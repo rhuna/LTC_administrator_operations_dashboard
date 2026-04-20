@@ -386,11 +386,41 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qcursor.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qbitmap.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabwidget.h \
- C:/Qt/6.11.0/mingw_64/include/QtGui/QAction \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QButtonGroup \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qbuttongroup.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
+ C:/dev/LTC_administrator_operations_dashboard/src/data/DatabaseManager.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/QList \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/QMap \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/QPair \
+ C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlDatabase \
+ C:/Qt/6.11.0/mingw_64/include/QtSql/qsqldatabase.h \
+ C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlglobal.h \
+ C:/Qt/6.11.0/mingw_64/include/QtSql/qtsql-config.h \
+ C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlexports.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qmetaobject.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/QString \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/QStringList \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CredentialingPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/EnvironmentalRoundsPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/HuddlePage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QualityMeasuresPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/RiskManagementPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/SurveyReadinessPage.h \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QAbstractScrollArea \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractscrollarea.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QHBoxLayout \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qboxlayout.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayout.h \
@@ -402,38 +432,27 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qiodevice.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qtextdocument.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qurl.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QMenuBar \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qmenubar.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qmenu.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QPushButton \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qpushbutton.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractbutton.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QListWidget \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlistwidget.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlistview.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractitemview.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qabstractitemmodel.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qitemselectionmodel.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractitemdelegate.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qstyleoption.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qlocale.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractspinbox.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qvalidator.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qregularexpression.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qslider.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractslider.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qstyle.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabbar.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qrubberband.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QScrollArea \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qscrollarea.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QSplitter \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qsplitter.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QStackedWidget \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qstackedwidget.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QVBoxLayout \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
- C:/dev/LTC_administrator_operations_dashboard/src/data/DatabaseManager.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/QObject \
- C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlDatabase \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qsqldatabase.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlglobal.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qtsql-config.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlexports.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/qmetaobject.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlQueryModel \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qsqlquerymodel.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/qabstractitemmodel.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/QString \
- C:/Qt/6.11.0/mingw_64/include/QtCore/QStringList \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/HuddlePage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QualityMeasuresPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/SurveyReadinessPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.h
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QVBoxLayout

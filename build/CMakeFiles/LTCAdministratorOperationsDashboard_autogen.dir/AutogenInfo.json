@@ -391,7 +391,6 @@
 		"C:/Qt/6.11.0/mingw_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginTargets-relwithdebinfo.cmake",
 		"C:/Qt/6.11.0/mingw_64/lib/cmake/Qt6Sql/Qt6QSQLiteDriverPluginAdditionalTargetInfo.cmake",
 		"C:/Qt/6.11.0/mingw_64/lib/cmake/Qt6Sql/Qt6SqlVersionlessAliasTargets.cmake",
-		"C:/Program Files/CMake/share/cmake-4.1/Modules/GNUInstallDirs.cmake",
 		"C:/dev/LTC_administrator_operations_dashboard/resources/resources.qrc"
 	],
 	"CMAKE_SOURCE_DIR" : "C:/dev/LTC_administrator_operations_dashboard",
@@ -431,9 +430,21 @@
 			null
 		],
 		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CredentialingPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_CredentialingPage.cpp",
+			null
+		],
+		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.h",
 			"MU",
 			"4PIRG7OLBM/moc_DashboardPage.cpp",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/EnvironmentalRoundsPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_EnvironmentalRoundsPage.cpp",
 			null
 		],
 		[
@@ -446,6 +457,24 @@
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.h",
 			"MU",
 			"4PIRG7OLBM/moc_IncidentsPage.cpp",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_InfectionControlPage.cpp",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.h",
+			"MU",
+			"4PIRG7OLBM/moc_ManagedCarePage.cpp",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_PreparednessPage.cpp",
 			null
 		],
 		[
@@ -464,6 +493,12 @@
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.h",
 			"MU",
 			"4PIRG7OLBM/moc_ResidentsPage.cpp",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/RiskManagementPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_RiskManagementPage.cpp",
 			null
 		],
 		[
@@ -499,7 +534,6 @@
 		"MINGW_HAS_SECURE_API=1",
 		"QT_CORE_LIB",
 		"QT_GUI_LIB",
-		"QT_NEEDS_QMAIN",
 		"QT_NO_DEBUG",
 		"QT_SQL_LIB",
 		"QT_WIDGETS_LIB",
@@ -519,7 +553,6 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"C:/dev/LTC_administrator_operations_dashboard/src",
 		"C:/Qt/6.11.0/mingw_64/include/QtCore",
 		"C:/Qt/6.11.0/mingw_64/include",
 		"C:/Qt/6.11.0/mingw_64/mkspecs/win32-g++",
@@ -547,7 +580,7 @@
 	"MOC_PREDEFS_CMD" : 
 	[
 		"C:/Qt/Tools/mingw1310_64/bin/g++.exe",
-		"-std=c++17",
+		"-std=gnu++17",
 		"-w",
 		"-dM",
 		"-E",
@@ -597,7 +630,17 @@
 			null
 		],
 		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CredentialingPage.cpp",
+			"MU",
+			null
+		],
+		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/EnvironmentalRoundsPage.cpp",
 			"MU",
 			null
 		],
@@ -608,6 +651,21 @@
 		],
 		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.cpp",
 			"MU",
 			null
 		],
@@ -623,6 +681,11 @@
 		],
 		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/RiskManagementPage.cpp",
 			"MU",
 			null
 		],

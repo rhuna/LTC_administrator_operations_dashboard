@@ -7,7 +7,7 @@
 	"CROSS_CONFIG" : false,
 	"GENERATOR" : "MinGW Makefiles",
 	"INCLUDE_DIR" : "C:/dev/LTC_administrator_operations_dashboard/build/LTCAdministratorOperationsDashboard_autogen/include",
-	"INPUTS" : [ "C:/dev/LTC_administrator_operations_dashboard/resources/app.qss" ],
+	"INPUTS" : [],
 	"LOCK_FILE" : "C:/dev/LTC_administrator_operations_dashboard/build/CMakeFiles/LTCAdministratorOperationsDashboard_autogen.dir/AutoRcc_resources_3YJK5W5UP7_Lock.lock",
 	"MULTI_CONFIG" : false,
 	"OPTIONS" : [ "--no-zstd", "-name", "resources" ],

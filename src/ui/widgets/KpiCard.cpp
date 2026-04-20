@@ -3,24 +3,21 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-KpiCard::KpiCard(const QString& title, const QString& value, QWidget* parent)
-    : QFrame(parent), valueLabel_(new QLabel(value, this)) {
-    setObjectName("CardFrame");
+KpiCard::KpiCard(const QString& title, const QString& value, QWidget* parent) : QFrame(parent) {
+    setObjectName("kpiCard");
 
     auto* layout = new QVBoxLayout(this);
-    layout->setContentsMargins(18, 16, 18, 16);
-    layout->setSpacing(8);
+    layout->setContentsMargins(16, 14, 16, 14);
+    layout->setSpacing(6);
 
-    auto* titleLabel = new QLabel(title, this);
-    titleLabel->setObjectName("CardTitle");
+    auto* t = new QLabel(title, this);
+    t->setObjectName("kpiTitle");
+    t->setWordWrap(true);
 
-    valueLabel_->setObjectName("CardValue");
+    auto* v = new QLabel(value, this);
+    v->setObjectName("kpiValue");
 
-    layout->addWidget(titleLabel);
-    layout->addWidget(valueLabel_);
+    layout->addWidget(t);
+    layout->addWidget(v);
     layout->addStretch();
-}
-
-void KpiCard::setValue(const QString& value) {
-    valueLabel_->setText(value);
 }

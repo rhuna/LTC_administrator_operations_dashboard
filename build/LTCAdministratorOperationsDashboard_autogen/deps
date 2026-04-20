@@ -103,9 +103,6 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/Program\ Files/CMake/share/cmake-4.1/Modules/Platform/Windows-windres.cmake \
 	C:/Program\ Files/CMake/share/cmake-4.1/Modules/Platform/Windows.cmake \
 	C:/Program\ Files/CMake/share/cmake-4.1/Modules/Platform/WindowsPaths.cmake \
-	C:/Qt/6.11.0/mingw_64/include/QtCore/QObject \
-	C:/Qt/6.11.0/mingw_64/include/QtCore/QString \
-	C:/Qt/6.11.0/mingw_64/include/QtCore/QStringList \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/q17memory.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/q20bit.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/q20functional.h \
@@ -115,7 +112,6 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/q20utility.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/q23type_traits.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/q23utility.h \
-	C:/Qt/6.11.0/mingw_64/include/QtCore/qabstractitemmodel.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qalgorithms.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qalloc.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qanystringview.h \
@@ -170,7 +166,6 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qmargins.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qmath.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qmetacontainer.h \
-	C:/Qt/6.11.0/mingw_64/include/QtCore/qmetaobject.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qmetatype.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qminmax.h \
 	C:/Qt/6.11.0/mingw_64/include/QtCore/qnamespace.h \
@@ -262,20 +257,8 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/Qt/6.11.0/mingw_64/include/QtGui/qtransform.h \
 	C:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs.h \
 	C:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs_win.h \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlDatabase \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlQueryModel \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/qsqldatabase.h \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/qsqlquerymodel.h \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/qtsql-config.h \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlexports.h \
-	C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlglobal.h \
-	C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
-	C:/Qt/6.11.0/mingw_64/include/QtWidgets/QMainWindow \
 	C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
-	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
-	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qmainwindow.h \
 	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qsizepolicy.h \
-	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabwidget.h \
 	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgets-config.h \
 	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsexports.h \
 	C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -719,18 +702,30 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CredentialingPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CredentialingPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/EnvironmentalRoundsPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/EnvironmentalRoundsPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/HuddlePage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/HuddlePage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QualityMeasuresPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QualityMeasuresPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/RiskManagementPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/RiskManagementPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/SurveyReadinessPage.cpp \

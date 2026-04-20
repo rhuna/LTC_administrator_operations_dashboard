@@ -1,122 +1,95 @@
 #include "DashboardPage.h"
+#include "../../data/DatabaseManager.h"
+#include "../widgets/KpiCard.h"
 
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QListWidget>
 #include <QVBoxLayout>
 
-#include "data/DatabaseManager.h"
-#include "ui/widgets/KpiCard.h"
-
-DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent)
-    : QWidget(parent), db_(db), subtitleLabel_(new QLabel(this)) {
+DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(parent) {
     auto* root = new QVBoxLayout(this);
-    root->setContentsMargins(20, 20, 20, 20);
+    root->setContentsMargins(8, 8, 8, 8);
     root->setSpacing(16);
 
-    auto* title = new QLabel("Executive Dashboard", this);
-    title->setObjectName("PageTitle");
-    root->addWidget(title);
+    auto* hero = new QGroupBox(this);
+    hero->setObjectName("heroPanel");
+    auto* heroLayout = new QVBoxLayout(hero);
+    heroLayout->setContentsMargins(20, 18, 20, 18);
+    heroLayout->setSpacing(6);
 
-    subtitleLabel_->setObjectName("SectionTitle");
-    root->addWidget(subtitleLabel_);
+    auto* title = new QLabel("Executive dashboard", hero);
+    title->setObjectName("dashboardTitle");
+    auto* subtitle = new QLabel(
+        "A simplified command center for census movement, staffing coverage, minimum staffing risk, compliance, and operational follow-up.",
+        hero);
+    subtitle->setObjectName("dashboardSubtitle");
+    subtitle->setWordWrap(true);
 
-    auto* cardsRow1 = new QHBoxLayout();
-    cardsRow1->setSpacing(14);
-    censusCard_ = new KpiCard("Current Census", "0", this);
-    occupancyCard_ = new KpiCard("Occupancy", "0%", this);
-    incidentsCard_ = new KpiCard("Open Incidents", "0", this);
-    tasksCard_ = new KpiCard("Open Tasks", "0", this);
-    cardsRow1->addWidget(censusCard_);
-    cardsRow1->addWidget(occupancyCard_);
-    cardsRow1->addWidget(incidentsCard_);
-    cardsRow1->addWidget(tasksCard_);
-    root->addLayout(cardsRow1);
+    auto* snapshot = new QLabel(
+        QString("%1 current residents · %2 open staffing assignments · %3 minimum staffing gaps")
+            .arg(db->countWhere("residents", "status='Current'"))
+            .arg(db->countWhere("staffing_assignments", "status='Open'"))
+            .arg(db->countMinimumStaffingGaps()),
+        hero);
+    snapshot->setObjectName("dashboardSnapshot");
 
-    auto* cardsRow2 = new QHBoxLayout();
-    cardsRow2->setSpacing(14);
-    hprdCard_ = new KpiCard("Avg HPRD", "0.0", this);
-    surveyRiskCard_ = new KpiCard("Survey Items At Risk", "0", this);
-    admissionsCard_ = new KpiCard("Pending Admissions", "0", this);
-    dischargeCard_ = new KpiCard("Planned Discharges", "0", this);
-    agencyCard_ = new KpiCard("Agency Shifts", "0", this);
-    qapiCard_ = new KpiCard("Active PIPs", "0", this);
-    overtimeCard_ = new KpiCard("OT Hours", "0.0", this);
-    varianceCard_ = new KpiCard("Labor Variance", "$0", this);
-    complianceCard_ = new KpiCard("Compliance Due", "0", this);
-    staffingChangeCard_ = new KpiCard("Staffing Changes", "0", this);
-    huddleCard_ = new KpiCard("Open Huddle Items", "0", this);
-    qualityCard_ = new KpiCard("Quality Measures Off Target", "0", this);
-    trainingCard_ = new KpiCard("Training Due", "0", this);
-    emergencyCard_ = new KpiCard("Preparedness Items Due", "0", this);
-    infectionCard_ = new KpiCard("Infection Control Open", "0", this);
-    cardsRow2->addWidget(hprdCard_);
-    cardsRow2->addWidget(surveyRiskCard_);
-    cardsRow2->addWidget(admissionsCard_);
-    cardsRow2->addWidget(dischargeCard_);
-    cardsRow2->addWidget(agencyCard_);
-    cardsRow2->addWidget(qapiCard_);
-    cardsRow2->addWidget(overtimeCard_);
-    cardsRow2->addWidget(varianceCard_);
-    cardsRow2->addWidget(complianceCard_);
-    cardsRow2->addWidget(staffingChangeCard_);
-    cardsRow2->addWidget(huddleCard_);
-    cardsRow2->addWidget(qualityCard_);
-    cardsRow2->addWidget(trainingCard_);
-    cardsRow2->addWidget(emergencyCard_);
-    cardsRow2->addWidget(infectionCard_);
-    root->addLayout(cardsRow2);
+    heroLayout->addWidget(title);
+    heroLayout->addWidget(subtitle);
+    heroLayout->addWidget(snapshot);
+    root->addWidget(hero);
 
-    auto* prioritiesBox = new QGroupBox("Administrator Action Center", this);
-    auto* prioritiesLayout = new QVBoxLayout(prioritiesBox);
-    priorityList_ = new QListWidget(prioritiesBox);
-    prioritiesLayout->addWidget(priorityList_);
-    root->addWidget(prioritiesBox, 1);
+    auto* kpiGrid = new QGridLayout();
+    kpiGrid->setHorizontalSpacing(12);
+    kpiGrid->setVerticalSpacing(12);
+    kpiGrid->addWidget(new KpiCard("Current residents", QString::number(db->countWhere("residents", "status='Current'")), this), 0, 0);
+    kpiGrid->addWidget(new KpiCard("Pending admissions", QString::number(db->countWhere("admissions", "status='Pending' OR status='Accepted'")), this), 0, 1);
+    kpiGrid->addWidget(new KpiCard("Open staffing", QString::number(db->countWhere("staffing_assignments", "status='Open'")), this), 0, 2);
+    kpiGrid->addWidget(new KpiCard("Minimum staffing gaps", QString::number(db->countMinimumStaffingGaps()), this), 1, 0);
+    kpiGrid->addWidget(new KpiCard("Staffing changes", QString::number(db->countWhere("staffing_changes", "status!='Closed'")), this), 1, 1);
+    kpiGrid->addWidget(new KpiCard("Compliance due", QString::number(db->countWhere("compliance_items", "status!='Closed'")), this), 1, 2);
+    kpiGrid->addWidget(new KpiCard("Active PIPs", QString::number(db->countWhere("pips", "status='Active'")), this), 2, 0);
+    kpiGrid->addWidget(new KpiCard("Open huddle items", QString::number(db->countWhere("huddle_items", "status!='Closed'")), this), 2, 1);
+    kpiGrid->addWidget(new KpiCard("Discharged residents", QString::number(db->countWhere("residents", "status='Discharged'")), this), 2, 2);
+    root->addLayout(kpiGrid);
 
-    refresh();
-}
+    auto* lowerRow = new QHBoxLayout();
+    lowerRow->setSpacing(16);
 
-void DashboardPage::refresh() {
-    const int census = db_->currentCensus();
-    const int capacity = db_->bedCapacity();
-    const double occupancy = capacity > 0 ? (100.0 * census / capacity) : 0.0;
-
-    subtitleLabel_->setText(QString("%1 | Beds: %2 | High Priority Tasks: %3 | Active PIPs: %4 | Compliance Due: %5 | Staffing Changes: %6 | Huddle Items: %7 | QM Off Target: %8 | Training Due: %9 | Preparedness Due: %10 | Infection Control Open: %11")
-                                .arg(db_->facilityName())
-                                .arg(capacity)
-                                .arg(db_->highPriorityTasks())
-                                .arg(db_->activeQapiProjects())
-                                .arg(db_->complianceItemsDueSoon())
-                                .arg(db_->pendingStaffingChanges())
-                                .arg(db_->openHuddleItems())
-                                .arg(db_->qualityMeasuresOffTarget())
-                                .arg(db_->trainingItemsDueSoon())
-                                .arg(db_->emergencyPreparednessItemsDueSoon())
-                                .arg(db_->infectionControlItemsOpen()));
-
-    censusCard_->setValue(QString::number(census));
-    occupancyCard_->setValue(QString::number(occupancy, 'f', 1) + "%");
-    incidentsCard_->setValue(QString::number(db_->openIncidents()));
-    tasksCard_->setValue(QString::number(db_->openTasks()));
-    hprdCard_->setValue(QString::number(db_->averageStaffHoursPerResidentDay(), 'f', 2));
-    surveyRiskCard_->setValue(QString::number(db_->surveyItemsAtRisk()));
-    admissionsCard_->setValue(QString::number(db_->pendingAdmissions()));
-    dischargeCard_->setValue(QString::number(db_->plannedDischarges()));
-    agencyCard_->setValue(QString::number(db_->agencyShifts()));
-    qapiCard_->setValue(QString::number(db_->activeQapiProjects()));
-    overtimeCard_->setValue(QString::number(db_->totalOvertimeHours(), 'f', 1));
-    varianceCard_->setValue(QString("$%1").arg(QString::number(db_->monthlyLaborBudgetVariance(), 'f', 0)));
-    complianceCard_->setValue(QString::number(db_->complianceItemsDueSoon()));
-    staffingChangeCard_->setValue(QString::number(db_->pendingStaffingChanges()));
-    huddleCard_->setValue(QString::number(db_->openHuddleItems()));
-    qualityCard_->setValue(QString::number(db_->qualityMeasuresOffTarget()));
-    trainingCard_->setValue(QString::number(db_->trainingItemsDueSoon()));
-    emergencyCard_->setValue(QString::number(db_->emergencyPreparednessItemsDueSoon()));
-    infectionCard_->setValue(QString::number(db_->infectionControlItemsOpen()));
-
-    priorityList_->clear();
-    for (const auto& item : db_->dashboardFocusItems()) {
-        priorityList_->addItem(item);
+    auto* actionBox = new QGroupBox("Administrator action center", this);
+    auto* actionLayout = new QVBoxLayout(actionBox);
+    auto* actionHint = new QLabel("Short list of the highest-value follow-up items.", actionBox);
+    actionHint->setObjectName("panelHint");
+    actionHint->setWordWrap(true);
+    auto* list = new QListWidget(actionBox);
+    list->setObjectName("actionList");
+    for (const auto& item : db->actionCenterItems()) {
+        list->addItem(item.first + " — " + item.second);
     }
+    actionLayout->addWidget(actionHint);
+    actionLayout->addWidget(list);
+
+    auto* quickBox = new QGroupBox("Today at a glance", this);
+    auto* quickLayout = new QVBoxLayout(quickBox);
+    auto* quickHint = new QLabel("Use this to orient quickly before moving into a detailed module.", quickBox);
+    quickHint->setObjectName("panelHint");
+    quickHint->setWordWrap(true);
+    auto* quickList = new QListWidget(quickBox);
+    quickList->setObjectName("actionList");
+    quickList->addItem(QString("%1 assignment(s) still marked open").arg(db->countWhere("staffing_assignments", "status='Open'")));
+    quickList->addItem(QString("%1 minimum staffing group(s) are below required coverage").arg(db->countMinimumStaffingGaps()));
+    quickList->addItem(QString("%1 incident(s) still open or under review").arg(db->countWhere("incidents", "status!='Closed'")));
+    quickList->addItem(QString("%1 managed-care item(s) at risk or open").arg(db->countWhere("managed_care_items", "status='At Risk' OR status='Open'")));
+    quickList->addItem(QString("%1 credentialing item(s) due soon or open").arg(db->countWhere("credentialing_items", "status!='Closed'")));
+    quickList->addItem(QString("%1 preparedness item(s) due soon or open").arg(db->countWhere("preparedness_items", "status!='Closed'")));
+    quickList->addItem(QString("%1 infection-control item(s) open or on watch").arg(db->countWhere("infection_control_items", "status='Open' OR status='Watch'")));
+    quickLayout->addWidget(quickHint);
+    quickLayout->addWidget(quickList);
+
+    lowerRow->addWidget(actionBox, 3);
+    lowerRow->addWidget(quickBox, 2);
+    root->addLayout(lowerRow);
+    root->addStretch();
 }

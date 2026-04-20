@@ -391,6 +391,30 @@ src/ui/pages/CompliancePage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/CompliancePage.cpp.s
 .PHONY : src/ui/pages/CompliancePage.cpp.s
 
+src/ui/pages/CredentialingPage.obj: src/ui/pages/CredentialingPage.cpp.obj
+.PHONY : src/ui/pages/CredentialingPage.obj
+
+# target to build an object file
+src/ui/pages/CredentialingPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/CredentialingPage.cpp.obj
+.PHONY : src/ui/pages/CredentialingPage.cpp.obj
+
+src/ui/pages/CredentialingPage.i: src/ui/pages/CredentialingPage.cpp.i
+.PHONY : src/ui/pages/CredentialingPage.i
+
+# target to preprocess a source file
+src/ui/pages/CredentialingPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/CredentialingPage.cpp.i
+.PHONY : src/ui/pages/CredentialingPage.cpp.i
+
+src/ui/pages/CredentialingPage.s: src/ui/pages/CredentialingPage.cpp.s
+.PHONY : src/ui/pages/CredentialingPage.s
+
+# target to generate assembly for a file
+src/ui/pages/CredentialingPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/CredentialingPage.cpp.s
+.PHONY : src/ui/pages/CredentialingPage.cpp.s
+
 src/ui/pages/DashboardPage.obj: src/ui/pages/DashboardPage.cpp.obj
 .PHONY : src/ui/pages/DashboardPage.obj
 
@@ -414,6 +438,30 @@ src/ui/pages/DashboardPage.s: src/ui/pages/DashboardPage.cpp.s
 src/ui/pages/DashboardPage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/DashboardPage.cpp.s
 .PHONY : src/ui/pages/DashboardPage.cpp.s
+
+src/ui/pages/EnvironmentalRoundsPage.obj: src/ui/pages/EnvironmentalRoundsPage.cpp.obj
+.PHONY : src/ui/pages/EnvironmentalRoundsPage.obj
+
+# target to build an object file
+src/ui/pages/EnvironmentalRoundsPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRoundsPage.cpp.obj
+.PHONY : src/ui/pages/EnvironmentalRoundsPage.cpp.obj
+
+src/ui/pages/EnvironmentalRoundsPage.i: src/ui/pages/EnvironmentalRoundsPage.cpp.i
+.PHONY : src/ui/pages/EnvironmentalRoundsPage.i
+
+# target to preprocess a source file
+src/ui/pages/EnvironmentalRoundsPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRoundsPage.cpp.i
+.PHONY : src/ui/pages/EnvironmentalRoundsPage.cpp.i
+
+src/ui/pages/EnvironmentalRoundsPage.s: src/ui/pages/EnvironmentalRoundsPage.cpp.s
+.PHONY : src/ui/pages/EnvironmentalRoundsPage.s
+
+# target to generate assembly for a file
+src/ui/pages/EnvironmentalRoundsPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRoundsPage.cpp.s
+.PHONY : src/ui/pages/EnvironmentalRoundsPage.cpp.s
 
 src/ui/pages/HuddlePage.obj: src/ui/pages/HuddlePage.cpp.obj
 .PHONY : src/ui/pages/HuddlePage.obj
@@ -462,6 +510,78 @@ src/ui/pages/IncidentsPage.s: src/ui/pages/IncidentsPage.cpp.s
 src/ui/pages/IncidentsPage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/IncidentsPage.cpp.s
 .PHONY : src/ui/pages/IncidentsPage.cpp.s
+
+src/ui/pages/InfectionControlPage.obj: src/ui/pages/InfectionControlPage.cpp.obj
+.PHONY : src/ui/pages/InfectionControlPage.obj
+
+# target to build an object file
+src/ui/pages/InfectionControlPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/InfectionControlPage.cpp.obj
+.PHONY : src/ui/pages/InfectionControlPage.cpp.obj
+
+src/ui/pages/InfectionControlPage.i: src/ui/pages/InfectionControlPage.cpp.i
+.PHONY : src/ui/pages/InfectionControlPage.i
+
+# target to preprocess a source file
+src/ui/pages/InfectionControlPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/InfectionControlPage.cpp.i
+.PHONY : src/ui/pages/InfectionControlPage.cpp.i
+
+src/ui/pages/InfectionControlPage.s: src/ui/pages/InfectionControlPage.cpp.s
+.PHONY : src/ui/pages/InfectionControlPage.s
+
+# target to generate assembly for a file
+src/ui/pages/InfectionControlPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/InfectionControlPage.cpp.s
+.PHONY : src/ui/pages/InfectionControlPage.cpp.s
+
+src/ui/pages/ManagedCarePage.obj: src/ui/pages/ManagedCarePage.cpp.obj
+.PHONY : src/ui/pages/ManagedCarePage.obj
+
+# target to build an object file
+src/ui/pages/ManagedCarePage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/ManagedCarePage.cpp.obj
+.PHONY : src/ui/pages/ManagedCarePage.cpp.obj
+
+src/ui/pages/ManagedCarePage.i: src/ui/pages/ManagedCarePage.cpp.i
+.PHONY : src/ui/pages/ManagedCarePage.i
+
+# target to preprocess a source file
+src/ui/pages/ManagedCarePage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/ManagedCarePage.cpp.i
+.PHONY : src/ui/pages/ManagedCarePage.cpp.i
+
+src/ui/pages/ManagedCarePage.s: src/ui/pages/ManagedCarePage.cpp.s
+.PHONY : src/ui/pages/ManagedCarePage.s
+
+# target to generate assembly for a file
+src/ui/pages/ManagedCarePage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/ManagedCarePage.cpp.s
+.PHONY : src/ui/pages/ManagedCarePage.cpp.s
+
+src/ui/pages/PreparednessPage.obj: src/ui/pages/PreparednessPage.cpp.obj
+.PHONY : src/ui/pages/PreparednessPage.obj
+
+# target to build an object file
+src/ui/pages/PreparednessPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PreparednessPage.cpp.obj
+.PHONY : src/ui/pages/PreparednessPage.cpp.obj
+
+src/ui/pages/PreparednessPage.i: src/ui/pages/PreparednessPage.cpp.i
+.PHONY : src/ui/pages/PreparednessPage.i
+
+# target to preprocess a source file
+src/ui/pages/PreparednessPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PreparednessPage.cpp.i
+.PHONY : src/ui/pages/PreparednessPage.cpp.i
+
+src/ui/pages/PreparednessPage.s: src/ui/pages/PreparednessPage.cpp.s
+.PHONY : src/ui/pages/PreparednessPage.s
+
+# target to generate assembly for a file
+src/ui/pages/PreparednessPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PreparednessPage.cpp.s
+.PHONY : src/ui/pages/PreparednessPage.cpp.s
 
 src/ui/pages/QapiPage.obj: src/ui/pages/QapiPage.cpp.obj
 .PHONY : src/ui/pages/QapiPage.obj
@@ -534,6 +654,30 @@ src/ui/pages/ResidentsPage.s: src/ui/pages/ResidentsPage.cpp.s
 src/ui/pages/ResidentsPage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/ResidentsPage.cpp.s
 .PHONY : src/ui/pages/ResidentsPage.cpp.s
+
+src/ui/pages/RiskManagementPage.obj: src/ui/pages/RiskManagementPage.cpp.obj
+.PHONY : src/ui/pages/RiskManagementPage.obj
+
+# target to build an object file
+src/ui/pages/RiskManagementPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/RiskManagementPage.cpp.obj
+.PHONY : src/ui/pages/RiskManagementPage.cpp.obj
+
+src/ui/pages/RiskManagementPage.i: src/ui/pages/RiskManagementPage.cpp.i
+.PHONY : src/ui/pages/RiskManagementPage.i
+
+# target to preprocess a source file
+src/ui/pages/RiskManagementPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/RiskManagementPage.cpp.i
+.PHONY : src/ui/pages/RiskManagementPage.cpp.i
+
+src/ui/pages/RiskManagementPage.s: src/ui/pages/RiskManagementPage.cpp.s
+.PHONY : src/ui/pages/RiskManagementPage.s
+
+# target to generate assembly for a file
+src/ui/pages/RiskManagementPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/RiskManagementPage.cpp.s
+.PHONY : src/ui/pages/RiskManagementPage.cpp.s
 
 src/ui/pages/StaffingPage.obj: src/ui/pages/StaffingPage.cpp.obj
 .PHONY : src/ui/pages/StaffingPage.obj
@@ -670,15 +814,30 @@ help:
 	@echo ... src/ui/pages/CompliancePage.obj
 	@echo ... src/ui/pages/CompliancePage.i
 	@echo ... src/ui/pages/CompliancePage.s
+	@echo ... src/ui/pages/CredentialingPage.obj
+	@echo ... src/ui/pages/CredentialingPage.i
+	@echo ... src/ui/pages/CredentialingPage.s
 	@echo ... src/ui/pages/DashboardPage.obj
 	@echo ... src/ui/pages/DashboardPage.i
 	@echo ... src/ui/pages/DashboardPage.s
+	@echo ... src/ui/pages/EnvironmentalRoundsPage.obj
+	@echo ... src/ui/pages/EnvironmentalRoundsPage.i
+	@echo ... src/ui/pages/EnvironmentalRoundsPage.s
 	@echo ... src/ui/pages/HuddlePage.obj
 	@echo ... src/ui/pages/HuddlePage.i
 	@echo ... src/ui/pages/HuddlePage.s
 	@echo ... src/ui/pages/IncidentsPage.obj
 	@echo ... src/ui/pages/IncidentsPage.i
 	@echo ... src/ui/pages/IncidentsPage.s
+	@echo ... src/ui/pages/InfectionControlPage.obj
+	@echo ... src/ui/pages/InfectionControlPage.i
+	@echo ... src/ui/pages/InfectionControlPage.s
+	@echo ... src/ui/pages/ManagedCarePage.obj
+	@echo ... src/ui/pages/ManagedCarePage.i
+	@echo ... src/ui/pages/ManagedCarePage.s
+	@echo ... src/ui/pages/PreparednessPage.obj
+	@echo ... src/ui/pages/PreparednessPage.i
+	@echo ... src/ui/pages/PreparednessPage.s
 	@echo ... src/ui/pages/QapiPage.obj
 	@echo ... src/ui/pages/QapiPage.i
 	@echo ... src/ui/pages/QapiPage.s
@@ -688,6 +847,9 @@ help:
 	@echo ... src/ui/pages/ResidentsPage.obj
 	@echo ... src/ui/pages/ResidentsPage.i
 	@echo ... src/ui/pages/ResidentsPage.s
+	@echo ... src/ui/pages/RiskManagementPage.obj
+	@echo ... src/ui/pages/RiskManagementPage.i
+	@echo ... src/ui/pages/RiskManagementPage.s
 	@echo ... src/ui/pages/StaffingPage.obj
 	@echo ... src/ui/pages/StaffingPage.i
 	@echo ... src/ui/pages/StaffingPage.s

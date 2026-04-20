@@ -1,30 +1,31 @@
 #pragma once
-
 #include <QWidget>
 
 class DatabaseManager;
-class QComboBox;
-class QDateEdit;
 class QLineEdit;
-class QSqlQueryModel;
-class QTableView;
+class QPushButton;
+class QTableWidget;
 
 class AdmissionsPage : public QWidget {
     Q_OBJECT
 public:
     explicit AdmissionsPage(DatabaseManager* db, QWidget* parent = nullptr);
-    void refresh();
 
 private slots:
-    void onAddAdmissionClicked();
+    void refreshTable();
+    void handleAddReferral();
+    void handleAdmitSelected();
 
 private:
-    DatabaseManager* db_;
-    QTableView* table_;
-    QSqlQueryModel* model_;
-    QLineEdit* residentEdit_;
-    QLineEdit* referralEdit_;
-    QLineEdit* payerEdit_;
-    QDateEdit* expectedDateEdit_;
-    QComboBox* statusCombo_;
+    DatabaseManager* m_db{nullptr};
+    QLineEdit* m_nameEdit{nullptr};
+    QLineEdit* m_sourceEdit{nullptr};
+    QLineEdit* m_dateEdit{nullptr};
+    QLineEdit* m_statusEdit{nullptr};
+    QLineEdit* m_roomEdit{nullptr};
+    QLineEdit* m_payerEdit{nullptr};
+    QPushButton* m_addButton{nullptr};
+    QPushButton* m_admitButton{nullptr};
+    QPushButton* m_refreshButton{nullptr};
+    QTableWidget* m_tableWidget{nullptr};
 };

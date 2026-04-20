@@ -20,7 +20,6 @@
 #define __FLT32_MIN_EXP__ (-125)
 #define __cpp_static_assert 201411L
 #define __BFLT16_MIN_10_EXP__ (-37)
-#define QT_NEEDS_QMAIN 1
 #define QT_GUI_LIB 1
 #define __ORDER_LITTLE_ENDIAN__ 1234
 #define __WCHAR_MAX__ 0xffff
@@ -47,6 +46,7 @@
 #define __UINT_FAST8_MAX__ 0xff
 #define __cpp_rvalue_reference 200610L
 #define __cpp_nested_namespace_definitions 201411L
+#define _stdcall __attribute__((__stdcall__))
 #define __DEC64_MAX_EXP__ 385
 #define __INT8_C(c) c
 #define __LDBL_HAS_INFINITY__ 1
@@ -126,6 +126,7 @@
 #define __FLT64X_MANT_DIG__ 64
 #define __BFLT16_DIG__ 2
 #define __GNUC__ 13
+#define _cdecl __attribute__((__cdecl__))
 #define __GXX_RTTI 1
 #define __MMX__ 1
 #define __FLT_HAS_DENORM__ 1
@@ -138,6 +139,7 @@
 #define __FLT16_MAX_10_EXP__ 4
 #define __cpp_delegating_constructors 200604L
 #define __DBL_MAX__ double(1.79769313486231570814527423731704357e+308L)
+#define _thiscall __attribute__((__thiscall__))
 #define __cpp_raw_strings 200710L
 #define __INT_FAST32_MAX__ 0x7fffffff
 #define __DBL_HAS_INFINITY__ 1
@@ -151,8 +153,8 @@
 #define __UINT_LEAST32_MAX__ 0xffffffffU
 #define __FLT32X_HAS_DENORM__ 1
 #define __INT_FAST16_TYPE__ short int
-#define __STRICT_ANSI__ 1
 #define __MMX_WITH_SSE__ 1
+#define _fastcall __attribute__((__fastcall__))
 #define __LDBL_HAS_DENORM__ 1
 #define QT_WIDGETS_LIB 1
 #define __SEG_GS 1
@@ -420,6 +422,7 @@
 #define __UINT32_C(c) c ## U
 #define ARCHITECTURE_ID "x86_64"
 #define __cpp_alias_templates 200704L
+#define WINNT 1
 #define __FLT_DENORM_MIN__ 1.40129846432481707092372958328991613e-45F
 #define __FLT128_IS_IEC_60559__ 1
 #define __INT8_MAX__ 0x7f
@@ -443,9 +446,11 @@
 #define __FLT64_MIN__ 2.22507385850720138309023271733240406e-308F64
 #define __INT_LEAST32_WIDTH__ 32
 #define __INTMAX_TYPE__ long long int
+#define __GLIBCXX_BITSIZE_INT_N_0 128
 #define __FLT32X_HAS_QUIET_NAN__ 1
 #define __ATOMIC_CONSUME 1
 #define __GNUC_MINOR__ 1
+#define __GLIBCXX_TYPE_INT_N_0 __int128
 #define __UINTMAX_MAX__ 0xffffffffffffffffULL
 #define __FLT32X_DENORM_MIN__ 4.94065645841246544176568792868221372e-324F32x
 #define __cpp_template_template_args 201611L

@@ -1,9 +1,9 @@
 CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/mocs_compilation.cpp.obj: \
  C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\mocs_compilation.cpp \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\PRMOGMWJPH/moc_AppWindow.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/core/AppWindow.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QMainWindow \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qmainwindow.h \
+ C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_AdmissionsPage.cpp \
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qtguiglobal.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qglobal.h \
@@ -157,7 +157,6 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDas
  C:/Qt/6.11.0/mingw_64/include/QtGui/qtguiexports.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgets-config.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsexports.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qobjectdefs.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qnamespace.h \
@@ -386,50 +385,10 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDas
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qsizepolicy.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qcursor.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qbitmap.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabwidget.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qtmochelpers.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qtmocconstants.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/q20algorithm.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\SG3YC7EIDC/moc_DatabaseManager.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/data/DatabaseManager.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/QObject \
- C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlDatabase \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qsqldatabase.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlglobal.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qtsql-config.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qtsqlexports.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/qmetaobject.h \
- C:/Qt/6.11.0/mingw_64/include/QtSql/QSqlQueryModel \
- C:/Qt/6.11.0/mingw_64/include/QtSql/qsqlquerymodel.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/qabstractitemmodel.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/QString \
- C:/Qt/6.11.0/mingw_64/include/QtCore/QStringList \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_AdmissionsPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_BudgetPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_CompliancePage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_DashboardPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_HuddlePage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/HuddlePage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_IncidentsPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_QapiPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_QualityMeasuresPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QualityMeasuresPage.h \
  C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_ResidentsPage.cpp \
  C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.h \
  C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_StaffingPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_SurveyReadinessPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/SurveyReadinessPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\4PIRG7OLBM/moc_TasksPage.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.h \
- C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\JCA2YNWUYB/moc_KpiCard.cpp \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/widgets/KpiCard.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h
+ C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.h

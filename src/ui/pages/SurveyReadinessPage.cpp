@@ -1,33 +1,28 @@
 #include "SurveyReadinessPage.h"
-
+#include "../../data/DatabaseManager.h"
 #include <QHeaderView>
 #include <QLabel>
-#include <QSqlQueryModel>
-#include <QTableView>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTableWidget>
 #include <QVBoxLayout>
-
-#include "data/DatabaseManager.h"
-
-SurveyReadinessPage::SurveyReadinessPage(DatabaseManager* db, QWidget* parent)
-    : QWidget(parent), db_(db), table_(new QTableView(this)), model_(nullptr) {
+#include <QHBoxLayout>
+SurveyReadinessPage::SurveyReadinessPage(DatabaseManager* db, QWidget* parent) : QWidget(parent) {
     auto* root = new QVBoxLayout(this);
-    root->setContentsMargins(20, 20, 20, 20);
-    root->setSpacing(16);
+    auto* heading = new QLabel("Survey Readiness", this);
+    heading->setStyleSheet("font-size: 20px; font-weight: 700;");
+    root->addWidget(heading);
+    auto* tableWidget = new QTableWidget(this);
+    tableWidget->setColumnCount(4);
+    tableWidget->setHorizontalHeaderLabels(QStringList{"focus_area", "owner", "risk_level", "status"});
+    tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    auto rows = db->fetchTable("survey_items", QStringList{"focus_area", "owner", "risk_level", "status"});
+    for (const auto& row : rows) {
+        int r = tableWidget->rowCount();
+        tableWidget->insertRow(r);
+        int c = 0;
+        for (const auto& key : QStringList{"focus_area", "owner", "risk_level", "status"}) tableWidget->setItem(r, c++, new QTableWidgetItem(row.value(key)));
+    }
 
-    auto* title = new QLabel("Survey Readiness", this);
-    title->setObjectName("PageTitle");
-    root->addWidget(title);
-
-    table_->horizontalHeader()->setStretchLastSection(true);
-    table_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    table_->setAlternatingRowColors(true);
-    root->addWidget(table_, 1);
-
-    refresh();
-}
-
-void SurveyReadinessPage::refresh() {
-    delete model_;
-    model_ = db_->createSurveyModel(this);
-    table_->setModel(model_);
+    root->addWidget(tableWidget);
 }
