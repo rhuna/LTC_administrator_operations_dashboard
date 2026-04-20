@@ -343,6 +343,30 @@ src/ui/pages/AdmissionsPage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/AdmissionsPage.cpp.s
 .PHONY : src/ui/pages/AdmissionsPage.cpp.s
 
+src/ui/pages/BedBoardPage.obj: src/ui/pages/BedBoardPage.cpp.obj
+.PHONY : src/ui/pages/BedBoardPage.obj
+
+# target to build an object file
+src/ui/pages/BedBoardPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj
+.PHONY : src/ui/pages/BedBoardPage.cpp.obj
+
+src/ui/pages/BedBoardPage.i: src/ui/pages/BedBoardPage.cpp.i
+.PHONY : src/ui/pages/BedBoardPage.i
+
+# target to preprocess a source file
+src/ui/pages/BedBoardPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.i
+.PHONY : src/ui/pages/BedBoardPage.cpp.i
+
+src/ui/pages/BedBoardPage.s: src/ui/pages/BedBoardPage.cpp.s
+.PHONY : src/ui/pages/BedBoardPage.s
+
+# target to generate assembly for a file
+src/ui/pages/BedBoardPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.s
+.PHONY : src/ui/pages/BedBoardPage.cpp.s
+
 src/ui/pages/BudgetPage.obj: src/ui/pages/BudgetPage.cpp.obj
 .PHONY : src/ui/pages/BudgetPage.obj
 
@@ -559,6 +583,30 @@ src/ui/pages/ManagedCarePage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/ManagedCarePage.cpp.s
 .PHONY : src/ui/pages/ManagedCarePage.cpp.s
 
+src/ui/pages/PharmacyPage.obj: src/ui/pages/PharmacyPage.cpp.obj
+.PHONY : src/ui/pages/PharmacyPage.obj
+
+# target to build an object file
+src/ui/pages/PharmacyPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj
+.PHONY : src/ui/pages/PharmacyPage.cpp.obj
+
+src/ui/pages/PharmacyPage.i: src/ui/pages/PharmacyPage.cpp.i
+.PHONY : src/ui/pages/PharmacyPage.i
+
+# target to preprocess a source file
+src/ui/pages/PharmacyPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.i
+.PHONY : src/ui/pages/PharmacyPage.cpp.i
+
+src/ui/pages/PharmacyPage.s: src/ui/pages/PharmacyPage.cpp.s
+.PHONY : src/ui/pages/PharmacyPage.s
+
+# target to generate assembly for a file
+src/ui/pages/PharmacyPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.s
+.PHONY : src/ui/pages/PharmacyPage.cpp.s
+
 src/ui/pages/PreparednessPage.obj: src/ui/pages/PreparednessPage.cpp.obj
 .PHONY : src/ui/pages/PreparednessPage.obj
 
@@ -751,6 +799,30 @@ src/ui/pages/TasksPage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TasksPage.cpp.s
 .PHONY : src/ui/pages/TasksPage.cpp.s
 
+src/ui/pages/TransportationPage.obj: src/ui/pages/TransportationPage.cpp.obj
+.PHONY : src/ui/pages/TransportationPage.obj
+
+# target to build an object file
+src/ui/pages/TransportationPage.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj
+.PHONY : src/ui/pages/TransportationPage.cpp.obj
+
+src/ui/pages/TransportationPage.i: src/ui/pages/TransportationPage.cpp.i
+.PHONY : src/ui/pages/TransportationPage.i
+
+# target to preprocess a source file
+src/ui/pages/TransportationPage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.i
+.PHONY : src/ui/pages/TransportationPage.cpp.i
+
+src/ui/pages/TransportationPage.s: src/ui/pages/TransportationPage.cpp.s
+.PHONY : src/ui/pages/TransportationPage.s
+
+# target to generate assembly for a file
+src/ui/pages/TransportationPage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\LTCAdministratorOperationsDashboard.dir\build.make CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.s
+.PHONY : src/ui/pages/TransportationPage.cpp.s
+
 src/ui/widgets/KpiCard.obj: src/ui/widgets/KpiCard.cpp.obj
 .PHONY : src/ui/widgets/KpiCard.obj
 
@@ -808,6 +880,9 @@ help:
 	@echo ... src/ui/pages/AdmissionsPage.obj
 	@echo ... src/ui/pages/AdmissionsPage.i
 	@echo ... src/ui/pages/AdmissionsPage.s
+	@echo ... src/ui/pages/BedBoardPage.obj
+	@echo ... src/ui/pages/BedBoardPage.i
+	@echo ... src/ui/pages/BedBoardPage.s
 	@echo ... src/ui/pages/BudgetPage.obj
 	@echo ... src/ui/pages/BudgetPage.i
 	@echo ... src/ui/pages/BudgetPage.s
@@ -835,6 +910,9 @@ help:
 	@echo ... src/ui/pages/ManagedCarePage.obj
 	@echo ... src/ui/pages/ManagedCarePage.i
 	@echo ... src/ui/pages/ManagedCarePage.s
+	@echo ... src/ui/pages/PharmacyPage.obj
+	@echo ... src/ui/pages/PharmacyPage.i
+	@echo ... src/ui/pages/PharmacyPage.s
 	@echo ... src/ui/pages/PreparednessPage.obj
 	@echo ... src/ui/pages/PreparednessPage.i
 	@echo ... src/ui/pages/PreparednessPage.s
@@ -859,6 +937,9 @@ help:
 	@echo ... src/ui/pages/TasksPage.obj
 	@echo ... src/ui/pages/TasksPage.i
 	@echo ... src/ui/pages/TasksPage.s
+	@echo ... src/ui/pages/TransportationPage.obj
+	@echo ... src/ui/pages/TransportationPage.i
+	@echo ... src/ui/pages/TransportationPage.s
 	@echo ... src/ui/widgets/KpiCard.obj
 	@echo ... src/ui/widgets/KpiCard.i
 	@echo ... src/ui/widgets/KpiCard.s

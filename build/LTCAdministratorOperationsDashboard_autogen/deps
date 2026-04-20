@@ -698,6 +698,8 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/dev/LTC_administrator_operations_dashboard/src/main.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BedBoardPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BedBoardPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.cpp \
@@ -716,6 +718,8 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PharmacyPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PharmacyPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.cpp \
@@ -732,6 +736,8 @@ LTCAdministratorOperationsDashboard_autogen/timestamp: \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/SurveyReadinessPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.h \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TransportationPage.cpp \
+	C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TransportationPage.h \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/widgets/KpiCard.cpp \
 	C:/dev/LTC_administrator_operations_dashboard/src/ui/widgets/KpiCard.h \
 	C:/Program\ Files/CMake/bin/cmake.exe

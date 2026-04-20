@@ -21,6 +21,11 @@ private slots:
 private:
     DatabaseManager* m_db{nullptr};
     QLabel* m_snapshotLabel{nullptr};
+    QLabel* m_openCountLabel{nullptr};
+    QLabel* m_gapCountLabel{nullptr};
+    QLabel* m_filledCountLabel{nullptr};
+    QLabel* m_agencyCountLabel{nullptr};
+    QLabel* m_hprdLabel{nullptr};
     QLineEdit* m_dateEdit{nullptr};
     QLineEdit* m_departmentEdit{nullptr};
     QLineEdit* m_shiftEdit{nullptr};
@@ -32,5 +37,9 @@ private:
     QPushButton* m_markFilledButton{nullptr};
     QPushButton* m_refreshButton{nullptr};
     QTableWidget* m_assignmentsTable{nullptr};
+    QTableWidget* m_shiftTotalsTable{nullptr};
+    QTableWidget* m_mixTable{nullptr};
     QTableWidget* m_minimumsTable{nullptr};
+    QTableWidget* m_hoursTable{nullptr};
+    QTableWidget* m_hprdTable{nullptr};
 };

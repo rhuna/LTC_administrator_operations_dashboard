@@ -6,7 +6,7 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("LTC Administrator Operations Dashboard");
-    app.setApplicationVersion("16.0.0");
+    app.setApplicationVersion("23.0.0");
     app.setStyleSheet(R"(
         QWidget {
             background: #f4f7fb;

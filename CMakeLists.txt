@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 16.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 23.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -53,6 +53,12 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/RiskManagementPage.cpp
     src/ui/pages/EnvironmentalRoundsPage.h
     src/ui/pages/EnvironmentalRoundsPage.cpp
+    src/ui/pages/BedBoardPage.h
+    src/ui/pages/BedBoardPage.cpp
+    src/ui/pages/TransportationPage.h
+    src/ui/pages/TransportationPage.cpp
+    src/ui/pages/PharmacyPage.h
+    src/ui/pages/PharmacyPage.cpp
     resources/resources.qrc
 )
 

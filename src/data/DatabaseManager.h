@@ -23,6 +23,10 @@ public:
     int countWhere(const QString& tableName, const QString& whereClause = QString()) const;
     int countMinimumStaffingGaps() const;
     QList<QMap<QString, QString>> staffingMinimumSummary() const;
+    QList<QMap<QString, QString>> staffingHoursSummary() const;
+    QList<QMap<QString, QString>> nursingHprdSummary() const;
+    double estimatedNursingHprd() const;
+    int estimatedMinimumHoursGap() const;
     QList<QPair<QString, QString>> actionCenterItems() const;
 
 private:

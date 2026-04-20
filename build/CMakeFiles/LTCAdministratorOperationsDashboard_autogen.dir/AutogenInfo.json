@@ -418,6 +418,12 @@
 			null
 		],
 		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BedBoardPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_BedBoardPage.cpp",
+			null
+		],
+		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h",
 			"MU",
 			"4PIRG7OLBM/moc_BudgetPage.cpp",
@@ -472,6 +478,12 @@
 			null
 		],
 		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PharmacyPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_PharmacyPage.cpp",
+			null
+		],
+		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.h",
 			"MU",
 			"4PIRG7OLBM/moc_PreparednessPage.cpp",
@@ -517,6 +529,12 @@
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.h",
 			"MU",
 			"4PIRG7OLBM/moc_TasksPage.cpp",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TransportationPage.h",
+			"MU",
+			"4PIRG7OLBM/moc_TransportationPage.cpp",
 			null
 		],
 		[
@@ -620,6 +638,11 @@
 			null
 		],
 		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BedBoardPage.cpp",
+			"MU",
+			null
+		],
+		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.cpp",
 			"MU",
 			null
@@ -665,6 +688,11 @@
 			null
 		],
 		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PharmacyPage.cpp",
+			"MU",
+			null
+		],
+		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.cpp",
 			"MU",
 			null
@@ -701,6 +729,11 @@
 		],
 		[
 			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.cpp",
+			"MU",
+			null
+		],
+		[
+			"C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TransportationPage.cpp",
 			"MU",
 			null
 		],

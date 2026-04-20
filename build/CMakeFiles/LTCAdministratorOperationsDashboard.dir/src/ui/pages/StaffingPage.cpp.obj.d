@@ -396,6 +396,7 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/StaffingPage.cpp
  C:/Qt/6.11.0/mingw_64/include/QtCore/qmetaobject.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/QString \
  C:/Qt/6.11.0/mingw_64/include/QtCore/QStringList \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/QColor \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFormLayout \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qformlayout.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QLayout \
@@ -403,9 +404,10 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/StaffingPage.cpp
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayoutitem.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qboxlayout.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qgridlayout.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QGroupBox \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qgroupbox.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QHeaderView \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qheaderview.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractitemview.h \

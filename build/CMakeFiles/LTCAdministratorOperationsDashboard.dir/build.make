@@ -423,11 +423,56 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRou
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRoundsPage.cpp.s"
 	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\EnvironmentalRoundsPage.cpp -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\EnvironmentalRoundsPage.cpp.s
 
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/flags.make
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/includes_CXX.rsp
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj: C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BedBoardPage.cpp
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj -MF CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\BedBoardPage.cpp.obj.d -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\BedBoardPage.cpp.obj -c C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\BedBoardPage.cpp
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.i"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\BedBoardPage.cpp > CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\BedBoardPage.cpp.i
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.s"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\BedBoardPage.cpp -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\BedBoardPage.cpp.s
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/flags.make
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/includes_CXX.rsp
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj: C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TransportationPage.cpp
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj -MF CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\TransportationPage.cpp.obj.d -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\TransportationPage.cpp.obj -c C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\TransportationPage.cpp
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.i"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\TransportationPage.cpp > CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\TransportationPage.cpp.i
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.s"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\TransportationPage.cpp -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\TransportationPage.cpp.s
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/flags.make
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/includes_CXX.rsp
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj: C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PharmacyPage.cpp
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj -MF CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\PharmacyPage.cpp.obj.d -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\PharmacyPage.cpp.obj -c C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\PharmacyPage.cpp
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.i"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\PharmacyPage.cpp > CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\PharmacyPage.cpp.i
+
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.s"
+	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\PharmacyPage.cpp -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\src\ui\pages\PharmacyPage.cpp.s
+
 CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/flags.make
 CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/includes_CXX.rsp
 CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj: LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp
 CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj: CMakeFiles/LTCAdministratorOperationsDashboard.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj"
 	C:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj -MF CMakeFiles\LTCAdministratorOperationsDashboard.dir\LTCAdministratorOperationsDashboard_autogen\3YJK5W5UP7\qrc_resources.cpp.obj.d -o CMakeFiles\LTCAdministratorOperationsDashboard.dir\LTCAdministratorOperationsDashboard_autogen\3YJK5W5UP7\qrc_resources.cpp.obj -c C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\3YJK5W5UP7\qrc_resources.cpp
 
 CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.i: cmake_force
@@ -463,6 +508,9 @@ LTCAdministratorOperationsDashboard_OBJECTS = \
 "CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/InfectionControlPage.cpp.obj" \
 "CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/RiskManagementPage.cpp.obj" \
 "CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRoundsPage.cpp.obj" \
+"CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj" \
+"CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj" \
+"CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj" \
 "CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj"
 
 # External object files for target LTCAdministratorOperationsDashboard
@@ -491,6 +539,9 @@ LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDa
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/InfectionControlPage.cpp.obj
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/RiskManagementPage.cpp.obj
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/EnvironmentalRoundsPage.cpp.obj
+LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/BedBoardPage.cpp.obj
+LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/TransportationPage.cpp.obj
+LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/build.make
 LTCAdministratorOperationsDashboard.exe: C:/Qt/6.11.0/mingw_64/lib/libQt6Widgets.a
@@ -500,7 +551,7 @@ LTCAdministratorOperationsDashboard.exe: C:/Qt/6.11.0/mingw_64/lib/libQt6Core.a
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/linkLibs.rsp
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/objects1.rsp
 LTCAdministratorOperationsDashboard.exe: CMakeFiles/LTCAdministratorOperationsDashboard.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Linking CXX executable LTCAdministratorOperationsDashboard.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\dev\LTC_administrator_operations_dashboard\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Linking CXX executable LTCAdministratorOperationsDashboard.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\LTCAdministratorOperationsDashboard.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

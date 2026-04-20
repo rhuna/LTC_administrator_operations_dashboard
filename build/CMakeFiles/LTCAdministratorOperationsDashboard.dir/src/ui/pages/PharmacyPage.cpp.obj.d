@@ -1,8 +1,8 @@
-CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
- C:\dev\LTC_administrator_operations_dashboard\src\core\AppWindow.cpp \
- C:\dev\LTC_administrator_operations_dashboard\src\core\AppWindow.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QMainWindow \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qmainwindow.h \
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/ui/pages/PharmacyPage.cpp.obj: \
+ C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\PharmacyPage.cpp \
+ C:\dev\LTC_administrator_operations_dashboard\src\ui\pages\PharmacyPage.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qtguiglobal.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qglobal.h \
@@ -156,7 +156,6 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qtguiexports.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgets-config.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsexports.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qobjectdefs.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qnamespace.h \
@@ -385,7 +384,6 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qsizepolicy.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qcursor.h \
  C:/Qt/6.11.0/mingw_64/include/QtGui/qbitmap.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabwidget.h \
  C:/dev/LTC_administrator_operations_dashboard/src/data/DatabaseManager.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/QList \
  C:/Qt/6.11.0/mingw_64/include/QtCore/QMap \
@@ -398,47 +396,11 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qmetaobject.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/QString \
  C:/Qt/6.11.0/mingw_64/include/QtCore/QStringList \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/AdmissionsPage.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BedBoardPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/BudgetPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CompliancePage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/CredentialingPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/DashboardPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/EnvironmentalRoundsPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/HuddlePage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/InfectionControlPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/IncidentsPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ManagedCarePage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PreparednessPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QapiPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/QualityMeasuresPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/ResidentsPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/RiskManagementPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/StaffingPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/SurveyReadinessPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TasksPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/TransportationPage.h \
- C:/dev/LTC_administrator_operations_dashboard/src/ui/pages/PharmacyPage.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QAbstractScrollArea \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QHeaderView \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qheaderview.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractitemview.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractscrollarea.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QHBoxLayout \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qboxlayout.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayout.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayoutitem.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qgridlayout.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QLabel \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlabel.h \
- C:/Qt/6.11.0/mingw_64/include/QtGui/qpicture.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/qiodevice.h \
- C:/Qt/6.11.0/mingw_64/include/QtGui/qtextdocument.h \
- C:/Qt/6.11.0/mingw_64/include/QtCore/qurl.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QListWidget \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlistwidget.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlistview.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractitemview.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qabstractitemmodel.h \
  C:/Qt/6.11.0/mingw_64/include/QtCore/qitemselectionmodel.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractitemdelegate.h \
@@ -451,11 +413,29 @@ CMakeFiles/LTCAdministratorOperationsDashboard.dir/src/core/AppWindow.cpp.obj: \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractslider.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qstyle.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabbar.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabwidget.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/qrubberband.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QScrollArea \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qscrollarea.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QSplitter \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qsplitter.h \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/QStackedWidget \
- C:/Qt/6.11.0/mingw_64/include/QtWidgets/qstackedwidget.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QHBoxLayout \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qboxlayout.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayout.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayoutitem.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qgridlayout.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QLabel \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlabel.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qpicture.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qiodevice.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qtextdocument.h \
+ C:/Qt/6.11.0/mingw_64/include/QtCore/qurl.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QLineEdit \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlineedit.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qtextcursor.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qtextformat.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qpen.h \
+ C:/Qt/6.11.0/mingw_64/include/QtGui/qtextoption.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QPushButton \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qpushbutton.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractbutton.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/QTableWidget \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtablewidget.h \
+ C:/Qt/6.11.0/mingw_64/include/QtWidgets/qtableview.h \
  C:/Qt/6.11.0/mingw_64/include/QtWidgets/QVBoxLayout

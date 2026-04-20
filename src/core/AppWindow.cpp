@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 #include "../data/DatabaseManager.h"
 #include "../ui/pages/AdmissionsPage.h"
+#include "../ui/pages/BedBoardPage.h"
 #include "../ui/pages/BudgetPage.h"
 #include "../ui/pages/CompliancePage.h"
 #include "../ui/pages/CredentialingPage.h"
@@ -18,6 +19,8 @@
 #include "../ui/pages/StaffingPage.h"
 #include "../ui/pages/SurveyReadinessPage.h"
 #include "../ui/pages/TasksPage.h"
+#include "../ui/pages/TransportationPage.h"
+#include "../ui/pages/PharmacyPage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -31,7 +34,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v18");
+    setWindowTitle("LTC Administrator Operations Dashboard v23");
     resize(1440, 920);
     setMinimumSize(1180, 760);
 
@@ -49,7 +52,7 @@ AppWindow::AppWindow(DatabaseManager* db, QWidget* parent) : QMainWindow(parent)
     auto* title = new QLabel("LTC Administrator Operations Dashboard", header);
     title->setObjectName("appTitle");
     auto* subtitle = new QLabel(
-        "Cleaner v18 workspace with staffing actions, minimum staffing visibility, lighter navigation, and easier scanning.",
+        "Cleaner v23 workspace with stronger staffing operations, admit/discharge support, bed-board visibility, transportation tracking, and pharmacy follow-up.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -82,7 +85,7 @@ AppWindow::AppWindow(DatabaseManager* db, QWidget* parent) : QMainWindow(parent)
         "Dashboard", "Residents", "Admissions", "Staffing", "Tasks", "QAPI / PIP", "Budget / Labor",
         "Compliance", "Huddle", "Incidents", "Survey Readiness", "Quality Measures",
         "Managed Care", "Credentialing", "Preparedness", "Infection Control",
-        "Grievances", "Environmental Rounds"
+        "Grievances", "Environmental Rounds", "Bed Board", "Transportation", "Pharmacy / Meds"
     };
     nav->addItems(items);
 
@@ -121,6 +124,9 @@ AppWindow::AppWindow(DatabaseManager* db, QWidget* parent) : QMainWindow(parent)
     stack->addWidget(wrapPage(new InfectionControlPage(db)));
     stack->addWidget(wrapPage(new RiskManagementPage(db)));
     stack->addWidget(wrapPage(new EnvironmentalRoundsPage(db)));
+    stack->addWidget(wrapPage(new BedBoardPage(db)));
+    stack->addWidget(wrapPage(new TransportationPage(db)));
+    stack->addWidget(wrapPage(new PharmacyPage(db)));
 
     QObject::connect(nav, &QListWidget::currentRowChanged, stack, &QStackedWidget::setCurrentIndex);
     nav->setCurrentRow(0);

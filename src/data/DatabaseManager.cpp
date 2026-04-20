@@ -12,7 +12,7 @@ DatabaseManager::~DatabaseManager() {
 }
 
 bool DatabaseManager::initialize() {
-    const QString dbPath = QDir(QCoreApplication::applicationDirPath()).filePath("ltc_admin_dashboard_v18.db");
+    const QString dbPath = QDir(QCoreApplication::applicationDirPath()).filePath("ltc_admin_dashboard_v23.db");
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
     } else {
@@ -43,7 +43,10 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS preparedness_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, due_date TEXT, owner TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS infection_control_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS grievances (id INTEGER PRIMARY KEY AUTOINCREMENT, report_date TEXT, category TEXT, resident_or_family TEXT, owner TEXT, priority TEXT, status TEXT, summary TEXT)",
-        "CREATE TABLE IF NOT EXISTS environmental_rounds (id INTEGER PRIMARY KEY AUTOINCREMENT, round_date TEXT, area_name TEXT, issue_name TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)"
+        "CREATE TABLE IF NOT EXISTS environmental_rounds (id INTEGER PRIMARY KEY AUTOINCREMENT, round_date TEXT, area_name TEXT, issue_name TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS bed_board (id INTEGER PRIMARY KEY AUTOINCREMENT, room_number TEXT, bed_status TEXT, resident_name TEXT, pending_action TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS transport_items (id INTEGER PRIMARY KEY AUTOINCREMENT, appointment_date TEXT, resident_name TEXT, appointment_type TEXT, destination TEXT, transport_mode TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS pharmacy_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, item_name TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)"
     };
     return executeAll(ddl);
 }
@@ -197,6 +200,28 @@ bool DatabaseManager::seedData() {
             "INSERT INTO environmental_rounds (round_date, area_name, issue_name, owner, priority, status, notes) VALUES ('2026-04-19', 'Dining Room', 'Floor transition trip-risk observation', 'Housekeeping', 'High', 'Watch', 'Temporary marker in place until permanent repair is scheduled.')"
         })) return false;
     }
+    if (tableIsEmpty("bed_board")) {
+        if (!executeAll({
+            "INSERT INTO bed_board (room_number, bed_status, resident_name, pending_action, owner, status, notes) VALUES ('118A', 'Open', '', 'Room turnover for accepted admission', 'Admissions', 'Open', 'Awaiting EVS final ready check before 3 PM admit.')",
+            "INSERT INTO bed_board (room_number, bed_status, resident_name, pending_action, owner, status, notes) VALUES ('122B', 'Hold', 'Recent discharge', 'Family belongings pickup and bed sanitization', 'Social Services', 'In Progress', 'Belongings pickup expected by noon; then release to EVS.')",
+            "INSERT INTO bed_board (room_number, bed_status, resident_name, pending_action, owner, status, notes) VALUES ('209B', 'Occupied', 'Martha Lane', 'No action', 'Nursing', 'Closed', 'Stable census bed; no turnover work needed today.')"
+        })) return false;
+    }
+    if (tableIsEmpty("pharmacy_items")) {
+        if (!executeAll({
+            "INSERT INTO pharmacy_items (review_date, resident_name, item_name, owner, priority, status, notes) VALUES ('2026-04-20', 'Martha Lane', 'Missing evening antibiotic delivery', 'Pharmacy Nurse', 'High', 'Open', 'Confirm courier delivery window and backup dose availability before med pass.')",
+            "INSERT INTO pharmacy_items (review_date, resident_name, item_name, owner, priority, status, notes) VALUES ('2026-04-20', 'James Hill', 'Prior authorization follow-up for inhaler refill', 'Business Office', 'Medium', 'In Progress', 'Need payer update and provider office callback before refill delay becomes a risk.')",
+            "INSERT INTO pharmacy_items (review_date, resident_name, item_name, owner, priority, status, notes) VALUES ('2026-04-19', 'Evelyn Cross', 'Controlled-drug count discrepancy review', 'DON', 'High', 'Watch', 'Recount complete; documentation review and witness signoff still pending.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("transport_items")) {
+        if (!executeAll({
+            "INSERT INTO transport_items (appointment_date, resident_name, appointment_type, destination, transport_mode, owner, status, notes) VALUES ('2026-04-21', 'James Hill', 'Orthopedic follow-up', 'Regional Ortho Clinic', 'Facility Van', 'Transportation', 'Scheduled', 'Packet and MAR copy needed before departure.')",
+            "INSERT INTO transport_items (appointment_date, resident_name, appointment_type, destination, transport_mode, owner, status, notes) VALUES ('2026-04-21', 'Evelyn Cross', 'Dialysis', 'West Dialysis Center', 'Contract Transport', 'Nursing', 'Confirmed', 'Early meal tray and return-time handoff requested.')",
+            "INSERT INTO transport_items (appointment_date, resident_name, appointment_type, destination, transport_mode, owner, status, notes) VALUES ('2026-04-22', 'Martha Lane', 'Dental consult', 'Smile Family Dental', 'Family', 'Social Services', 'Needs Packet', 'Consent copy and insurance card still need to be sent with resident.')"
+        })) return false;
+    }
     return true;
 }
 
@@ -274,6 +299,76 @@ int DatabaseManager::countMinimumStaffingGaps() const {
     return staffingMinimumSummary().size();
 }
 
+QList<QMap<QString, QString>> DatabaseManager::staffingHoursSummary() const {
+    QList<QMap<QString, QString>> rows;
+    QSqlQuery q(m_db);
+    q.exec(
+        "SELECT department, shift_name, role_name, "
+        "COALESCE(SUM(CASE WHEN status IN ('Filled','Scheduled') THEN 1 ELSE 0 END), 0) AS covered_count, "
+        "COALESCE(SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END), 0) AS open_count "
+        "FROM staffing_assignments "
+        "GROUP BY department, shift_name, role_name "
+        "ORDER BY department, shift_name, role_name");
+    while (q.next()) {
+        const int covered = q.value(3).toInt();
+        const int open = q.value(4).toInt();
+        QMap<QString, QString> row;
+        row["department"] = q.value(0).toString();
+        row["shift_name"] = q.value(1).toString();
+        row["role_name"] = q.value(2).toString();
+        row["covered_count"] = QString::number(covered);
+        row["open_count"] = QString::number(open);
+        row["estimated_hours"] = QString::number(covered * 8);
+        row["open_hours"] = QString::number(open * 8);
+        rows.append(row);
+    }
+    return rows;
+}
+
+double DatabaseManager::estimatedNursingHprd() const {
+    const int currentResidents = countWhere("residents", "status='Current'");
+    if (currentResidents <= 0) return 0.0;
+
+    QSqlQuery q(m_db);
+    q.exec(
+        "SELECT COALESCE(SUM(CASE WHEN status IN ('Filled','Scheduled') THEN 1 ELSE 0 END), 0) "
+        "FROM staffing_assignments WHERE department='Nursing'");
+    const int nursingCoveredAssignments = q.next() ? q.value(0).toInt() : 0;
+    return (nursingCoveredAssignments * 8.0) / static_cast<double>(currentResidents);
+}
+
+int DatabaseManager::estimatedMinimumHoursGap() const {
+    int totalGapHours = 0;
+    const auto rows = staffingMinimumSummary();
+    for (const auto& row : rows) {
+        totalGapHours += row.value("gap_count").toInt() * 8;
+    }
+    return totalGapHours;
+}
+
+QList<QMap<QString, QString>> DatabaseManager::nursingHprdSummary() const {
+    QList<QMap<QString, QString>> rows;
+    const int currentResidents = countWhere("residents", "status='Current'");
+    if (currentResidents <= 0) return rows;
+
+    QSqlQuery q(m_db);
+    q.exec(
+        "SELECT role_name, COALESCE(SUM(CASE WHEN status IN ('Filled','Scheduled') THEN 1 ELSE 0 END), 0) AS covered_count "
+        "FROM staffing_assignments WHERE department='Nursing' "
+        "GROUP BY role_name ORDER BY role_name");
+    while (q.next()) {
+        const int covered = q.value(1).toInt();
+        const double hours = covered * 8.0;
+        QMap<QString, QString> row;
+        row["role_name"] = q.value(0).toString();
+        row["covered_count"] = QString::number(covered);
+        row["estimated_hours"] = QString::number(hours, 'f', 1);
+        row["hprd"] = QString::number(hours / static_cast<double>(currentResidents), 'f', 2);
+        rows.append(row);
+    }
+    return rows;
+}
+
 QList<QMap<QString, QString>> DatabaseManager::staffingMinimumSummary() const {
     QList<QMap<QString, QString>> rows;
     QSqlQuery q(m_db);
@@ -314,8 +409,12 @@ QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
         {"Discharges", "Mark completed discharges from the Residents page to keep census accurate."},
         {"Staffing", "Use the Staffing page to add assignments and flip open shifts to filled coverage."},
         {"Minimum staffing", QString("%1 assignment group(s) are still below minimum coverage.").arg(countMinimumStaffingGaps())},
+        {"Hours gap", QString("Estimated uncovered hours against minimum staffing: %1.").arg(estimatedMinimumHoursGap())},
         {"Survey readiness", "Abuse policy interview prep still open."},
         {"Managed care", "Authorization extension remains at risk."},
-        {"Risk management", "Family grievance follow-up call overdue."}
+        {"Risk management", "Family grievance follow-up call overdue."},
+        {"Bed board", QString("%1 room-turnover or bed-board item(s) remain open.").arg(countWhere("bed_board", "status!='Closed'"))},
+        {"Transportation", QString("%1 transport or outside-appointment item(s) still need follow-up.").arg(countWhere("transport_items", "status!='Returned' AND status!='Closed'"))},
+        {"Pharmacy", QString("%1 pharmacy or medication-system item(s) are open or on watch.").arg(countWhere("pharmacy_items", "status='Open' OR status='Watch' OR status='In Progress'"))}
     };
 }
