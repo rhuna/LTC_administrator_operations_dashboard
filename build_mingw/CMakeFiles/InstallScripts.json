@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/dev/LTC_administrator_operations_dashboard/build_mingw/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

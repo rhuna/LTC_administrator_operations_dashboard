@@ -1,0 +1,9 @@
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/LTCAdministratorOperationsDashboard.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/edit_cache.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/rebuild_cache.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/list_install_components.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/install.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/install/local.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/install/strip.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/LTCAdministratorOperationsDashboard_autogen_timestamp_deps.dir
+C:/dev/LTC_administrator_operations_dashboard/build_mingw/CMakeFiles/LTCAdministratorOperationsDashboard_autogen.dir
