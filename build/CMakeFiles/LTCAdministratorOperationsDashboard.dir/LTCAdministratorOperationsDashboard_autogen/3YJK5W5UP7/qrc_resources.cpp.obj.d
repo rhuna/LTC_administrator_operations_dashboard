@@ -1,0 +1,2 @@
+CMakeFiles/LTCAdministratorOperationsDashboard.dir/LTCAdministratorOperationsDashboard_autogen/3YJK5W5UP7/qrc_resources.cpp.obj: \
+ C:\dev\LTC_administrator_operations_dashboard\build\LTCAdministratorOperationsDashboard_autogen\3YJK5W5UP7\qrc_resources.cpp

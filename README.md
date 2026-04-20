@@ -1,17 +1,38 @@
-# LTC Administrator Operations Dashboard
+# LTC Administrator Operations Dashboard v12
 
-A cross-platform **C++ desktop application** for long-term care administrators. This starter repo uses **Qt Widgets**, **SQLite**, and **CMake** so it can be built on **Windows, Linux, and macOS**.
+A cross-platform **C++ desktop application** for long-term care administrators. This repo uses **Qt Widgets**, **SQLite**, and **CMake** so it can build on **Windows, Linux, and macOS**.
 
-## What it includes
+## What's new in v12
 
-- Executive dashboard with KPI cards
-- Residents / census table
-- Staffing and labor table
+- Added a dedicated **Emergency Preparedness and Drills** module
+- Added a **preparedness follow-up add form**
+- Added seeded preparedness records for:
+  - severe-weather shelter-in-place drill follow-up
+  - generator load and fuel continuity check
+  - missing-resident elopement tabletop review
+  - evacuation transportation roster audit
+- Added a new dashboard KPI: **Preparedness Items Due**
+- Expanded the **Administrator Action Center** so overdue and due-soon preparedness items appear with the other executive follow-up risks
+- Corrected the database table-creation chain so the new snapshot carries forward a cleaner initialization path
+- Kept prior modules intact, including the **Qt 6.11 MinGW** Windows build flow
+
+## Included modules
+
+- Executive dashboard
+- Residents / census view
+- Admissions and transition pipeline
+- Staffing and labor snapshot
+- Staffing change tracking with add form
 - Task tracker with add form
+- QAPI / PIP tracker with add form
+- Budget and labor variance tracker with add form
+- Compliance calendar and license tracker with add form
+- Daily operations huddle tracker with add form
+- Quality measures and clinical outcomes tracker with add form
+- Workforce development and credentialing tracker with add form
+- Emergency preparedness and drills tracker with add form
 - Incident log with add form
 - Survey readiness tracker
-- Local SQLite database with sample seed data
-- Cross-platform CMake project structure
 
 ## Tech stack
 
@@ -25,6 +46,7 @@ A cross-platform **C++ desktop application** for long-term care administrators. 
 
 ```text
 LTCAdministratorOperationsDashboard/
+├─ build_release_and_run.bat
 ├─ CMakeLists.txt
 ├─ README.md
 ├─ resources/
@@ -40,108 +62,49 @@ LTCAdministratorOperationsDashboard/
    └─ ui/
 ```
 
-## Build requirements
+## Windows build for your setup (Qt 6.11 MinGW)
 
-### Windows
-- Visual Studio 2022 or newer
-- CMake 3.21+
-- Qt 6 with Widgets and Sql components installed
-
-Example Qt install path:
-- `C:/Qt/6.8.0/msvc2022_64`
-
-### Linux
-- GCC or Clang
-- CMake 3.21+
-- Qt 6 development packages
-
-Ubuntu example:
-```bash
-sudo apt update
-sudo apt install -y build-essential cmake qt6-base-dev
-```
-
-### macOS
-- Xcode command line tools
-- CMake 3.21+
-- Qt 6 installed via Qt online installer or Homebrew
-
-Homebrew example:
-```bash
-brew install cmake qt
-```
-
-## Build instructions
-
-### Windows (MSVC)
 ```bat
-scripts\build_windows_msvc.bat
+set QT_PREFIX=C:\Qt\6.11.0\mingw_64
+set MINGW_BIN=C:\Qt\Tools\mingw1310_64\bin
+build_release_and_run.bat clean
 ```
 
-Or manually:
+## If you need to confirm your Qt path
+
 ```bat
-cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="C:/Qt/6.8.0/msvc2022_64"
-cmake --build build --config Release
+dir C:\Qt /s /b Qt6Config.cmake
 ```
 
-### Linux
+## If you need to confirm your compiler path
+
+```bat
+dir C:\Qt\Tools\mingw1310_64\bin\g++.exe
+```
+
+## Linux build
+
 ```bash
 chmod +x scripts/build_linux.sh
 ./scripts/build_linux.sh
 ```
 
-### macOS
+## macOS build
+
 ```bash
 chmod +x scripts/build_macos.sh
 ./scripts/build_macos.sh
 ```
 
-## Run
-
-### Windows
-```bat
-build\Release\LTCAdministratorOperationsDashboard.exe
-```
-
-### Linux / macOS
-```bash
-./build/LTCAdministratorOperationsDashboard
-```
-
 ## Data storage
 
-The application stores its local SQLite database in the app data location returned by Qt. On first launch it creates the database and seeds sample LTC operations data.
+The application stores its local SQLite database in the writable app-data location returned by Qt. On first launch it creates the database and seeds sample LTC operations data.
 
-## Next version ideas
+## Suggested v12 direction
 
-- Login and role-based permissions
-- QAPI / PIP module
-- Admissions and discharge workflow
-- Budget and labor variance analytics
-- Pharmacy / wound / infection control widgets
-- Report export to PDF / CSV
 - Editable resident and staffing records
+- Admissions conversion funnel metrics
+- User roles and authentication
+- Export to CSV / PDF
 - Survey binder document center
-
-
-
-## Windows one-step build and run
-
-From the repo root:
-
-```bat
-build_release_and_run.bat
-```
-
-To force a clean rebuild:
-
-```bat
-build_release_and_run.bat clean
-```
-
-If Qt is installed in a non-default location, set `QT_PREFIX` first:
-
-```bat
-set QT_PREFIX=C:\Qt\6.8.0\msvc2022_64
-build_release_and_run.bat
-```
+- Executive report printing

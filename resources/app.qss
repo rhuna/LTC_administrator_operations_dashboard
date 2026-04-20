@@ -13,6 +13,12 @@ QLabel#AppTitle {
     font-weight: 700;
 }
 
+QLabel#NavSubtitle {
+    color: #b9d0e7;
+    font-size: 12px;
+    font-weight: 500;
+}
+
 QPushButton#NavButton {
     background: transparent;
     color: #e6eef7;
@@ -57,9 +63,9 @@ QLabel#PageTitle {
 }
 
 QLabel#SectionTitle {
-    color: #17324d;
-    font-size: 16px;
-    font-weight: 700;
+    color: #42586d;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 QTableView, QTableWidget, QListWidget {
