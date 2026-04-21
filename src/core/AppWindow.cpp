@@ -31,6 +31,20 @@
 #include "../ui/pages/SurveyCommandCenterPage.h"
 #include "../ui/pages/OutbreakCommandPage.h"
 #include "../ui/pages/SearchFiltersPage.h"
+#include "../ui/pages/DashboardCustomizePage.h"
+#include "../ui/pages/CalendarPage.h"
+#include "../ui/pages/MetricsChartsPage.h"
+#include "../ui/pages/KpiTrendEnginePage.h"
+#include "../ui/pages/ServiceLayerPage.h"
+#include "../ui/pages/ExternalSyncReadinessPage.h"
+#include "../ui/pages/ReleaseCandidatePage.h"
+#include "../ui/pages/SopCenterPage.h"
+#include "../ui/pages/ShiftHandoffPage.h"
+#include "../ui/pages/CareConferencePage.h"
+#include "../ui/pages/DepartmentDashboardsPage.h"
+#include "../ui/pages/BackupRestorePage.h"
+#include "../ui/pages/AuditLogPage.h"
+#include "../ui/pages/FormsValidationPage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -43,7 +57,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v38 Search & Filters");
+    setWindowTitle("LTC Administrator Operations Dashboard v53 Care Conference Center");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -67,7 +81,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v38 adds a search-and-filters workspace so administrators can find residents, referrals, staffing issues, quality measures, documents, MDS items, survey-command tasks, and outbreak follow-up from one calm, scroll-friendly desktop shell.",
+        "v53 keeps the single-facility line intact and adds a care conference center so leaders can track family communication, payer updates, interdisciplinary review, and resident conference follow-up in one place.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -98,9 +112,20 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     nav->setSpacing(4);
 
     const QList<QPair<QString,QWidget*>> pages = {
-        {"Dashboard", new DashboardPage(db)},
+{"Dashboard", new DashboardPage(db)},
+        {"Dashboard Setup", new DashboardCustomizePage(db)},
         {"Search", new SearchFiltersPage(db)},
         {"Alerts", new AlertsPage(db)},
+        {"Calendar", new CalendarPage(db)},
+        {"Metrics & Trends", new MetricsChartsPage(db)},
+        {"KPI Trend Engine", new KpiTrendEnginePage(db)},
+        {"Service Layer", new ServiceLayerPage(db)},
+        {"External Sync", new ExternalSyncReadinessPage(db)},
+        {"Release Candidate", new ReleaseCandidatePage(db)},
+        {"SOP / Quick Start", new SopCenterPage(db)},
+        {"Shift Handoff", new ShiftHandoffPage(db)},
+        {"Care Conferences", new CareConferencePage(db)},
+        {"Department Views", new DepartmentDashboardsPage(db)},
         {"Residents", new ResidentsPage(db)},
         {"Admissions", new AdmissionsPage(db)},
         {"Staffing", new StaffingPage(db)},
@@ -128,6 +153,9 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"Survey Cmd", new SurveyCommandCenterPage(db)},
         {"Outbreak Command", new OutbreakCommandPage(db)},
         {"Reports", new ReportsPage(db)},
+        {"Backup & Restore", new BackupRestorePage(db)},
+        {"Audit Log", new AuditLogPage(db)},
+        {"Forms & Validation", new FormsValidationPage(db)},
         {"Workflow Center", new WorkflowCenterPage(db)}
     };
 
@@ -135,13 +163,13 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     if (roleName == "Administrator") {
         for (const auto& pair : pages) allowed << pair.first;
     } else if (roleName == "Director of Nursing") {
-        allowed = {"Dashboard","Search","Alerts","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else if (roleName == "Admissions Director") {
-        allowed = {"Dashboard","Search","Alerts","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else if (roleName == "Staffing Coordinator") {
-        allowed = {"Dashboard","Search","Alerts","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else {
-        allowed = {"Dashboard","Search","Alerts","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     }
 
     sidebarLayout->addWidget(navLabel);
@@ -167,11 +195,32 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     }
 
     QObject::connect(nav, &QListWidget::currentRowChanged, stack, &QStackedWidget::setCurrentIndex);
-    nav->setCurrentRow(0);
+
+    QString defaultPage = "Dashboard";
+    const auto prefRows = db->fetchTable("dashboard_preferences", {"pref_key", "pref_value"});
+    QString densityMode = "Comfortable";
+    for (const auto& row : prefRows) {
+        if (row.value("pref_key") == "default_page") defaultPage = row.value("pref_value");
+        if (row.value("pref_key") == "density_mode") densityMode = row.value("pref_value");
+    }
+    int defaultIndex = 0;
+    for (int i = 0; i < nav->count(); ++i) {
+        if (nav->item(i)->text() == defaultPage) {
+            defaultIndex = i;
+            break;
+        }
+    }
+    nav->setCurrentRow(defaultIndex);
 
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 1);
-    splitter->setSizes(QList<int>{240, 1220});
+    if (densityMode == "Compact") {
+        splitter->setSizes(QList<int>{220, 1240});
+    } else if (densityMode == "Executive") {
+        splitter->setSizes(QList<int>{250, 1210});
+    } else {
+        splitter->setSizes(QList<int>{240, 1220});
+    }
 
     shellLayout->addWidget(splitter, 1);
     setCentralWidget(shell);

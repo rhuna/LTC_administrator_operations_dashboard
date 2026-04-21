@@ -1,21 +1,33 @@
-# LTC Administrator Operations Dashboard v38
 
-This snapshot keeps the full v36 operations stack intact and adds a calmer, cleaner UI polish pass.
+## v53 Shift Handoff Center
 
-## v38 highlights
-- simplified navigation labels
-- cleaner dashboard hierarchy
-- summary strip for quick scanning
-- reduced dashboard clutter without removing modules
-- preserved scroll-friendly layout for smaller screens
+This snapshot intentionally skips the multi-facility direction for now and continues from the fixed v46 line.
 
-## Build on Windows (Qt 6.11 MinGW)
+### What is new
+- Service Layer / Integration Readiness module
+- `service_registry` SQLite table
+- seeded service rows for admissions, staffing, documents, and reporting
+- app version text updated to v53
+- local database file updated to `ltc_admin_dashboard_v53_service_layer.db`
+
+### Build
 ```bat
-set QT_PREFIX=C:\Qt\6.11.0\mingw_64
-set MINGW_BIN=C:\Qt\Tools\mingw1310_64\bin
+set QT_PREFIX=C:\Qt.11.0\mingw_64
+set MINGW_BIN=C:\Qt\Tools\mingw1310_64in
 build_release_and_run.bat clean
 ```
 
 
-## v38
-- Added Search & Filters workspace with module, status, and keyword filtering across key operational tables.
+## v53 highlight
+This snapshot adds an External Sync / EMR Readiness workspace so future PCC/EMR integration planning stays visible without changing the current single-facility workflow.
+
+
+## New in v53
+- SOP / Quick Start Center module
+- seeded operating guides for admissions, staffing, reports, and backup workflows
+- dashboard visibility for SOP items
+
+
+## v53 additions
+- Care Conferences / Family Communication module
+- New local database file: `ltc_admin_dashboard_v53_care_conference.db`

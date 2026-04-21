@@ -1,10 +1,18 @@
 #include "DatabaseManager.h"
 #include <QCoreApplication>
+#include <QDate>
+#include <QDateTime>
 #include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QSaveFile>
+#include <QStandardPaths>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QVariant>
-#include <QDate>
 #include <algorithm>
 
 DatabaseManager::DatabaseManager() {}
@@ -13,15 +21,169 @@ DatabaseManager::~DatabaseManager() {
 }
 
 bool DatabaseManager::initialize() {
-    const QString dbPath = QDir(QCoreApplication::applicationDirPath()).filePath("ltc_admin_dashboard_v38_search_filters.db");
+    const QString baseDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if (baseDir.isEmpty()) {
+        m_lastError = "QStandardPaths::AppDataLocation returned an empty path.";
+        return false;
+    }
+    QDir().mkpath(baseDir);
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v53_care_conference.db");
+
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
     } else {
         m_db = QSqlDatabase::addDatabase("QSQLITE", "ltc_connection");
-        m_db.setDatabaseName(dbPath);
     }
-    if (!m_db.open()) return false;
-    return createTables() && seedData();
+    m_db.setDatabaseName(dbPath);
+
+    if (!m_db.isValid()) {
+        m_lastError = QString("Qt SQL connection is invalid. Available drivers: %1").arg(QSqlDatabase::drivers().join(", "));
+        return false;
+    }
+    if (!m_db.open()) {
+        m_lastError = QString("Could not open SQLite database at:\n%1\n\nQt error: %2\nAvailable drivers: %3")
+            .arg(dbPath, m_db.lastError().text(), QSqlDatabase::drivers().join(", "));
+        return false;
+    }
+    if (!createTables()) return false;
+
+    {
+        QSqlQuery infoQuery(m_db);
+        if (!infoQuery.exec("PRAGMA table_info(care_conference_items)")) {
+            m_lastError = QString("Unable to inspect care_conference_items schema: %1").arg(infoQuery.lastError().text());
+            return false;
+        }
+
+        QSet<QString> careConferenceColumns;
+        while (infoQuery.next()) {
+            careConferenceColumns.insert(infoQuery.value(1).toString());
+        }
+
+        if (!careConferenceColumns.contains("contact_name")) {
+            QSqlQuery alterQuery(m_db);
+            if (!alterQuery.exec("ALTER TABLE care_conference_items ADD COLUMN contact_name TEXT")) {
+                m_lastError = QString("Unable to add contact_name column to care_conference_items: %1")
+                                  .arg(alterQuery.lastError().text());
+                return false;
+            }
+        }
+
+        if (!careConferenceColumns.contains("notes")) {
+            QSqlQuery alterQuery(m_db);
+            if (!alterQuery.exec("ALTER TABLE care_conference_items ADD COLUMN notes TEXT")) {
+                m_lastError = QString("Unable to add notes column to care_conference_items: %1")
+                                  .arg(alterQuery.lastError().text());
+                return false;
+            }
+
+            QSqlQuery copyQuery(m_db);
+            copyQuery.exec("UPDATE care_conference_items SET notes = COALESCE(summary_note, '') WHERE notes IS NULL OR notes = ''");
+        }
+    }
+
+    if (!seedData()) return false;
+    return true;
+}
+
+QString DatabaseManager::databaseFilePath() const {
+    return m_db.databaseName();
+}
+
+QString DatabaseManager::lastErrorText() const {
+    return m_lastError;
+}
+
+QString DatabaseManager::backupDirectoryPath() const {
+    const QString path = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("backups");
+    QDir().mkpath(path);
+    return path;
+}
+
+QStringList DatabaseManager::availableBackupFiles() const {
+    QDir dir(backupDirectoryPath());
+    QStringList names = dir.entryList(QStringList() << "*.db", QDir::Files, QDir::Time);
+    for (QString& name : names) name = dir.absoluteFilePath(name);
+    return names;
+}
+
+bool DatabaseManager::createBackupCopy(QString* createdPath) {
+    if (!m_db.isOpen()) return false;
+    const QString sourcePath = m_db.databaseName();
+    if (sourcePath.isEmpty() || !QFile::exists(sourcePath)) return false;
+    const QString targetPath = QDir(backupDirectoryPath()).filePath(QString("ltc_backup_%1.db").arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")));
+    const QString connectionName = m_db.connectionName();
+    m_db.close();
+    QFile::remove(targetPath);
+    const bool copied = QFile::copy(sourcePath, targetPath);
+    m_db.open();
+    if (copied && createdPath) *createdPath = targetPath;
+    return copied;
+}
+
+bool DatabaseManager::restoreFromBackup(const QString& backupPath) {
+    if (backupPath.isEmpty() || !QFile::exists(backupPath)) return false;
+    const QString destPath = m_db.databaseName();
+    if (destPath.isEmpty()) return false;
+
+    QString preRestoreBackup;
+    createBackupCopy(&preRestoreBackup);
+
+    m_db.close();
+    QFile::remove(destPath);
+    const bool copied = QFile::copy(backupPath, destPath);
+    const bool reopened = m_db.open();
+    return copied && reopened;
+}
+
+bool DatabaseManager::exportJsonSnapshot(QString* exportPath) const {
+    QJsonObject root;
+    const QList<QPair<QString, QStringList>> exports = {
+        {"residents", {"resident_name", "room", "payer", "diagnosis_summary", "status"}},
+        {"admissions", {"resident_name", "referral_source", "planned_date", "payer", "diagnosis_summary", "assessment_type", "ard_date", "room_target", "status"}},
+        {"staffing_assignments", {"work_date", "department", "shift_name", "role_name", "employee_name", "status"}},
+        {"tasks", {"due_date", "owner", "task_name", "priority", "status"}},
+        {"incidents", {"incident_date", "resident_name", "incident_type", "severity", "status"}},
+        {"quality_measures", {"measure_name", "category", "current_value", "target_value", "trend", "status", "notes"}},
+        {"document_items", {"module_name", "document_name", "document_type", "linked_item", "owner", "status", "file_path", "imported_on"}},
+        {"mds_items", {"resident_name", "payer", "assessment_type", "ard_date", "triple_check_date", "status", "owner"}}
+    };
+
+    for (const auto& pair : exports) {
+        QJsonArray arr;
+        const auto rows = fetchTable(pair.first, pair.second);
+        for (const auto& row : rows) {
+            QJsonObject obj;
+            for (const auto& col : pair.second) obj.insert(col, row.value(col));
+            arr.append(obj);
+        }
+        root.insert(pair.first, arr);
+    }
+    root.insert("exported_on", QDateTime::currentDateTime().toString(Qt::ISODate));
+    root.insert("database_file", databaseFilePath());
+
+    const QString outPath = QDir(backupDirectoryPath()).filePath(QString("ltc_snapshot_%1.json").arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")));
+    QSaveFile file(outPath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
+    file.write(QJsonDocument(root).toJson(QJsonDocument::Indented));
+    const bool ok = file.commit();
+    if (ok && exportPath) *exportPath = outPath;
+    return ok;
+}
+
+QList<QMap<QString, QString>> DatabaseManager::auditLogItems() const {
+    return fetchTable("audit_log", {"log_date", "module_name", "action_name", "item_name", "actor_name", "details"});
+}
+
+bool DatabaseManager::logAuditEvent(const QString& moduleName, const QString& actionName, const QString& itemName, const QString& actorName, const QString& details) {
+    QSqlQuery q(m_db);
+    q.prepare("INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES (:log_date, :module_name, :action_name, :item_name, :actor_name, :details)");
+    q.bindValue(":log_date", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"));
+    q.bindValue(":module_name", moduleName);
+    q.bindValue(":action_name", actionName);
+    q.bindValue(":item_name", itemName);
+    q.bindValue(":actor_name", actorName);
+    q.bindValue(":details", details);
+    return q.exec();
 }
 
 bool DatabaseManager::createTables() {
@@ -58,7 +220,17 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS diagnosis_items (id INTEGER PRIMARY KEY AUTOINCREMENT, resident_name TEXT, diagnosis_summary TEXT, source_name TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS survey_command_items (id INTEGER PRIMARY KEY AUTOINCREMENT, focus_area TEXT, item_name TEXT, evidence_needed TEXT, owner TEXT, priority TEXT, due_date TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS outbreak_items (id INTEGER PRIMARY KEY AUTOINCREMENT, issue_name TEXT, location_name TEXT, case_count TEXT, owner TEXT, priority TEXT, review_date TEXT, status TEXT, notes TEXT)",
-        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT, full_name TEXT, role_name TEXT, is_active INTEGER DEFAULT 1)"
+        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT, full_name TEXT, role_name TEXT, is_active INTEGER DEFAULT 1)",
+        "CREATE TABLE IF NOT EXISTS dashboard_preferences (id INTEGER PRIMARY KEY AUTOINCREMENT, pref_key TEXT UNIQUE, pref_value TEXT)",
+        "CREATE TABLE IF NOT EXISTS audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT, log_date TEXT, module_name TEXT, action_name TEXT, item_name TEXT, actor_name TEXT, details TEXT)",
+        "CREATE TABLE IF NOT EXISTS validation_profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, module_name TEXT, required_fields TEXT, form_style TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS kpi_trend_rows (id INTEGER PRIMARY KEY AUTOINCREMENT, metric_name TEXT, period_label TEXT, metric_value TEXT, target_value TEXT, trend_status TEXT, owner_name TEXT, note_text TEXT)",
+        "CREATE TABLE IF NOT EXISTS external_sync_profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, system_name TEXT, entity_type TEXT, sync_direction TEXT, status TEXT, owner TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS release_candidate_items (id INTEGER PRIMARY KEY AUTOINCREMENT, area_name TEXT, item_name TEXT, owner_name TEXT, status TEXT, due_date TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS sop_items (id INTEGER PRIMARY KEY AUTOINCREMENT, area_name TEXT, title_name TEXT, owner_name TEXT, status TEXT, last_reviewed TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS shift_handoff_items (id INTEGER PRIMARY KEY AUTOINCREMENT, handoff_date TEXT, shift_name TEXT, department TEXT, priority TEXT, owner_name TEXT, status TEXT, handoff_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS service_registry (id INTEGER PRIMARY KEY AUTOINCREMENT, service_name TEXT, purpose TEXT, status TEXT, owner TEXT, notes TEXT, archived INTEGER DEFAULT 0)",
+        "CREATE TABLE IF NOT EXISTS care_conference_items (id INTEGER PRIMARY KEY AUTOINCREMENT, conference_date TEXT, resident_name TEXT, contact_name TEXT, conference_type TEXT, owner_name TEXT, status TEXT, notes TEXT, summary_note TEXT)"
     };
     return executeAll(ddl);
 }
@@ -66,17 +238,12 @@ bool DatabaseManager::createTables() {
 bool DatabaseManager::executeAll(const QStringList& statements) const {
     for (const QString& stmt : statements) {
         QSqlQuery q(m_db);
-        if (!q.exec(stmt)) return false;
+        if (!q.exec(stmt)) {
+            const_cast<DatabaseManager*>(this)->m_lastError =
+                QString("SQL failed:\n%1\n\nQt error: %2").arg(stmt, q.lastError().text());
+            return false;
+        }
     }
-
-    if (tableIsEmpty("survey_command_items")) {
-        if (!executeAll({
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Dining', 'Mock survey meal-service observation', 'Tray-line audit, observation notes, corrective-action log', 'Administrator', 'High', '2026-04-23', 'Open', 'Need current meal observation packet and leadership rounding notes before mock survey.')",
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Infection Prevention', 'Isolation cart readiness evidence binder', 'Cart checklist, PPE audit, line-list summary', 'Infection Preventionist', 'High', '2026-04-22', 'In Progress', 'Complete final PPE spot-checks and add current line-list to binder.')",
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Grievances', 'Plan-of-correction follow-up verification', 'Resident council minutes, grievance resolutions, service-recovery logs', 'Social Services', 'Medium', '2026-04-25', 'Watch', 'Need final signoff that grievance trend review was discussed in QAPI.')"
-        })) return false;
-    }
-
     return true;
 }
 
@@ -88,6 +255,71 @@ bool DatabaseManager::tableIsEmpty(const QString& tableName) const {
 
 bool DatabaseManager::seedData() {
 
+    if (tableIsEmpty("validation_profiles")) {
+        const QStringList validationSeeds = {
+            "INSERT INTO validation_profiles (module_name, required_fields, form_style, notes) VALUES ('Admissions', 'resident_name, referral_source, planned_date, payer, diagnosis_summary, assessment_type', 'Guided intake', 'Use before moving a referral to admit-ready status.')",
+            "INSERT INTO validation_profiles (module_name, required_fields, form_style, notes) VALUES ('Staffing', 'work_date, department, shift_name, role_name, status', 'Shift coverage', 'Review open assignments and minimum staffing before finalizing schedule changes.')",
+            "INSERT INTO validation_profiles (module_name, required_fields, form_style, notes) VALUES ('Documents', 'module_name, document_name, document_type, linked_item, owner, file_path', 'Document intake', 'Imported files should always have owner and linked item context.')",
+            "INSERT INTO validation_profiles (module_name, required_fields, form_style, notes) VALUES ('MDS', 'resident_name, payer, assessment_type, ard_date, status, owner', 'Clinical reimbursement', 'ARD and owner are required before triple-check review.')"
+        };
+        if (!executeAll(validationSeeds)) return false;
+    }
+
+    if (tableIsEmpty("audit_log")) {
+        if (!executeAll({
+            "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 07:05', 'Admissions', 'Referral reviewed', 'New Referral - Ortho', 'Morgan Reed', 'Referral packet reviewed and marked for therapy follow-up before final admit decision.')",
+            "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 08:10', 'Staffing', 'Assignment status updated', 'Day shift CNA coverage', 'Jordan Lane', 'Open day-shift CNA coverage escalated to agency pool after call-off.')",
+            "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 09:20', 'Quality', 'Follow-up added', '30-day rehospitalization rate', 'Alex Carter', 'Root-cause review added to the quality follow-up worklist for weekly stand-up.')",
+            "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 11:35', 'Backup & Restore', 'Backup created', 'Local database snapshot', 'System', 'Timestamped local backup created before restore testing.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("dashboard_preferences")) {
+        if (!executeAll({
+            "INSERT INTO dashboard_preferences (pref_key, pref_value) VALUES ('default_page', 'Dashboard')",
+            "INSERT INTO dashboard_preferences (pref_key, pref_value) VALUES ('density_mode', 'Comfortable')",
+            "INSERT INTO dashboard_preferences (pref_key, pref_value) VALUES ('focus_note', 'Keep the executive view centered on staffing, admit-ready referrals, and survey follow-up.')",
+            "INSERT INTO dashboard_preferences (pref_key, pref_value) VALUES ('pinned_modules', 'Admissions,Staffing,Quality,Survey Cmd')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("kpi_trend_rows")) {
+        if (!executeAll({
+            "INSERT INTO kpi_trend_rows (metric_name, period_label, metric_value, target_value, trend_status, owner_name, note_text) VALUES ('Occupancy', '2026-02', '89.6%', '>= 92.0%', 'Watch', 'Administrator', 'Occupancy softened after two long-stay discharges and one delayed admit.')",
+            "INSERT INTO kpi_trend_rows (metric_name, period_label, metric_value, target_value, trend_status, owner_name, note_text) VALUES ('Occupancy', '2026-03', '91.4%', '>= 92.0%', 'Watch', 'Administrator', 'March closed stronger after orthopedic referrals converted to admits.')",
+            "INSERT INTO kpi_trend_rows (metric_name, period_label, metric_value, target_value, trend_status, owner_name, note_text) VALUES ('Staffing Fill Rate', '2026-03', '93.0%', '>= 96.0%', 'Off Track', 'Staffing Coordinator', 'Open evening CNA coverage and weekend agency dependence remain above goal.')",
+            "INSERT INTO kpi_trend_rows (metric_name, period_label, metric_value, target_value, trend_status, owner_name, note_text) VALUES ('Quality On-Target Rate', '2026-03', '74.0%', '>= 85.0%', 'Off Track', 'DON', 'Falls and weight-loss measures remain the biggest drag on the overall score.')",
+            "INSERT INTO kpi_trend_rows (metric_name, period_label, metric_value, target_value, trend_status, owner_name, note_text) VALUES ('Survey Readiness', '2026-04', '88.0%', '>= 95.0%', 'Watch', 'Administrator', 'Evidence binders improved, but mock-survey follow-up is still open in two focus areas.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("external_sync_profiles")) {
+        if (!executeAll({
+            "INSERT INTO external_sync_profiles (system_name, entity_type, sync_direction, status, owner, notes) VALUES ('PointClickCare Intake', 'Referral intake + admit-ready census', 'Import', 'Planned', 'Admissions', 'Target future import of referral demographics, payer source, and admit-readiness status.')",
+            "INSERT INTO external_sync_profiles (system_name, entity_type, sync_direction, status, owner, notes) VALUES ('Clinical Reimbursement Feed', 'MDS / ARD / Triple Check', 'Bidirectional', 'Watch', 'MDS Coordinator', 'Future handoff path for MDS timing, payer review, and reimbursement checkpoints.')",
+            "INSERT INTO external_sync_profiles (system_name, entity_type, sync_direction, status, owner, notes) VALUES ('Document Exchange', 'Referral packet / document intake', 'Import', 'Ready', 'Operations', 'Local document intake is already in place; next step is mapping external file metadata.')",
+            "INSERT INTO external_sync_profiles (system_name, entity_type, sync_direction, status, owner, notes) VALUES ('Executive Reporting Export', 'Daily summary / census / staffing', 'Export', 'Ready', 'Administrator', 'Current local export path can be promoted later to scheduled outbound reporting.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("release_candidate_items")) {
+        if (!executeAll({
+            "INSERT INTO release_candidate_items (area_name, item_name, owner_name, status, due_date, notes) VALUES ('Build', 'Validate Release build on Qt 6.11 MinGW', 'IT', 'Ready', '2026-04-22', 'Clean build script should complete and app should launch from release folder.')",
+            "INSERT INTO release_candidate_items (area_name, item_name, owner_name, status, due_date, notes) VALUES ('Packaging', 'Verify runtime deployment and portable launch', 'IT', 'Watch', '2026-04-22', 'Confirm Qt runtime deployment and SQLite creation on a fresh directory copy.')",
+            "INSERT INTO release_candidate_items (area_name, item_name, owner_name, status, due_date, notes) VALUES ('Workflow Validation', 'Test referral waitlist to MDS, diagnosis, and admit flow', 'Admissions', 'Open', '2026-04-23', 'Use one referral with imported document and admit from waitlist end to end.')",
+            "INSERT INTO release_candidate_items (area_name, item_name, owner_name, status, due_date, notes) VALUES ('Training', 'Prepare one-page end-user quick start', 'Administrator', 'Open', '2026-04-24', 'Cover login, dashboard, referrals, staffing, reports, and backup/restore.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("sop_items")) {
+        if (!executeAll({
+            "INSERT INTO sop_items (area_name, title_name, owner_name, status, last_reviewed, notes) VALUES ('Admissions', 'Referral waitlist to admit quick start', 'Admissions Director', 'Active', '2026-04-20', 'Review referral, import documents, push MDS/diagnosis, mark ready, then admit from waitlist.')",
+            "INSERT INTO sop_items (area_name, title_name, owner_name, status, last_reviewed, notes) VALUES ('Staffing', 'Minimum staffing review before shift change', 'Staffing Coordinator', 'Active', '2026-04-20', 'Check open assignments, minimum gaps, uncovered hours, and HPRD snapshot before finalizing coverage.')",
+            "INSERT INTO sop_items (area_name, title_name, owner_name, status, last_reviewed, notes) VALUES ('Reports', 'Daily executive summary and CSV export', 'Administrator', 'Watch', '2026-04-19', 'Run summary preview, export census/staffing CSV, and print if leadership rounding packet is needed.')",
+            "INSERT INTO sop_items (area_name, title_name, owner_name, status, last_reviewed, notes) VALUES ('Backup', 'Create backup before restore or major cleanup', 'IT', 'Active', '2026-04-18', 'Create timestamped backup, confirm backup folder, then restore only when users are out of the app.')"
+        })) return false;
+    }
+
     if (tableIsEmpty("users")) {
         if (!executeAll({
             "INSERT INTO users (username, password, full_name, role_name, is_active) VALUES ('admin', 'admin123', 'Alex Carter', 'Administrator', 1)",
@@ -95,6 +327,21 @@ bool DatabaseManager::seedData() {
             "INSERT INTO users (username, password, full_name, role_name, is_active) VALUES ('admissions', 'admit123', 'Morgan Reed', 'Admissions Director', 1)",
             "INSERT INTO users (username, password, full_name, role_name, is_active) VALUES ('staffing', 'staff123', 'Jordan Lane', 'Staffing Coordinator', 1)",
             "INSERT INTO users (username, password, full_name, role_name, is_active) VALUES ('viewer', 'view123', 'Casey Nguyen', 'Executive Viewer', 1)"
+        })) return false;
+    }
+    if (tableIsEmpty("care_conference_items")) {
+        if (!executeAll({
+            "INSERT INTO care_conference_items (conference_date, resident_name, contact_name, conference_type, owner_name, status, notes) VALUES ('2026-04-22', 'Martha Lane', 'Diane Lane', 'Quarterly Care Conference', 'Social Services', 'Open', 'Review weight trend, CHF monitoring, and discharge-planning outlook with family.')",
+            "INSERT INTO care_conference_items (conference_date, resident_name, contact_name, conference_type, owner_name, status, notes) VALUES ('2026-04-23', 'James Hill', 'Robert Hill', 'Insurance / Goal Review', 'Admissions Director', 'Watch', 'Discuss managed-care update, therapy extension, and projected discharge target.')",
+            "INSERT INTO care_conference_items (conference_date, resident_name, contact_name, conference_type, owner_name, status, notes) VALUES ('2026-04-24', 'Evelyn Cross', 'Melissa Cross', 'Behavior / Safety Review', 'DON', 'Open', 'Discuss fall-risk interventions, room change questions, and family communication plan.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("shift_handoff_items")) {
+        if (!executeAll({
+            "INSERT INTO shift_handoff_items (handoff_date, shift_name, department, priority, owner_name, status, handoff_note) VALUES ('2026-04-20', 'Evening to Night', 'Nursing', 'High', 'House Supervisor', 'Open', 'Room 212 pending return from ER; confirm re-entry orders, skin check, and pharmacy delivery status on arrival.')",
+            "INSERT INTO shift_handoff_items (handoff_date, shift_name, department, priority, owner_name, status, handoff_note) VALUES ('2026-04-20', 'Day to Evening', 'Admissions', 'Medium', 'Admissions Director', 'Open', 'Referral packet for Sarah Coleman still missing therapy note; keep waitlist in needs-docs until packet is complete.')",
+            "INSERT INTO shift_handoff_items (handoff_date, shift_name, department, priority, owner_name, status, handoff_note) VALUES ('2026-04-20', 'Evening to Night', 'Staffing', 'High', 'Staffing Coordinator', 'Watch', 'Night CNA opening remains agency-covered only; review call-off exposure before final assignment board prints.')"
         })) return false;
     }
     if (tableIsEmpty("residents")) {
@@ -305,6 +552,17 @@ if (tableIsEmpty("document_items")) {
         })) return false;
     }
 
+
+    if (tableIsEmpty("service_registry")) {
+        const QStringList serviceRows = {
+            "INSERT INTO service_registry (service_name, purpose, status, owner, notes) VALUES ('AdmissionsPipelineService', 'Waitlist intake, admit-from-referral, MDS carry-forward', 'Ready', 'Admissions', 'Supports current referral-to-admit workflow.')",
+            "INSERT INTO service_registry (service_name, purpose, status, owner, notes) VALUES ('StaffingCoverageService', 'Assignments, minimum staffing, HPRD summaries', 'Ready', 'Staffing', 'Backs staffing assignment, fill, and minimum coverage workflows.')",
+            "INSERT INTO service_registry (service_name, purpose, status, owner, notes) VALUES ('DocumentIngestionService', 'Imports local files and links them to operational records', 'Watch', 'Operations', 'Local file intake is ready; external sync can come later.')",
+            "INSERT INTO service_registry (service_name, purpose, status, owner, notes) VALUES ('ReportingExportService', 'Daily summary, CSV export, print support', 'Ready', 'Administrator', 'Backs reports/export and printing workflows.')"
+        };
+        if (!executeAll(serviceRows)) return false;
+    }
+
     return true;
 }
 
@@ -351,7 +609,12 @@ bool DatabaseManager::addRecord(const QString& tableName, const QMap<QString, QS
     QSqlQuery q(m_db);
     q.prepare(QString("INSERT INTO %1 (%2) VALUES (%3)").arg(tableName, cols.join(", "), binds.join(", ")));
     for (const QString& c : cols) q.bindValue(":" + c, values.value(c));
-    return q.exec();
+    const bool ok = q.exec();
+    if (ok && tableName != "audit_log") {
+        const QString itemName = values.value("resident_name", values.value("item_name", values.value("task_name", values.value("document_name", values.value("issue_name", values.value("project_name", "Record"))))));
+        logAuditEvent(tableName, "Record added", itemName, "System", QString("Inserted record into %1.").arg(tableName));
+    }
+    return ok;
 }
 
 
@@ -364,7 +627,11 @@ bool DatabaseManager::updateRecordById(const QString& tableName, int id, const Q
     q.prepare(QString("UPDATE %1 SET %2 WHERE id = :id").arg(tableName, assignments.join(", ")));
     for (const QString& c : cols) q.bindValue(":" + c, values.value(c));
     q.bindValue(":id", id);
-    return q.exec();
+    const bool ok = q.exec();
+    if (ok && tableName != "audit_log") {
+        logAuditEvent(tableName, "Record updated", QString("ID %1").arg(id), "System", QString("Updated %1 field(s) in %2.").arg(values.size()).arg(tableName));
+    }
+    return ok;
 }
 
 bool DatabaseManager::deleteRecordById(const QString& tableName, int id) {
@@ -372,12 +639,20 @@ bool DatabaseManager::deleteRecordById(const QString& tableName, int id) {
     QSqlQuery q(m_db);
     q.prepare(QString("DELETE FROM %1 WHERE id = :id").arg(tableName));
     q.bindValue(":id", id);
-    return q.exec();
+    const bool ok = q.exec();
+    if (ok && tableName != "audit_log") {
+        logAuditEvent(tableName, "Record deleted", QString("ID %1").arg(id), "System", QString("Deleted record from %1.").arg(tableName));
+    }
+    return ok;
 }
 
 bool DatabaseManager::archiveRecordById(const QString& tableName, int id) {
     if (id < 0) return false;
-    return updateRecordById(tableName, id, {{"status", "Archived"}});
+    const bool ok = updateRecordById(tableName, id, {{"status", "Archived"}});
+    if (ok && tableName != "audit_log") {
+        logAuditEvent(tableName, "Record archived", QString("ID %1").arg(id), "System", QString("Archived record in %1.").arg(tableName));
+    }
+    return ok;
 }
 
 bool DatabaseManager::admitResident(const QString& residentName, const QString& room, const QString& payer, int admissionId, const QString& diagnosisSummary) {
@@ -390,6 +665,7 @@ bool DatabaseManager::admitResident(const QString& residentName, const QString& 
             return false;
         }
     }
+    logAuditEvent("Admissions", "Resident admitted", residentName, "System", QString("Admitted to room %1 with payer %2.").arg(room, payer));
     return true;
 }
 
@@ -401,6 +677,7 @@ bool DatabaseManager::dischargeResident(int residentId, const QString& residentN
     if (!residentName.trimmed().isEmpty()) {
         addRecord("admissions", {{"resident_name", residentName}, {"referral_source", "Internal discharge"}, {"planned_date", QDate::currentDate().toString("yyyy-MM-dd")}, {"payer", ""}, {"diagnosis_summary", ""}, {"assessment_type", "Discharge"}, {"ard_date", QDate::currentDate().toString("yyyy-MM-dd")}, {"room_target", ""}, {"status", "Discharged"}, {"notes", "Generated from discharge action."}});
     }
+    logAuditEvent("Residents", "Resident discharged", residentName, "System", "Resident marked discharged from current census.");
 
     if (tableIsEmpty("survey_command_items")) {
         if (!executeAll({
@@ -437,7 +714,9 @@ bool DatabaseManager::addStaffingAssignment(const QString& workDate, const QStri
 
 bool DatabaseManager::updateStaffingAssignmentStatus(int assignmentId, const QString& status) {
     if (assignmentId < 0) return false;
-    return updateRecordById("staffing_assignments", assignmentId, {{"status", status}});
+    const bool ok = updateRecordById("staffing_assignments", assignmentId, {{"status", status}});
+    if (ok) logAuditEvent("Staffing", "Assignment status changed", QString("Assignment %1").arg(assignmentId), "System", QString("Staffing assignment moved to %1.").arg(status));
+    return ok;
 }
 
 int DatabaseManager::countMinimumStaffingGaps() const {
@@ -613,6 +892,36 @@ QList<QMap<QString, QString>> DatabaseManager::alertItems() const {
     return rows;
 }
 
+QList<QMap<QString, QString>> DatabaseManager::validationAlerts() const {
+    QList<QMap<QString, QString>> rows;
+    QSqlQuery query(m_db);
+    query.prepare(
+        "SELECT 'Admissions' AS module_name, resident_name AS item_name, 'Missing key referral intake fields' AS issue_name, 'Complete payer, diagnosis, assessment type, and target dates before admit-ready review.' AS recommended_action "
+        "FROM admissions WHERE trim(ifnull(resident_name,'')) <> '' AND (trim(ifnull(payer,'')) = '' OR trim(ifnull(diagnosis_summary,'')) = '' OR trim(ifnull(assessment_type,'')) = '' OR trim(ifnull(planned_date,'')) = '') "
+        "UNION ALL "
+        "SELECT 'Staffing', role_name || ' · ' || department || ' · ' || shift_name, 'Open staffing assignment', 'Move open assignments to filled or agency-covered status and compare to minimum staffing.' "
+        "FROM staffing_assignments WHERE status = 'Open' "
+        "UNION ALL "
+        "SELECT 'Documents', document_name, 'Imported document missing context', 'Add owner, linked item, and document type so the file can be used operationally.' "
+        "FROM document_items WHERE trim(ifnull(document_name,'')) <> '' AND (trim(ifnull(owner,'')) = '' OR trim(ifnull(linked_item,'')) = '' OR trim(ifnull(document_type,'')) = '') "
+        "UNION ALL "
+        "SELECT 'MDS', resident_name, 'MDS item missing due-date or owner', 'Complete ARD, owner, and reimbursement follow-up fields before triple-check.' "
+        "FROM mds_items WHERE trim(ifnull(resident_name,'')) <> '' AND (trim(ifnull(ard_date,'')) = '' OR trim(ifnull(owner,'')) = '') "
+        "ORDER BY module_name, item_name");
+    if (!query.exec()) {
+        return rows;
+    }
+    while (query.next()) {
+        rows.append({
+            {"module_name", query.value(0).toString()},
+            {"item_name", query.value(1).toString()},
+            {"issue_name", query.value(2).toString()},
+            {"recommended_action", query.value(3).toString()}
+        });
+    }
+    return rows;
+}
+
 QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
     return {
         {"Admissions", "Move accepted referrals into current census from the Admissions page."},
@@ -630,6 +939,7 @@ QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
         {"Outbreak command", QString("%1 outbreak-response item(s) remain open, in progress, or on watch.").arg(countWhere("outbreak_items", "status!='Closed' AND status!='Complete'"))},
         {"Alerts", QString("%1 overdue and %2 due-soon item(s) need attention across due-date driven modules.").arg(overdueAlertCount()).arg(dueSoonAlertCount())},
         {"Workflow center", "Use Workflow Center to edit, archive, or delete operational records without hunting through every page."},
+        {"Shift handoff", QString("%1 shift handoff item(s) remain open or on watch for the next leadership handoff.").arg(countWhere("shift_handoff_items", "status='Open' OR status='Watch' OR status='In Progress'"))},
         {"Reports", "Use the Reports workspace to export a daily summary, staffing CSV, and census snapshot for leadership review."}
     };
 }

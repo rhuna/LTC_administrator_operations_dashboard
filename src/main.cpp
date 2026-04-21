@@ -8,7 +8,7 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("LTC Administrator Operations Dashboard");
-    app.setApplicationVersion("37.0.0");
+    app.setApplicationVersion("53.1.0");
     app.setStyleSheet(R"(
         QWidget {
             background: #f6f8fb;
@@ -127,7 +127,10 @@ int main(int argc, char *argv[]) {
 
     DatabaseManager db;
     if (!db.initialize()) {
-        QMessageBox::critical(nullptr, "Database Error", "Failed to initialize local SQLite database.");
+        QMessageBox::critical(
+            nullptr,
+            "Database Error",
+            QString("Failed to initialize local SQLite database.\n\n%1").arg(db.lastErrorText()));
         return 1;
     }
 

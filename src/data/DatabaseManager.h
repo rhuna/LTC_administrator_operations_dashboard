@@ -35,11 +35,22 @@ public:
     int dueSoonAlertCount() const;
     QList<QMap<QString, QString>> alertItems() const;
     QList<QPair<QString, QString>> actionCenterItems() const;
+    QString databaseFilePath() const;
+    QString backupDirectoryPath() const;
+    QStringList availableBackupFiles() const;
+    bool createBackupCopy(QString* createdPath = nullptr);
+    bool restoreFromBackup(const QString& backupPath);
+    bool exportJsonSnapshot(QString* exportPath = nullptr) const;
+    QList<QMap<QString, QString>> auditLogItems() const;
+    QList<QMap<QString, QString>> validationAlerts() const;
+    QString lastErrorText() const;
 
 private:
     QSqlDatabase m_db;
+    QString m_lastError;
     bool createTables();
     bool seedData();
     bool executeAll(const QStringList& statements) const;
     bool tableIsEmpty(const QString& tableName) const;
+    bool logAuditEvent(const QString& moduleName, const QString& actionName, const QString& itemName, const QString& actorName, const QString& details);
 };

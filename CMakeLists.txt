@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 38.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 53.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,6 +25,34 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/AlertsPage.cpp
     src/ui/pages/SearchFiltersPage.h
     src/ui/pages/SearchFiltersPage.cpp
+    src/ui/pages/DashboardCustomizePage.h
+    src/ui/pages/DashboardCustomizePage.cpp
+    src/ui/pages/CalendarPage.h
+    src/ui/pages/CalendarPage.cpp
+    src/ui/pages/MetricsChartsPage.h
+    src/ui/pages/MetricsChartsPage.cpp
+    src/ui/pages/KpiTrendEnginePage.h
+    src/ui/pages/KpiTrendEnginePage.cpp
+    src/ui/pages/ServiceLayerPage.h
+    src/ui/pages/ServiceLayerPage.cpp
+    src/ui/pages/ExternalSyncReadinessPage.h
+    src/ui/pages/ExternalSyncReadinessPage.cpp
+    src/ui/pages/ReleaseCandidatePage.h
+    src/ui/pages/ReleaseCandidatePage.cpp
+    src/ui/pages/SopCenterPage.h
+    src/ui/pages/SopCenterPage.cpp
+    src/ui/pages/ShiftHandoffPage.h
+    src/ui/pages/ShiftHandoffPage.cpp
+    src/ui/pages/CareConferencePage.h
+    src/ui/pages/CareConferencePage.cpp
+    src/ui/pages/DepartmentDashboardsPage.h
+    src/ui/pages/DepartmentDashboardsPage.cpp
+    src/ui/pages/BackupRestorePage.h
+    src/ui/pages/BackupRestorePage.cpp
+    src/ui/pages/AuditLogPage.h
+    src/ui/pages/AuditLogPage.cpp
+    src/ui/pages/FormsValidationPage.h
+    src/ui/pages/FormsValidationPage.cpp
     src/ui/pages/ResidentsPage.h
     src/ui/pages/ResidentsPage.cpp
     src/ui/pages/AdmissionsPage.h

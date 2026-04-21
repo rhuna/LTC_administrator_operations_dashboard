@@ -40,5 +40,11 @@ if not exist "%EXE_PATH%" (
     echo ERROR: Built executable not found.
     exit /b 1
 )
-if exist "%QT_PREFIX%\bin\windeployqt.exe" "%QT_PREFIX%\bin\windeployqt.exe" "%EXE_PATH%"
+if exist "%QT_PREFIX%\bin\windeployqt.exe" (
+    "%QT_PREFIX%\bin\windeployqt.exe" --release --compiler-runtime "%EXE_PATH%"
+)
+if not exist "%BUILD_DIR%\sqldrivers\qsqlite.dll" (
+    echo WARNING: qsqlite.dll was not found after deployment.
+    echo Expected at: %BUILD_DIR%\sqldrivers\qsqlite.dll
+)
 start "" "%EXE_PATH%"

@@ -23,25 +23,52 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* title = new QLabel("Executive dashboard", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up.",
+        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up, now with saved dashboard preferences and a calendar view for scheduled work, plus a local audit trail for recent changes, a KPI trend engine for rolling executive measure review, an external sync readiness layer for future EMR/PCC work, and a release-candidate checklist for packaging, validation, rollout readiness, and a built-in SOP / quick-start center for repeatable operations.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
 
     auto* snapshot = new QLabel(
-        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures")
+        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items")
             .arg(db->countWhere("residents", "status='Current'"))
             .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'"))
             .arg(db->countWhere("staffing_assignments", "status='Open'"))
             .arg(db->countMinimumStaffingGaps())
             .arg(db->overdueAlertCount())
-            .arg(db->countWhere("quality_measures", "status='Off Target'")),
+            .arg(db->countWhere("quality_measures", "status='Off Target'"))
+            .arg(db->countWhere("audit_log"))
+            .arg(db->countWhere("kpi_trend_rows"))
+            .arg(db->countWhere("external_sync_profiles"))
+            .arg(db->countWhere("release_candidate_items"))
+            .arg(db->countWhere("sop_items")),
         hero);
     snapshot->setObjectName("dashboardSnapshot");
+
+    const auto prefRows = db->fetchTable("dashboard_preferences", {"pref_key", "pref_value"});
+    QString focusNote;
+    QString densityMode = "Comfortable";
+    QString pinnedModules;
+    for (const auto& row : prefRows) {
+        if (row.value("pref_key") == "focus_note") focusNote = row.value("pref_value");
+        if (row.value("pref_key") == "density_mode") densityMode = row.value("pref_value");
+        if (row.value("pref_key") == "pinned_modules") pinnedModules = row.value("pref_value");
+    }
 
     heroLayout->addWidget(title);
     heroLayout->addWidget(subtitle);
     heroLayout->addWidget(snapshot);
+    if (!focusNote.trimmed().isEmpty()) {
+        auto* focusLabel = new QLabel(QString("Executive focus: %1").arg(focusNote), hero);
+        focusLabel->setObjectName("panelHint");
+        focusLabel->setWordWrap(true);
+        heroLayout->addWidget(focusLabel);
+    }
+    if (!pinnedModules.trimmed().isEmpty()) {
+        auto* pinnedLabel = new QLabel(QString("Pinned modules: %1").arg(pinnedModules), hero);
+        pinnedLabel->setObjectName("panelHint");
+        pinnedLabel->setWordWrap(true);
+        heroLayout->addWidget(pinnedLabel);
+    }
     root->addWidget(hero);
 
     auto* summaryStrip = new QFrame(this);
@@ -62,9 +89,16 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     addSummary("Ready referrals", QString::number(db->countWhere("admissions", "status='Ready'")));
     addSummary("Needs docs", QString::number(db->countWhere("admissions", "status='Needs Docs'")));
     addSummary("Open beds / turnovers", QString::number(db->countWhere("bed_board", "status!='Closed'")));
+    addSummary("Calendar items today", QString::number(db->countWhere("tasks", "due_date='2026-04-20'") + db->countWhere("compliance_items", "due_date='2026-04-20'") + db->countWhere("transport_items", "appointment_date='2026-04-20'")));
     addSummary("Open incidents", QString::number(db->countWhere("incidents", "status!='Closed'")));
     addSummary("Open quality follow-ups", QString::number(db->countWhere("quality_followups", "status!='Closed' AND status!='Complete'")));
     addSummary("Outbreak items", QString::number(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
+    addSummary("Audit events", QString::number(db->countWhere("audit_log")));
+    addSummary("KPI trend rows", QString::number(db->countWhere("kpi_trend_rows")));
+    addSummary("Sync profiles", QString::number(db->countWhere("external_sync_profiles")));
+    addSummary("Release items", QString::number(db->countWhere("release_candidate_items")));
+    addSummary("Ready to deploy", QString::number(db->countWhere("release_candidate_items", "status='Ready' OR status='Complete'")));
+    addSummary("SOP items", QString::number(db->countWhere("sop_items")));
     summaryLayout->addStretch();
     root->addWidget(summaryStrip);
 
@@ -95,6 +129,18 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     kpiGrid->addWidget(new KpiCard("Referrals ready", QString::number(db->countWhere("admissions", "status='Ready'")), this), 7, 0);
     kpiGrid->addWidget(new KpiCard("Needs documents", QString::number(db->countWhere("admissions", "status='Needs Docs'")), this), 7, 1);
     kpiGrid->addWidget(new KpiCard("Outbreak items", QString::number(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")), this), 7, 2);
+    kpiGrid->addWidget(new KpiCard("Audit log events", QString::number(db->countWhere("audit_log")), this), 8, 0);
+    kpiGrid->addWidget(new KpiCard("KPI trend rows", QString::number(db->countWhere("kpi_trend_rows")), this), 8, 1);
+    kpiGrid->addWidget(new KpiCard("Off-track KPI rows", QString::number(db->countWhere("kpi_trend_rows", "trend_status='Off Track'")), this), 8, 2);
+    kpiGrid->addWidget(new KpiCard("Sync profiles", QString::number(db->countWhere("external_sync_profiles")), this), 9, 0);
+    kpiGrid->addWidget(new KpiCard("Ready syncs", QString::number(db->countWhere("external_sync_profiles", "status='Ready'")), this), 9, 1);
+    kpiGrid->addWidget(new KpiCard("Planned syncs", QString::number(db->countWhere("external_sync_profiles", "status='Planned'")), this), 9, 2);
+    kpiGrid->addWidget(new KpiCard("Release items", QString::number(db->countWhere("release_candidate_items")), this), 10, 0);
+    kpiGrid->addWidget(new KpiCard("Ready to deploy", QString::number(db->countWhere("release_candidate_items", "status='Ready' OR status='Complete'")), this), 10, 1);
+    kpiGrid->addWidget(new KpiCard("Open rollout items", QString::number(db->countWhere("release_candidate_items", "status='Open' OR status='Watch'")), this), 10, 2);
+    kpiGrid->addWidget(new KpiCard("SOP items", QString::number(db->countWhere("sop_items")), this), 11, 0);
+    kpiGrid->addWidget(new KpiCard("Active SOPs", QString::number(db->countWhere("sop_items", "status='Active'")), this), 11, 1);
+    kpiGrid->addWidget(new KpiCard("SOPs need update", QString::number(db->countWhere("sop_items", "status='Needs Update'")), this), 11, 2);
     root->addLayout(kpiGrid);
 
     auto* lowerRow = new QHBoxLayout();
@@ -115,7 +161,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
 
     auto* quickBox = new QGroupBox("Today at a glance", this);
     auto* quickLayout = new QVBoxLayout(quickBox);
-    auto* quickHint = new QLabel("Use this to orient quickly before moving into a detailed module.", quickBox);
+    auto* quickHint = new QLabel(QString("Use this to orient quickly before moving into a detailed module. Density mode: %1.").arg(densityMode), quickBox);
     quickHint->setObjectName("panelHint");
     quickHint->setWordWrap(true);
     auto* quickList = new QListWidget(quickBox);
@@ -130,6 +176,12 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     quickList->addItem(QString("%1 outbreak item(s) remain open").arg(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
     quickList->addItem(QString("%1 quality measure(s) are off target").arg(db->countWhere("quality_measures", "status='Off Target'")));
     quickList->addItem(QString("%1 overdue alert(s) need immediate attention").arg(db->overdueAlertCount()));
+    quickList->addItem("Calendar view rolls due dates, transports, admits, and MDS timing into one place.");
+    quickList->addItem(QString("%1 audit event(s) are available in the local change history.").arg(db->countWhere("audit_log")));
+    quickList->addItem(QString("%1 KPI trend row(s) are available for executive review.").arg(db->countWhere("kpi_trend_rows")));
+    quickList->addItem(QString("%1 sync readiness profile(s) are documented for future EMR/PCC integration work.").arg(db->countWhere("external_sync_profiles")));
+    quickList->addItem(QString("%1 release-readiness item(s) are tracked for packaging and rollout.").arg(db->countWhere("release_candidate_items")));
+    quickList->addItem(QString("%1 SOP / quick-start item(s) are available for training and repeatable operations.").arg(db->countWhere("sop_items")));
     quickList->addItem("Reports workspace can export a daily summary, census CSV, and staffing CSV.");
     quickLayout->addWidget(quickHint);
     quickLayout->addWidget(quickList);
