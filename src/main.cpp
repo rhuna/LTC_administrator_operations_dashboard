@@ -1,12 +1,14 @@
 #include <QApplication>
 #include <QMessageBox>
+
 #include "core/AppWindow.h"
 #include "data/DatabaseManager.h"
+#include "ui/dialogs/LoginDialog.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("LTC Administrator Operations Dashboard");
-    app.setApplicationVersion("23.0.0");
+    app.setApplicationVersion("33.1.0");
     app.setStyleSheet(R"(
         QWidget {
             background: #f4f7fb;
@@ -17,7 +19,7 @@ int main(int argc, char *argv[]) {
         QMainWindow, QScrollArea, QStackedWidget {
             background: #f4f7fb;
         }
-        QFrame#appHeader, QFrame#sidebarCard, QGroupBox, QFrame#kpiCard {
+        QFrame#appHeader, QFrame#sidebarCard, QGroupBox, QFrame#kpiCard, QFrame#loginCard {
             background: #ffffff;
             border: 1px solid #d9e2ec;
             border-radius: 16px;
@@ -92,7 +94,7 @@ int main(int argc, char *argv[]) {
             left: 14px;
             padding: 0 6px;
         }
-        QLineEdit, QTextEdit, QTableWidget, QListWidget#actionList {
+        QLineEdit, QTextEdit, QTableWidget, QListWidget#actionList, QComboBox {
             background: #ffffff;
             border: 1px solid #d9e2ec;
             border-radius: 10px;
@@ -128,7 +130,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    AppWindow window(&db);
+    LoginDialog login(&db);
+    if (login.exec() != QDialog::Accepted) {
+        return 0;
+    }
+
+    AppWindow window(&db, login.fullName(), login.role());
     window.resize(1400, 900);
     window.show();
     return app.exec();

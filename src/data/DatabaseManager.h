@@ -13,9 +13,13 @@ public:
 
     bool initialize();
     QList<QMap<QString, QString>> fetchTable(const QString& tableName, const QStringList& columns) const;
+    bool authenticateUser(const QString& username, const QString& password, QString* fullName, QString* role) const;
+    QList<QMap<QString, QString>> fetchUsers() const;
     bool addRecord(const QString& tableName, const QMap<QString, QString>& values);
     bool updateRecordById(const QString& tableName, int id, const QMap<QString, QString>& values);
-    bool admitResident(const QString& residentName, const QString& room, const QString& payer, int admissionId = -1);
+    bool deleteRecordById(const QString& tableName, int id);
+    bool archiveRecordById(const QString& tableName, int id);
+    bool admitResident(const QString& residentName, const QString& room, const QString& payer, int admissionId = -1, const QString& diagnosisSummary = QString());
     bool dischargeResident(int residentId, const QString& residentName);
     bool addStaffingAssignment(const QString& workDate, const QString& department, const QString& shiftName,
                               const QString& roleName, const QString& employeeName, const QString& status);
@@ -27,6 +31,9 @@ public:
     QList<QMap<QString, QString>> nursingHprdSummary() const;
     double estimatedNursingHprd() const;
     int estimatedMinimumHoursGap() const;
+    int overdueAlertCount() const;
+    int dueSoonAlertCount() const;
+    QList<QMap<QString, QString>> alertItems() const;
     QList<QPair<QString, QString>> actionCenterItems() const;
 
 private:

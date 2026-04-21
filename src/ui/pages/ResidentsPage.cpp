@@ -40,8 +40,8 @@ ResidentsPage::ResidentsPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     root->addWidget(actionCard);
 
     m_tableWidget = new QTableWidget(this);
-    m_tableWidget->setColumnCount(5);
-    m_tableWidget->setHorizontalHeaderLabels(QStringList{"id", "resident_name", "room", "payer", "status"});
+    m_tableWidget->setColumnCount(6);
+    m_tableWidget->setHorizontalHeaderLabels(QStringList{"id", "resident_name", "room", "payer", "diagnosis_summary", "status"});
     m_tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -57,12 +57,12 @@ ResidentsPage::ResidentsPage(DatabaseManager* db, QWidget* parent) : QWidget(par
 
 void ResidentsPage::refreshTable() {
     m_tableWidget->setRowCount(0);
-    const auto rows = m_db->fetchTable("residents", QStringList{"id", "resident_name", "room", "payer", "status"});
+    const auto rows = m_db->fetchTable("residents", QStringList{"id", "resident_name", "room", "payer", "diagnosis_summary", "status"});
     for (const auto& row : rows) {
         int r = m_tableWidget->rowCount();
         m_tableWidget->insertRow(r);
         int c = 0;
-        for (const auto& key : QStringList{"id", "resident_name", "room", "payer", "status"}) {
+        for (const auto& key : QStringList{"id", "resident_name", "room", "payer", "diagnosis_summary", "status"}) {
             m_tableWidget->setItem(r, c++, new QTableWidgetItem(row.value(key)));
         }
     }
@@ -77,7 +77,7 @@ void ResidentsPage::handleDischargeResident() {
 
     const int residentId = m_tableWidget->item(row, 0)->text().toInt();
     const QString residentName = m_tableWidget->item(row, 1)->text();
-    const QString currentStatus = m_tableWidget->item(row, 4)->text();
+    const QString currentStatus = m_tableWidget->item(row, 5)->text();
 
     if (currentStatus.compare("Discharged", Qt::CaseInsensitive) == 0) {
         QMessageBox::information(this, "Discharge resident", "That resident is already marked discharged.");

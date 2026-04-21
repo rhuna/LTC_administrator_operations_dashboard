@@ -14,6 +14,7 @@ public:
 private slots:
     void refreshTable();
     void handleAddReferral();
+    void handleSendToMds();
     void handleAdmitSelected();
 
 private:
@@ -24,7 +25,12 @@ private:
     QLineEdit* m_statusEdit{nullptr};
     QLineEdit* m_roomEdit{nullptr};
     QLineEdit* m_payerEdit{nullptr};
+    QLineEdit* m_diagnosisEdit{nullptr};
+    QLineEdit* m_assessmentTypeEdit{nullptr};
+    QLineEdit* m_ardDateEdit{nullptr};
+    QLineEdit* m_notesEdit{nullptr};
     QPushButton* m_addButton{nullptr};
+    QPushButton* m_sendToMdsButton{nullptr};
     QPushButton* m_admitButton{nullptr};
     QPushButton* m_refreshButton{nullptr};
     QTableWidget* m_tableWidget{nullptr};
