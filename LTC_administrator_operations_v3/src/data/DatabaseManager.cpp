@@ -110,6 +110,43 @@ bool DatabaseManager::initialize() {
         if (!executeAll(housekeepingSeeds)) return false;
     }
 
+
+    if (tableIsEmpty("alerts_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_items (alert_date, module_name, item_name, owner, status) VALUES ('2026-04-21', 'Medical Records', 'Verify isolation signage for Hall 200', 'Medical Records', 'Open')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("vaccination_items")) {
+        if (!executeAll({
+            "INSERT INTO vaccination_items (review_date, resident_name, vaccine_name, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Pneumococcal review', 'Open', 'Confirm consent and administration date.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("isolation_items")) {
+        if (!executeAll({
+            "INSERT INTO isolation_items (review_date, resident_name, isolation_type, status, notes) VALUES ('2026-04-21', 'John Carter', 'Contact isolation', 'Open', 'Track start/end dates and precautions in record.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("interventions")) {
+        if (!executeAll({
+            "INSERT INTO interventions (review_date, resident_name, intervention_name, owner, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Fall intervention review', 'DON', 'Open', 'Reassess interventions after overnight event.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("diagnosis_reportables")) {
+        if (!executeAll({
+            "INSERT INTO diagnosis_reportables (review_date, resident_name, diagnosis_name, reportable_flag, owner, status, notes) VALUES ('2026-04-21', 'John Carter', 'Suspected influenza', 'Yes', 'DON', 'Open', 'Assess whether reporting threshold is met.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("wound_treatments")) {
+        if (!executeAll({
+            "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
     return true;
 }
 
@@ -223,6 +260,7 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS staffing_changes (id INTEGER PRIMARY KEY AUTOINCREMENT, change_date TEXT, department TEXT, shift_name TEXT, change_type TEXT, position_name TEXT, employee_name TEXT, impact_level TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS staffing_number_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, entry_date TEXT, shift_name TEXT, resident_census INTEGER, rn_count INTEGER, lpn_count INTEGER, cna_count INTEGER, agency_count INTEGER, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, due_date TEXT, owner TEXT, task_name TEXT, priority TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS alerts_items (id INTEGER PRIMARY KEY AUTOINCREMENT, alert_date TEXT, module_name TEXT, item_name TEXT, owner TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS pips (id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT, owner TEXT, status TEXT, next_step TEXT)",
         "CREATE TABLE IF NOT EXISTS budget_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, department TEXT, variance TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS compliance_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, due_date TEXT, owner TEXT, status TEXT)",
@@ -237,10 +275,15 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS credentialing_items (id INTEGER PRIMARY KEY AUTOINCREMENT, employee_name TEXT, item_name TEXT, due_date TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS preparedness_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, due_date TEXT, owner TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS infection_control_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS vaccination_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, vaccine_name TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS isolation_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, isolation_type TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS grievances (id INTEGER PRIMARY KEY AUTOINCREMENT, report_date TEXT, category TEXT, resident_or_family TEXT, owner TEXT, priority TEXT, status TEXT, summary TEXT)",
+        "CREATE TABLE IF NOT EXISTS interventions (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, intervention_name TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS diagnosis_reportables (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, diagnosis_name TEXT, reportable_flag TEXT, owner TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS environmental_rounds (id INTEGER PRIMARY KEY AUTOINCREMENT, round_date TEXT, area_name TEXT, issue_name TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS bed_board (id INTEGER PRIMARY KEY AUTOINCREMENT, room_number TEXT, bed_status TEXT, resident_name TEXT, pending_action TEXT, owner TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS transport_items (id INTEGER PRIMARY KEY AUTOINCREMENT, appointment_date TEXT, resident_name TEXT, appointment_type TEXT, destination TEXT, transport_mode TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS wound_treatments (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, wound_name TEXT, location TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS pharmacy_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, item_name TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS dietary_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, item_name TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS document_items (id INTEGER PRIMARY KEY AUTOINCREMENT, module_name TEXT, document_name TEXT, document_type TEXT, linked_item TEXT, owner TEXT, status TEXT, file_path TEXT, imported_on TEXT, notes TEXT)",
@@ -286,6 +329,43 @@ bool DatabaseManager::executeAll(const QStringList& statements) const {
             "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
         };
         if (!executeAll(housekeepingSeeds)) return false;
+    }
+
+
+    if (tableIsEmpty("alerts_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_items (alert_date, module_name, item_name, owner, status) VALUES ('2026-04-21', 'Medical Records', 'Verify isolation signage for Hall 200', 'Medical Records', 'Open')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("vaccination_items")) {
+        if (!executeAll({
+            "INSERT INTO vaccination_items (review_date, resident_name, vaccine_name, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Pneumococcal review', 'Open', 'Confirm consent and administration date.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("isolation_items")) {
+        if (!executeAll({
+            "INSERT INTO isolation_items (review_date, resident_name, isolation_type, status, notes) VALUES ('2026-04-21', 'John Carter', 'Contact isolation', 'Open', 'Track start/end dates and precautions in record.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("interventions")) {
+        if (!executeAll({
+            "INSERT INTO interventions (review_date, resident_name, intervention_name, owner, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Fall intervention review', 'DON', 'Open', 'Reassess interventions after overnight event.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("diagnosis_reportables")) {
+        if (!executeAll({
+            "INSERT INTO diagnosis_reportables (review_date, resident_name, diagnosis_name, reportable_flag, owner, status, notes) VALUES ('2026-04-21', 'John Carter', 'Suspected influenza', 'Yes', 'DON', 'Open', 'Assess whether reporting threshold is met.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("wound_treatments")) {
+        if (!executeAll({
+            "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
     }
 
     return true;
@@ -652,6 +732,43 @@ if (tableIsEmpty("document_items")) {
         if (!executeAll(housekeepingSeeds)) return false;
     }
 
+
+    if (tableIsEmpty("alerts_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_items (alert_date, module_name, item_name, owner, status) VALUES ('2026-04-21', 'Medical Records', 'Verify isolation signage for Hall 200', 'Medical Records', 'Open')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("vaccination_items")) {
+        if (!executeAll({
+            "INSERT INTO vaccination_items (review_date, resident_name, vaccine_name, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Pneumococcal review', 'Open', 'Confirm consent and administration date.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("isolation_items")) {
+        if (!executeAll({
+            "INSERT INTO isolation_items (review_date, resident_name, isolation_type, status, notes) VALUES ('2026-04-21', 'John Carter', 'Contact isolation', 'Open', 'Track start/end dates and precautions in record.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("interventions")) {
+        if (!executeAll({
+            "INSERT INTO interventions (review_date, resident_name, intervention_name, owner, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Fall intervention review', 'DON', 'Open', 'Reassess interventions after overnight event.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("diagnosis_reportables")) {
+        if (!executeAll({
+            "INSERT INTO diagnosis_reportables (review_date, resident_name, diagnosis_name, reportable_flag, owner, status, notes) VALUES ('2026-04-21', 'John Carter', 'Suspected influenza', 'Yes', 'DON', 'Open', 'Assess whether reporting threshold is met.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("wound_treatments")) {
+        if (!executeAll({
+            "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
     return true;
 }
 
@@ -683,6 +800,43 @@ bool DatabaseManager::authenticateUser(const QString& username, const QString& p
             "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
         };
         if (!executeAll(housekeepingSeeds)) return false;
+    }
+
+
+    if (tableIsEmpty("alerts_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_items (alert_date, module_name, item_name, owner, status) VALUES ('2026-04-21', 'Medical Records', 'Verify isolation signage for Hall 200', 'Medical Records', 'Open')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("vaccination_items")) {
+        if (!executeAll({
+            "INSERT INTO vaccination_items (review_date, resident_name, vaccine_name, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Pneumococcal review', 'Open', 'Confirm consent and administration date.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("isolation_items")) {
+        if (!executeAll({
+            "INSERT INTO isolation_items (review_date, resident_name, isolation_type, status, notes) VALUES ('2026-04-21', 'John Carter', 'Contact isolation', 'Open', 'Track start/end dates and precautions in record.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("interventions")) {
+        if (!executeAll({
+            "INSERT INTO interventions (review_date, resident_name, intervention_name, owner, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Fall intervention review', 'DON', 'Open', 'Reassess interventions after overnight event.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("diagnosis_reportables")) {
+        if (!executeAll({
+            "INSERT INTO diagnosis_reportables (review_date, resident_name, diagnosis_name, reportable_flag, owner, status, notes) VALUES ('2026-04-21', 'John Carter', 'Suspected influenza', 'Yes', 'DON', 'Open', 'Assess whether reporting threshold is met.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("wound_treatments")) {
+        if (!executeAll({
+            "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
     }
 
     return true;
@@ -765,6 +919,43 @@ bool DatabaseManager::admitResident(const QString& residentName, const QString& 
         if (!executeAll(housekeepingSeeds)) return false;
     }
 
+
+    if (tableIsEmpty("alerts_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_items (alert_date, module_name, item_name, owner, status) VALUES ('2026-04-21', 'Medical Records', 'Verify isolation signage for Hall 200', 'Medical Records', 'Open')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("vaccination_items")) {
+        if (!executeAll({
+            "INSERT INTO vaccination_items (review_date, resident_name, vaccine_name, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Pneumococcal review', 'Open', 'Confirm consent and administration date.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("isolation_items")) {
+        if (!executeAll({
+            "INSERT INTO isolation_items (review_date, resident_name, isolation_type, status, notes) VALUES ('2026-04-21', 'John Carter', 'Contact isolation', 'Open', 'Track start/end dates and precautions in record.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("interventions")) {
+        if (!executeAll({
+            "INSERT INTO interventions (review_date, resident_name, intervention_name, owner, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Fall intervention review', 'DON', 'Open', 'Reassess interventions after overnight event.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("diagnosis_reportables")) {
+        if (!executeAll({
+            "INSERT INTO diagnosis_reportables (review_date, resident_name, diagnosis_name, reportable_flag, owner, status, notes) VALUES ('2026-04-21', 'John Carter', 'Suspected influenza', 'Yes', 'DON', 'Open', 'Assess whether reporting threshold is met.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("wound_treatments")) {
+        if (!executeAll({
+            "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
     return true;
 }
 
@@ -800,6 +991,43 @@ bool DatabaseManager::dischargeResident(int residentId, const QString& residentN
             "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
         };
         if (!executeAll(housekeepingSeeds)) return false;
+    }
+
+
+    if (tableIsEmpty("alerts_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_items (alert_date, module_name, item_name, owner, status) VALUES ('2026-04-21', 'Medical Records', 'Verify isolation signage for Hall 200', 'Medical Records', 'Open')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("vaccination_items")) {
+        if (!executeAll({
+            "INSERT INTO vaccination_items (review_date, resident_name, vaccine_name, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Pneumococcal review', 'Open', 'Confirm consent and administration date.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("isolation_items")) {
+        if (!executeAll({
+            "INSERT INTO isolation_items (review_date, resident_name, isolation_type, status, notes) VALUES ('2026-04-21', 'John Carter', 'Contact isolation', 'Open', 'Track start/end dates and precautions in record.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("interventions")) {
+        if (!executeAll({
+            "INSERT INTO interventions (review_date, resident_name, intervention_name, owner, status, notes) VALUES ('2026-04-21', 'Mary Adams', 'Fall intervention review', 'DON', 'Open', 'Reassess interventions after overnight event.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("diagnosis_reportables")) {
+        if (!executeAll({
+            "INSERT INTO diagnosis_reportables (review_date, resident_name, diagnosis_name, reportable_flag, owner, status, notes) VALUES ('2026-04-21', 'John Carter', 'Suspected influenza', 'Yes', 'DON', 'Open', 'Assess whether reporting threshold is met.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("wound_treatments")) {
+        if (!executeAll({
+            "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
     }
 
     return true;

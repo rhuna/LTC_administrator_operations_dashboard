@@ -1,22 +1,17 @@
+
 #include "AppWindow.h"
 #include "../data/DatabaseManager.h"
 #include "../ui/pages/AdmissionsPage.h"
 #include "../ui/pages/AlertsPage.h"
-#include "../ui/pages/BedBoardPage.h"
 #include "../ui/pages/BudgetPage.h"
-#include "../ui/pages/CompliancePage.h"
 #include "../ui/pages/DashboardPage.h"
 #include "../ui/pages/DashboardCustomizePage.h"
-#include "../ui/pages/DepartmentDashboardsPage.h"
 #include "../ui/pages/DietaryPage.h"
 #include "../ui/pages/DocumentCenterPage.h"
 #include "../ui/pages/EnvironmentalRoundsPage.h"
 #include "../ui/pages/HuddlePage.h"
 #include "../ui/pages/IncidentsPage.h"
-#include "../ui/pages/ManagedCarePage.h"
 #include "../ui/pages/MdsTripleCheckPage.h"
-#include "../ui/pages/MetricsChartsPage.h"
-#include "../ui/pages/OutbreakCommandPage.h"
 #include "../ui/pages/PharmacyPage.h"
 #include "../ui/pages/QapiPage.h"
 #include "../ui/pages/QualityMeasuresPage.h"
@@ -24,16 +19,11 @@
 #include "../ui/pages/ResidentsPage.h"
 #include "../ui/pages/SocialServicesPage.h"
 #include "../ui/pages/StaffingPage.h"
-#include "../ui/pages/SurveyCommandCenterPage.h"
 #include "../ui/pages/SurveyReadinessPage.h"
 #include "../ui/pages/TasksPage.h"
 #include "../ui/pages/TransportationPage.h"
-#include "../ui/pages/WorkflowCenterPage.h"
 #include "../ui/pages/CalendarPage.h"
-#include "../ui/pages/CensusManagementPage.h"
-#include "../ui/pages/RevenueCyclePage.h"
-#include "../ui/pages/ContractManagementPage.h"
-#include "../ui/pages/BackupRestorePage.h"
+#include "../ui/pages/TreatmentsPage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -46,7 +36,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v61 Consolidated Operations Layout");
+    setWindowTitle("LTC Administrator Operations Dashboard v65 Live Operations");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -70,7 +60,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v61 folds department views and metrics into Huddle, moves compliance into Survey Ready, moves managed care into MDS, removes Bed Board as a standalone page, and shows room availability directly in Admissions.",
+        "v65 uses a streamlined, non-duplicated tab layout: staffing is live numbers and ratios, medical records carries pharmacy / isolations / vaccinations / infection-control, DON carries incidents / interventions / reportables, and treatments tracks wounds.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -107,40 +97,27 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"Calendar", new CalendarPage(db)},
         {"Residents", new ResidentsPage(db)},
         {"Admissions", new AdmissionsPage(db)},
-        {"Staffing", new StaffingPage(db)},
+        {"HR / Staffing", new StaffingPage(db)},
         {"Tasks", new TasksPage(db)},
         {"Huddle", new HuddlePage(db)},
         {"Social Services", new SocialServicesPage(db)},
         {"Environmental Services", new EnvironmentalRoundsPage(db)},
         {"Medical Records", new PharmacyPage(db)},
         {"MDS", new MdsTripleCheckPage(db)},
+        {"DON", new IncidentsPage(db)},
+        {"Treatments", new TreatmentsPage(db)},
         {"QAPI", new QapiPage(db)},
         {"Budget", new BudgetPage(db)},
-        {"Incidents", new IncidentsPage(db)},
         {"Survey Ready", new SurveyReadinessPage(db)},
-        {"Outbreak Command", new OutbreakCommandPage(db)},
         {"Quality", new QualityMeasuresPage(db)},
         {"Transportation", new TransportationPage(db)},
         {"Dietary", new DietaryPage(db)},
         {"Document Center", new DocumentCenterPage(db)},
-        {"Census Management", new CensusManagementPage(db)},
-        {"Reports", new ReportsPage(db)},
-        {"Backup & Restore", new BackupRestorePage(db)},
-        {"Workflow Center", new WorkflowCenterPage(db)}
+        {"Reports", new ReportsPage(db)}
     };
 
     QStringList allowed;
-    if (roleName == "Administrator") {
-        for (const auto& pair : pages) allowed << pair.first;
-    } else if (roleName == "Director of Nursing") {
-        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Residents","Admissions","Staffing","Tasks","Huddle","Social Services","Environmental Services","Medical Records","MDS","QAPI","Incidents","Survey Ready","Outbreak Command","Quality","Transportation","Dietary","Document Center","Census Management","Reports","Backup & Restore","Workflow Center"};
-    } else if (roleName == "Admissions Director") {
-        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Residents","Admissions","Tasks","Huddle","Social Services","Environmental Services","Medical Records","MDS","Transportation","Document Center","Census Management","Reports","Backup & Restore","Workflow Center"};
-    } else if (roleName == "Staffing Coordinator") {
-        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Staffing","Tasks","Huddle","Environmental Services","Reports","Backup & Restore","Workflow Center"};
-    } else {
-        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Residents","Admissions","Staffing","Tasks","Huddle","Social Services","Environmental Services","Medical Records","MDS","Quality","Document Center","Census Management","Reports","Backup & Restore","Workflow Center"};
-    }
+    for (const auto& pair : pages) allowed << pair.first;
 
     sidebarLayout->addWidget(navLabel);
     sidebarLayout->addWidget(navHint);

@@ -1,3 +1,4 @@
+
 #include "MdsTripleCheckPage.h"
 #include "../../data/DatabaseManager.h"
 
@@ -16,20 +17,24 @@ MdsTripleCheckPage::MdsTripleCheckPage(DatabaseManager* db, QWidget* parent)
     root->setContentsMargins(8, 8, 8, 8);
     root->setSpacing(14);
 
-    auto* heading = new QLabel("MDS / ARD / Triple Check / Therapy / Managed Care", this);
+    auto* heading = new QLabel("MDS / Therapy / Managed Care", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     root->addWidget(heading);
 
     auto* subtitle = new QLabel(
-        "Track MDS due dates, ARD targets, triple-check readiness, diagnosis detail, therapy / rehab items, and managed-care reimbursement follow-up from one combined MDS workspace.",
+        "MDS, therapy, diagnosis detail, and managed-care follow-up are grouped here.",
         this);
     subtitle->setWordWrap(true);
     root->addWidget(subtitle);
 
     auto* mdsTable = new QTableWidget(this);
-    const QStringList mdsCols{"resident_name", "payer", "assessment_type", "ard_date", "triple_check_date", "status", "owner", "notes"};
+    const QStringList mdsCols{
+        "resident_name", "payer", "assessment_type", "ard_date",
+        "triple_check_date", "status", "owner", "notes"
+    };
     mdsTable->setColumnCount(mdsCols.size());
-    mdsTable->setHorizontalHeaderLabels({"Resident", "Payer", "Assessment", "ARD", "Triple Check", "Status", "Owner", "Notes"});
+    mdsTable->setHorizontalHeaderLabels(
+        {"Resident", "Payer", "Assessment", "ARD", "Triple Check", "Status", "Owner", "Notes"});
     mdsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     auto refreshMdsTable = [db, mdsTable, mdsCols]() {
@@ -50,16 +55,17 @@ MdsTripleCheckPage::MdsTripleCheckPage(DatabaseManager* db, QWidget* parent)
     auto* payer = new QLineEdit(this);
     payer->setPlaceholderText("Payer");
     auto* assessmentType = new QLineEdit(this);
-    assessmentType->setPlaceholderText("5-day / PPS / OBRA");
+    assessmentType->setPlaceholderText("Assessment");
     auto* ardDate = new QLineEdit(this);
     ardDate->setPlaceholderText("ARD YYYY-MM-DD");
     auto* tripleCheckDate = new QLineEdit(this);
-    tripleCheckDate->setPlaceholderText("Triple-check YYYY-MM-DD");
+    tripleCheckDate->setPlaceholderText("Triple Check YYYY-MM-DD");
     auto* owner = new QLineEdit(this);
     owner->setPlaceholderText("Owner");
     auto* notes = new QLineEdit(this);
     notes->setPlaceholderText("Notes");
     auto* button = new QPushButton("Add MDS Item", this);
+
     form->addWidget(residentName);
     form->addWidget(payer);
     form->addWidget(assessmentType);
@@ -68,29 +74,9 @@ MdsTripleCheckPage::MdsTripleCheckPage(DatabaseManager* db, QWidget* parent)
     form->addWidget(owner);
     form->addWidget(notes);
     form->addWidget(button);
+
     root->addLayout(form);
     root->addWidget(mdsTable);
-
-    auto* therapyHeading = new QLabel("Therapy / rehab items", this);
-    therapyHeading->setStyleSheet("font-size: 16px; font-weight: 700;");
-    root->addWidget(therapyHeading);
-
-    auto* therapyTable = new QTableWidget(this);
-    const QStringList therapyCols{"review_date", "resident_name", "discipline", "item_name", "owner", "status", "notes"};
-    therapyTable->setColumnCount(therapyCols.size());
-    therapyTable->setHorizontalHeaderLabels({"Date", "Resident", "Discipline", "Item", "Owner", "Status", "Notes"});
-    therapyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    auto refreshTherapyTable = [db, therapyTable, therapyCols]() {
-        therapyTable->setRowCount(0);
-        for (const auto& row : db->fetchTable("therapy_items", therapyCols)) {
-            const int r = therapyTable->rowCount();
-            therapyTable->insertRow(r);
-            for (int c = 0; c < therapyCols.size(); ++c) {
-                therapyTable->setItem(r, c, new QTableWidgetItem(row.value(therapyCols[c])));
-            }
-        }
-    };
-    root->addWidget(therapyTable);
 
     auto* diagnosisHeading = new QLabel("Imported diagnosis detail", this);
     diagnosisHeading->setStyleSheet("font-size: 16px; font-weight: 700;");
@@ -113,6 +99,7 @@ MdsTripleCheckPage::MdsTripleCheckPage(DatabaseManager* db, QWidget* parent)
             }
         }
     };
+
     root->addWidget(diagnosisTable);
 
     auto* managedHeading = new QLabel("Managed care / reimbursement follow-up", this);
@@ -120,21 +107,22 @@ MdsTripleCheckPage::MdsTripleCheckPage(DatabaseManager* db, QWidget* parent)
     root->addWidget(managedHeading);
 
     auto* managedTable = new QTableWidget(this);
-    const QStringList managedCols{"resident_name", "payer", "item_name", "auth_expiry", "owner", "status"};
+    const QStringList managedCols{
+        "resident_name", "payer", "item_name", "status"
+    };
     managedTable->setColumnCount(managedCols.size());
-    managedTable->setHorizontalHeaderLabels({"Resident", "Payer", "Item / Auth", "Auth Expiry", "Owner", "Status"});
+    managedTable->setHorizontalHeaderLabels(
+        {"Resident", "Payer", "Item / Auth", "Status"});
     managedTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    auto refreshManagedTable = [db, managedTable, managedCols]() {
-        managedTable->setRowCount(0);
-        for (const auto& row : db->fetchTable("managed_care_items", managedCols)) {
-            const int r = managedTable->rowCount();
-            managedTable->insertRow(r);
-            for (int c = 0; c < managedCols.size(); ++c) {
-                managedTable->setItem(r, c, new QTableWidgetItem(row.value(managedCols[c])));
-            }
+    const auto managedRows = db->fetchTable("managed_care_items", managedCols);
+    for (const auto& row : managedRows) {
+        const int r = managedTable->rowCount();
+        managedTable->insertRow(r);
+        for (int c = 0; c < managedCols.size(); ++c) {
+            managedTable->setItem(r, c, new QTableWidgetItem(row.value(managedCols[c])));
         }
-    };
+    }
     root->addWidget(managedTable);
 
     QObject::connect(button, &QPushButton::clicked, this, [=]() {
@@ -160,7 +148,5 @@ MdsTripleCheckPage::MdsTripleCheckPage(DatabaseManager* db, QWidget* parent)
     });
 
     refreshMdsTable();
-    refreshTherapyTable();
     refreshDiagnosisTable();
-    refreshManagedTable();
 }

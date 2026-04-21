@@ -1,3 +1,4 @@
+
 #include "SurveyReadinessPage.h"
 #include "../../data/DatabaseManager.h"
 
@@ -12,9 +13,15 @@ SurveyReadinessPage::SurveyReadinessPage(DatabaseManager* db, QWidget* parent)
     root->setContentsMargins(8, 8, 8, 8);
     root->setSpacing(14);
 
-    auto* heading = new QLabel("Survey Readiness / Compliance", this);
+    auto* heading = new QLabel("Survey Ready", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     root->addWidget(heading);
+
+    auto* subtitle = new QLabel(
+        "Survey readiness and compliance are combined here so due items, risk areas, and owners are in one place.",
+        this);
+    subtitle->setWordWrap(true);
+    root->addWidget(subtitle);
 
     auto* surveyHeading = new QLabel("Survey readiness items", this);
     surveyHeading->setStyleSheet("font-size: 16px; font-weight: 700;");
