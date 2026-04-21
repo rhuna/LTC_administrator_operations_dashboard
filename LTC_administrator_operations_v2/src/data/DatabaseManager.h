@@ -23,6 +23,8 @@ public:
     bool dischargeResident(int residentId, const QString& residentName);
     bool addStaffingAssignment(const QString& workDate, const QString& department, const QString& shiftName,
                               const QString& roleName, const QString& employeeName, const QString& status);
+    bool addStaffingNumbersEntry(const QString& entryDate, const QString& shiftName, int residentCensus,
+                                 int rnCount, int lpnCount, int cnaCount, int agencyCount, const QString& notes);
     bool updateStaffingAssignmentStatus(int assignmentId, const QString& status);
     int countWhere(const QString& tableName, const QString& whereClause = QString()) const;
     int countMinimumStaffingGaps() const;

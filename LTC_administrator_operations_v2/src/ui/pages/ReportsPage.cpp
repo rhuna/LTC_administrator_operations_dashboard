@@ -76,7 +76,7 @@ QString ReportsPage::buildDailySummaryText() const {
     QString text;
     QTextStream stream(&text);
 
-    stream << "LTC Administrator Operations Dashboard v25\n";
+    stream << "LTC Administrator Operations Dashboard 54.0.0\n";
     stream << "Daily Executive Summary\n";
     stream << "Generated: " << QDate::currentDate().toString("yyyy-MM-dd") << "\n\n";
 
@@ -171,26 +171,26 @@ void ReportsPage::refreshPreview() {
 }
 
 void ReportsPage::exportDailySummary() {
-    if (saveTextToFile("ltc_daily_summary_v25.txt", "Text Files (*.txt)", buildDailySummaryText())) {
+    if (saveTextToFile("ltc_daily_summary_54.0.0.txt", "Text Files (*.txt)", buildDailySummaryText())) {
         QMessageBox::information(this, "Report exported", "The daily summary was exported successfully.");
     }
 }
 
 void ReportsPage::exportCensusCsv() {
-    if (saveTextToFile("ltc_census_snapshot_v25.csv", "CSV Files (*.csv)", buildCensusCsv())) {
+    if (saveTextToFile("ltc_census_snapshot_54.0.0.csv", "CSV Files (*.csv)", buildCensusCsv())) {
         QMessageBox::information(this, "Export complete", "The census CSV was exported successfully.");
     }
 }
 
 void ReportsPage::exportStaffingCsv() {
-    if (saveTextToFile("ltc_staffing_snapshot_v25.csv", "CSV Files (*.csv)", buildStaffingCsv())) {
+    if (saveTextToFile("ltc_staffing_snapshot_54.0.0.csv", "CSV Files (*.csv)", buildStaffingCsv())) {
         QMessageBox::information(this, "Export complete", "The staffing CSV was exported successfully.");
     }
 }
 
 void ReportsPage::printDailySummary() {
     QPrinter printer(QPrinter::HighResolution);
-    printer.setDocName("LTC Daily Executive Summary v25");
+    printer.setDocName("LTC Daily Executive Summary 54.0.0");
     QPrintDialog dialog(&printer, this);
     if (dialog.exec() == QDialog::Accepted) {
         m_preview->document()->print(&printer);

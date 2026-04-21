@@ -1,7 +1,8 @@
+
 #include "StaffingPage.h"
 #include "../../data/DatabaseManager.h"
 
-#include <QColor>
+#include <QDate>
 #include <QFormLayout>
 #include <QFrame>
 #include <QGroupBox>
@@ -10,18 +11,12 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMap>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QVBoxLayout>
 
 namespace {
-QString norm(const QString& value, const QString& fallback) {
-    const QString trimmed = value.trimmed();
-    return trimmed.isEmpty() ? fallback : trimmed;
-}
-
 QLabel* makeStatValue(const QString& value, QWidget* parent) {
     auto* label = new QLabel(value, parent);
     label->setStyleSheet("font-size: 26px; font-weight: 700; color: #0f172a;");
@@ -34,6 +29,15 @@ QLabel* makeStatCaption(const QString& text, QWidget* parent) {
     label->setStyleSheet("font-size: 11px; color: #64748b;");
     return label;
 }
+
+QString ratioText(int residents, int staff) {
+    if (staff <= 0) return "—";
+    return QString("%1 : 1").arg(QString::number(static_cast<double>(residents) / static_cast<double>(staff), 'f', 1));
+}
+
+int toInt(const QMap<QString, QString>& row, const QString& key) {
+    return row.value(key).toInt();
+}
 }
 
 StaffingPage::StaffingPage(DatabaseManager* db, QWidget* parent) : QWidget(parent), m_db(db) {
@@ -41,10 +45,10 @@ StaffingPage::StaffingPage(DatabaseManager* db, QWidget* parent) : QWidget(paren
     root->setContentsMargins(10, 10, 10, 10);
     root->setSpacing(14);
 
-    auto* heading = new QLabel("Staffing Operations", this);
+    auto* heading = new QLabel("Staffing Numbers & Ratios", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     auto* subheading = new QLabel(
-        "Manage assignments, flip coverage status, and review minimum staffing, estimated hours, and nursing HPRD-style staffing numbers in one workspace.",
+        "Enter house staffing numbers by shift, review resident-to-staff ratios, and compare the entered staffing counts to your configured minimum staffing targets. This keeps staffing focused on the numbers, not hiring or firing workflow.",
         this);
     subheading->setWordWrap(true);
     subheading->setStyleSheet("color: #5b6472;");
@@ -67,333 +71,217 @@ StaffingPage::StaffingPage(DatabaseManager* db, QWidget* parent) : QWidget(paren
         layout->addWidget(makeStatCaption(caption, card));
         statRow->addWidget(card, 1);
     };
-    addStatCard("Open assignments needing coverage", &m_openCountLabel);
-    addStatCard("Shift groups below minimum staffing", &m_gapCountLabel);
-    addStatCard("Assignments currently marked filled", &m_filledCountLabel);
-    addStatCard("Agency-covered assignments", &m_agencyCountLabel);
-    addStatCard("Estimated nursing HPRD", &m_hprdLabel);
+    addStatCard("Latest resident census", &m_latestCensusLabel);
+    addStatCard("Latest total nursing staff", &m_totalNursingLabel);
+    addStatCard("Residents per CNA", &m_cnaRatioLabel);
+    addStatCard("Residents per licensed nurse", &m_licensedRatioLabel);
+    addStatCard("Residents per total staff", &m_totalRatioLabel);
     root->addLayout(statRow);
 
-    auto* formCard = new QGroupBox("Add staffing assignment", this);
+    auto* formCard = new QGroupBox("Enter staffing numbers", this);
     auto* formLayout = new QFormLayout(formCard);
     m_dateEdit = new QLineEdit(formCard);
-    m_departmentEdit = new QLineEdit(formCard);
     m_shiftEdit = new QLineEdit(formCard);
-    m_roleEdit = new QLineEdit(formCard);
-    m_employeeEdit = new QLineEdit(formCard);
-    m_statusEdit = new QLineEdit(formCard);
+    m_censusEdit = new QLineEdit(formCard);
+    m_rnEdit = new QLineEdit(formCard);
+    m_lpnEdit = new QLineEdit(formCard);
+    m_cnaEdit = new QLineEdit(formCard);
+    m_agencyEdit = new QLineEdit(formCard);
+    m_notesEdit = new QLineEdit(formCard);
 
-    m_dateEdit->setPlaceholderText("YYYY-MM-DD");
-    m_departmentEdit->setPlaceholderText("Nursing / Dietary / EVS");
+    m_dateEdit->setText(QDate::currentDate().toString("yyyy-MM-dd"));
     m_shiftEdit->setPlaceholderText("Day / Evening / Night");
-    m_roleEdit->setPlaceholderText("CNA / RN / LPN / Cook");
-    m_employeeEdit->setPlaceholderText("Employee name, Agency Pool, or Open Position");
-    m_statusEdit->setPlaceholderText("Scheduled / Filled / Open");
-    m_statusEdit->setText("Scheduled");
+    m_censusEdit->setPlaceholderText("Current resident census");
+    m_rnEdit->setPlaceholderText("RN count");
+    m_lpnEdit->setPlaceholderText("LPN count");
+    m_cnaEdit->setPlaceholderText("CNA count");
+    m_agencyEdit->setPlaceholderText("Agency count");
+    m_notesEdit->setPlaceholderText("Optional note");
 
-    formLayout->addRow("Work date:", m_dateEdit);
-    formLayout->addRow("Department:", m_departmentEdit);
+    formLayout->addRow("Entry date:", m_dateEdit);
     formLayout->addRow("Shift:", m_shiftEdit);
-    formLayout->addRow("Role:", m_roleEdit);
-    formLayout->addRow("Employee:", m_employeeEdit);
-    formLayout->addRow("Status:", m_statusEdit);
+    formLayout->addRow("Resident census:", m_censusEdit);
+    formLayout->addRow("RN count:", m_rnEdit);
+    formLayout->addRow("LPN count:", m_lpnEdit);
+    formLayout->addRow("CNA count:", m_cnaEdit);
+    formLayout->addRow("Agency count:", m_agencyEdit);
+    formLayout->addRow("Notes:", m_notesEdit);
 
     auto* buttonRow = new QHBoxLayout();
-    m_addButton = new QPushButton("Add Assignment", formCard);
-    m_markOpenButton = new QPushButton("Mark Selected Open", formCard);
-    m_markFilledButton = new QPushButton("Mark Selected Filled", formCard);
+    m_addButton = new QPushButton("Save Staffing Numbers", formCard);
     m_refreshButton = new QPushButton("Refresh", formCard);
     buttonRow->addWidget(m_addButton);
-    buttonRow->addWidget(m_markOpenButton);
-    buttonRow->addWidget(m_markFilledButton);
     buttonRow->addWidget(m_refreshButton);
     buttonRow->addStretch();
     formLayout->addRow(buttonRow);
     root->addWidget(formCard);
 
-    auto* assignmentsCard = new QGroupBox("Assignments and coverage status", this);
-    auto* assignmentsLayout = new QVBoxLayout(assignmentsCard);
-    m_assignmentsTable = new QTableWidget(assignmentsCard);
-    m_assignmentsTable->setColumnCount(7);
-    m_assignmentsTable->setHorizontalHeaderLabels(QStringList{"id", "work_date", "department", "shift_name", "role_name", "employee_name", "status"});
-    m_assignmentsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_assignmentsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_assignmentsTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_assignmentsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_assignmentsTable->setColumnHidden(0, true);
-    assignmentsLayout->addWidget(m_assignmentsTable);
-    root->addWidget(assignmentsCard, 1);
+    auto* entriesCard = new QGroupBox("Saved staffing entries", this);
+    auto* entriesLayout = new QVBoxLayout(entriesCard);
+    m_entriesTable = new QTableWidget(entriesCard);
+    m_entriesTable->setColumnCount(11);
+    m_entriesTable->setHorizontalHeaderLabels(QStringList{"entry_date", "shift_name", "resident_census", "rn_count", "lpn_count", "cna_count", "agency_count", "licensed_total", "nursing_total", "total_staff", "notes"});
+    m_entriesTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_entriesTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    entriesLayout->addWidget(m_entriesTable);
+    root->addWidget(entriesCard, 1);
 
-    auto* rowTwo = new QHBoxLayout();
-    rowTwo->setSpacing(14);
+    auto* bottomRow = new QHBoxLayout();
+    bottomRow->setSpacing(14);
 
-    auto* shiftTotalsCard = new QGroupBox("Shift-by-shift staffing totals", this);
-    auto* shiftTotalsLayout = new QVBoxLayout(shiftTotalsCard);
-    auto* shiftHint = new QLabel("Totals are grouped by department, shift, and role so you can see what is covered, still open, and estimated in hours.", shiftTotalsCard);
-    shiftHint->setWordWrap(true);
-    shiftHint->setStyleSheet("color: #5b6472;");
-    m_shiftTotalsTable = new QTableWidget(shiftTotalsCard);
-    m_shiftTotalsTable->setColumnCount(7);
-    m_shiftTotalsTable->setHorizontalHeaderLabels(QStringList{"department", "shift_name", "role_name", "total", "filled", "open", "scheduled"});
-    m_shiftTotalsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_shiftTotalsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    shiftTotalsLayout->addWidget(shiftHint);
-    shiftTotalsLayout->addWidget(m_shiftTotalsTable);
-    rowTwo->addWidget(shiftTotalsCard, 3);
+    auto* ratioCard = new QGroupBox("Ratio view by entry", this);
+    auto* ratioLayout = new QVBoxLayout(ratioCard);
+    auto* ratioHint = new QLabel("Quick ratio view using each saved staffing entry so you can compare CNA, licensed, and total-staff coverage against the resident census.", ratioCard);
+    ratioHint->setWordWrap(true);
+    ratioHint->setStyleSheet("color: #5b6472;");
+    m_ratioTable = new QTableWidget(ratioCard);
+    m_ratioTable->setColumnCount(6);
+    m_ratioTable->setHorizontalHeaderLabels(QStringList{"entry_date", "shift_name", "residents_per_cna", "residents_per_licensed", "residents_per_total_staff", "agency_share"});
+    m_ratioTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_ratioTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ratioLayout->addWidget(ratioHint);
+    ratioLayout->addWidget(m_ratioTable);
+    bottomRow->addWidget(ratioCard, 3);
 
-    auto* mixCard = new QGroupBox("Coverage mix", this);
-    auto* mixLayout = new QVBoxLayout(mixCard);
-    auto* mixHint = new QLabel("Quick split of employee, agency, and open coverage by department.", mixCard);
-    mixHint->setWordWrap(true);
-    mixHint->setStyleSheet("color: #5b6472;");
-    m_mixTable = new QTableWidget(mixCard);
-    m_mixTable->setColumnCount(4);
-    m_mixTable->setHorizontalHeaderLabels(QStringList{"department", "employee", "agency", "open"});
-    m_mixTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_mixTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    mixLayout->addWidget(mixHint);
-    mixLayout->addWidget(m_mixTable);
-    rowTwo->addWidget(mixCard, 2);
-
-    root->addLayout(rowTwo, 1);
-
-    auto* rowThree = new QHBoxLayout();
-    rowThree->setSpacing(14);
-
-    auto* minimumCard = new QGroupBox("Minimum staffing summary", this);
+    auto* minimumCard = new QGroupBox("Minimum staffing comparison", this);
     auto* minimumLayout = new QVBoxLayout(minimumCard);
-    auto* minimumHint = new QLabel("This compares currently covered assignments to configured minimum staffing targets and shows the remaining gap.", minimumCard);
+    auto* minimumHint = new QLabel("This compares the latest entered total nursing count for each shift to the configured minimum nursing requirement for that shift.", minimumCard);
     minimumHint->setWordWrap(true);
     minimumHint->setStyleSheet("color: #5b6472;");
-    m_minimumsTable = new QTableWidget(minimumCard);
-    m_minimumsTable->setColumnCount(6);
-    m_minimumsTable->setHorizontalHeaderLabels(QStringList{"department", "shift_name", "role_name", "minimum_required", "scheduled_count", "gap_count"});
-    m_minimumsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_minimumsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_minimumTable = new QTableWidget(minimumCard);
+    m_minimumTable->setColumnCount(5);
+    m_minimumTable->setHorizontalHeaderLabels(QStringList{"shift_name", "required_nursing", "entered_nursing", "gap_count", "status"});
+    m_minimumTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    m_minimumTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     minimumLayout->addWidget(minimumHint);
-    minimumLayout->addWidget(m_minimumsTable);
-    rowThree->addWidget(minimumCard, 3);
+    minimumLayout->addWidget(m_minimumTable);
+    bottomRow->addWidget(minimumCard, 2);
 
-    auto* hprdCard = new QGroupBox("Nursing HPRD view", this);
-    auto* hprdLayout = new QVBoxLayout(hprdCard);
-    auto* hprdHint = new QLabel("Estimated nursing hours per resident day based on currently covered nursing assignments at 8 hours each.", hprdCard);
-    hprdHint->setWordWrap(true);
-    hprdHint->setStyleSheet("color: #5b6472;");
-    m_hprdTable = new QTableWidget(hprdCard);
-    m_hprdTable->setColumnCount(4);
-    m_hprdTable->setHorizontalHeaderLabels(QStringList{"role_name", "covered_count", "estimated_hours", "hprd"});
-    m_hprdTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_hprdTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    hprdLayout->addWidget(hprdHint);
-    hprdLayout->addWidget(m_hprdTable);
-    rowThree->addWidget(hprdCard, 2);
+    root->addLayout(bottomRow, 1);
 
-    root->addLayout(rowThree, 1);
-
-    auto* hoursCard = new QGroupBox("Estimated staffing hours by shift", this);
-    auto* hoursLayout = new QVBoxLayout(hoursCard);
-    auto* hoursHint = new QLabel("Estimated hours assume an 8-hour assignment. Use this to see where covered hours and open hours are concentrated.", hoursCard);
-    hoursHint->setWordWrap(true);
-    hoursHint->setStyleSheet("color: #5b6472;");
-    m_hoursTable = new QTableWidget(hoursCard);
-    m_hoursTable->setColumnCount(6);
-    m_hoursTable->setHorizontalHeaderLabels(QStringList{"department", "shift_name", "role_name", "covered_count", "estimated_hours", "open_hours"});
-    m_hoursTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    m_hoursTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    hoursLayout->addWidget(hoursHint);
-    hoursLayout->addWidget(m_hoursTable);
-    root->addWidget(hoursCard, 1);
-
-    connect(m_addButton, &QPushButton::clicked, this, &StaffingPage::handleAddAssignment);
-    connect(m_markOpenButton, &QPushButton::clicked, this, &StaffingPage::handleMarkSelectedOpen);
-    connect(m_markFilledButton, &QPushButton::clicked, this, &StaffingPage::handleMarkSelectedFilled);
+    connect(m_addButton, &QPushButton::clicked, this, &StaffingPage::handleAddNumbers);
     connect(m_refreshButton, &QPushButton::clicked, this, &StaffingPage::refreshTables);
 
     refreshTables();
 }
 
-void StaffingPage::refreshTables() {
-    const QStringList assignmentCols{"id", "work_date", "department", "shift_name", "role_name", "employee_name", "status"};
-    const auto rows = m_db->fetchTable("staffing_assignments", assignmentCols);
+void StaffingPage::handleAddNumbers() {
+    const bool ok = m_db->addStaffingNumbersEntry(
+        m_dateEdit->text().trimmed(),
+        m_shiftEdit->text().trimmed(),
+        m_censusEdit->text().trimmed().toInt(),
+        m_rnEdit->text().trimmed().toInt(),
+        m_lpnEdit->text().trimmed().toInt(),
+        m_cnaEdit->text().trimmed().toInt(),
+        m_agencyEdit->text().trimmed().toInt(),
+        m_notesEdit->text().trimmed());
 
-    m_assignmentsTable->setRowCount(0);
-    QMap<QString, QMap<QString, int>> groupedCounts;
-    QMap<QString, QMap<QString, int>> departmentMix;
-    int openCount = 0;
-    int filledCount = 0;
-    int agencyCount = 0;
+    if (ok) {
+        m_shiftEdit->clear();
+        m_censusEdit->clear();
+        m_rnEdit->clear();
+        m_lpnEdit->clear();
+        m_cnaEdit->clear();
+        m_agencyEdit->clear();
+        m_notesEdit->clear();
+        refreshTables();
+    }
+}
+
+void StaffingPage::refreshTables() {
+    const QStringList cols{"entry_date", "shift_name", "resident_census", "rn_count", "lpn_count", "cna_count", "agency_count", "notes"};
+    const auto rows = m_db->fetchTable("staffing_number_entries", cols);
+
+    m_entriesTable->setRowCount(0);
+    m_ratioTable->setRowCount(0);
+
+    int latestCensus = 0;
+    int latestRn = 0;
+    int latestLpn = 0;
+    int latestCna = 0;
+    int latestAgency = 0;
+    QString latestShift;
+
+    QMap<QString, QMap<QString, int>> latestByShift;
 
     for (const auto& row : rows) {
-        const int r = m_assignmentsTable->rowCount();
-        m_assignmentsTable->insertRow(r);
-        for (int c = 0; c < assignmentCols.size(); ++c) {
-            m_assignmentsTable->setItem(r, c, new QTableWidgetItem(row.value(assignmentCols[c])));
-        }
+        const int census = toInt(row, "resident_census");
+        const int rn = toInt(row, "rn_count");
+        const int lpn = toInt(row, "lpn_count");
+        const int cna = toInt(row, "cna_count");
+        const int agency = toInt(row, "agency_count");
+        const int licensed = rn + lpn;
+        const int nursing = licensed + cna;
+        const int totalStaff = nursing + agency;
 
-        const QString department = norm(row.value("department"), "Unknown");
-        const QString shift = norm(row.value("shift_name"), "Unknown");
-        const QString role = norm(row.value("role_name"), "Unknown");
-        const QString employee = norm(row.value("employee_name"), "Open Position");
-        const QString status = norm(row.value("status"), "Scheduled");
-        const QString groupKey = department + "|" + shift + "|" + role;
+        int r = m_entriesTable->rowCount();
+        m_entriesTable->insertRow(r);
+        const QStringList entryVals{
+            row.value("entry_date"), row.value("shift_name"), QString::number(census), QString::number(rn),
+            QString::number(lpn), QString::number(cna), QString::number(agency), QString::number(licensed),
+            QString::number(nursing), QString::number(totalStaff), row.value("notes")
+        };
+        for (int c = 0; c < entryVals.size(); ++c) m_entriesTable->setItem(r, c, new QTableWidgetItem(entryVals[c]));
 
-        groupedCounts[groupKey]["total"] += 1;
-        if (status.compare("Filled", Qt::CaseInsensitive) == 0) {
-            groupedCounts[groupKey]["filled"] += 1;
-            filledCount += 1;
-        }
-        if (status.compare("Open", Qt::CaseInsensitive) == 0) {
-            groupedCounts[groupKey]["open"] += 1;
-            openCount += 1;
-        }
-        if (status.compare("Scheduled", Qt::CaseInsensitive) == 0) {
-            groupedCounts[groupKey]["scheduled"] += 1;
-        }
+        r = m_ratioTable->rowCount();
+        m_ratioTable->insertRow(r);
+        const QString agencyShare = totalStaff > 0 ? QString("%1%").arg(QString::number((agency * 100.0) / totalStaff, 'f', 1)) : "0.0%";
+        const QStringList ratioVals{
+            row.value("entry_date"),
+            row.value("shift_name"),
+            ratioText(census, cna),
+            ratioText(census, licensed),
+            ratioText(census, totalStaff),
+            agencyShare
+        };
+        for (int c = 0; c < ratioVals.size(); ++c) m_ratioTable->setItem(r, c, new QTableWidgetItem(ratioVals[c]));
 
-        const bool isAgency = employee.contains("agency", Qt::CaseInsensitive) || employee.contains("pool", Qt::CaseInsensitive);
-        const bool isOpen = status.compare("Open", Qt::CaseInsensitive) == 0 || employee.contains("open", Qt::CaseInsensitive);
-        if (isAgency) {
-            departmentMix[department]["agency"] += 1;
-            agencyCount += 1;
-        } else if (isOpen) {
-            departmentMix[department]["open"] += 1;
-        } else {
-            departmentMix[department]["employee"] += 1;
-        }
+        latestCensus = census;
+        latestRn = rn;
+        latestLpn = lpn;
+        latestCna = cna;
+        latestAgency = agency;
+        latestShift = row.value("shift_name");
+
+        latestByShift[row.value("shift_name")]["nursing"] = nursing;
     }
 
-    m_shiftTotalsTable->setRowCount(0);
-    const auto groupKeys = groupedCounts.keys();
-    for (const QString& key : groupKeys) {
-        const QStringList parts = key.split('|');
-        if (parts.size() != 3) continue;
-        const int r = m_shiftTotalsTable->rowCount();
-        m_shiftTotalsTable->insertRow(r);
-        m_shiftTotalsTable->setItem(r, 0, new QTableWidgetItem(parts[0]));
-        m_shiftTotalsTable->setItem(r, 1, new QTableWidgetItem(parts[1]));
-        m_shiftTotalsTable->setItem(r, 2, new QTableWidgetItem(parts[2]));
-        m_shiftTotalsTable->setItem(r, 3, new QTableWidgetItem(QString::number(groupedCounts[key].value("total"))));
-        m_shiftTotalsTable->setItem(r, 4, new QTableWidgetItem(QString::number(groupedCounts[key].value("filled"))));
-        m_shiftTotalsTable->setItem(r, 5, new QTableWidgetItem(QString::number(groupedCounts[key].value("open"))));
-        m_shiftTotalsTable->setItem(r, 6, new QTableWidgetItem(QString::number(groupedCounts[key].value("scheduled"))));
-    }
+    const int latestLicensed = latestRn + latestLpn;
+    const int latestNursing = latestLicensed + latestCna;
+    const int latestTotal = latestNursing + latestAgency;
 
-    m_mixTable->setRowCount(0);
-    const auto departments = departmentMix.keys();
-    for (const QString& department : departments) {
-        const int r = m_mixTable->rowCount();
-        m_mixTable->insertRow(r);
-        m_mixTable->setItem(r, 0, new QTableWidgetItem(department));
-        m_mixTable->setItem(r, 1, new QTableWidgetItem(QString::number(departmentMix[department].value("employee"))));
-        m_mixTable->setItem(r, 2, new QTableWidgetItem(QString::number(departmentMix[department].value("agency"))));
-        m_mixTable->setItem(r, 3, new QTableWidgetItem(QString::number(departmentMix[department].value("open"))));
-    }
+    m_latestCensusLabel->setText(QString::number(latestCensus));
+    m_totalNursingLabel->setText(QString::number(latestNursing));
+    m_cnaRatioLabel->setText(ratioText(latestCensus, latestCna));
+    m_licensedRatioLabel->setText(ratioText(latestCensus, latestLicensed));
+    m_totalRatioLabel->setText(ratioText(latestCensus, latestTotal));
 
-    m_minimumsTable->setRowCount(0);
-    const auto minimumRows = m_db->staffingMinimumSummary();
-    for (const auto& row : minimumRows) {
-        const int r = m_minimumsTable->rowCount();
-        m_minimumsTable->insertRow(r);
-        int c = 0;
-        for (const auto& key : QStringList{"department", "shift_name", "role_name", "minimum_required", "scheduled_count", "gap_count"}) {
-            auto* item = new QTableWidgetItem(row.value(key));
-            if (key == "gap_count" && row.value(key).toInt() > 0) {
-                item->setBackground(QColor("#fee2e2"));
-            }
-            m_minimumsTable->setItem(r, c++, item);
-        }
-    }
-
-    m_hprdTable->setRowCount(0);
-    const auto hprdRows = m_db->nursingHprdSummary();
-    for (const auto& row : hprdRows) {
-        const int r = m_hprdTable->rowCount();
-        m_hprdTable->insertRow(r);
-        int c = 0;
-        for (const auto& key : QStringList{"role_name", "covered_count", "estimated_hours", "hprd"}) {
-            m_hprdTable->setItem(r, c++, new QTableWidgetItem(row.value(key)));
-        }
-    }
-
-    m_hoursTable->setRowCount(0);
-    const auto hoursRows = m_db->staffingHoursSummary();
-    for (const auto& row : hoursRows) {
-        const int r = m_hoursTable->rowCount();
-        m_hoursTable->insertRow(r);
-        int c = 0;
-        for (const auto& key : QStringList{"department", "shift_name", "role_name", "covered_count", "estimated_hours", "open_hours"}) {
-            auto* item = new QTableWidgetItem(row.value(key));
-            if (key == "open_hours" && row.value(key).toInt() > 0) {
-                item->setBackground(QColor("#fff7ed"));
-            }
-            m_hoursTable->setItem(r, c++, item);
-        }
-    }
-
-    const int minimumGaps = m_db->countMinimumStaffingGaps();
-    const int minimumGapHours = m_db->estimatedMinimumHoursGap();
-    const double nursingHprd = m_db->estimatedNursingHprd();
     m_snapshotLabel->setText(
-        QString("%1 open assignment(s) · %2 minimum staffing gap group(s) · %3 uncovered minimum hours · Nursing HPRD %4")
-            .arg(openCount)
-            .arg(minimumGaps)
-            .arg(minimumGapHours)
-            .arg(QString::number(nursingHprd, 'f', 2)));
-    m_openCountLabel->setText(QString::number(openCount));
-    m_gapCountLabel->setText(QString::number(minimumGaps));
-    m_filledCountLabel->setText(QString::number(filledCount));
-    m_agencyCountLabel->setText(QString::number(agencyCount));
-    m_hprdLabel->setText(QString::number(nursingHprd, 'f', 2));
-}
+        QString("Latest staffing entry: %1 shift · %2 census · %3 total nursing · %4 agency. Enter your house numbers here and use the ratios below for quick staffing review.")
+            .arg(latestShift.isEmpty() ? "No" : latestShift)
+            .arg(latestCensus)
+            .arg(latestNursing)
+            .arg(latestAgency));
 
-void StaffingPage::handleAddAssignment() {
-    if (m_departmentEdit->text().trimmed().isEmpty() || m_shiftEdit->text().trimmed().isEmpty() || m_roleEdit->text().trimmed().isEmpty()) {
-        QMessageBox::information(this, "Add staffing assignment", "Enter at least department, shift, and role.");
-        return;
+    // minimum comparison uses configured nursing minimums aggregated by shift
+    const auto minimumRows = m_db->fetchTable("staffing_minimums", {"shift_name", "department", "minimum_required"});
+    QMap<QString, int> requiredByShift;
+    for (const auto& row : minimumRows) {
+        if (row.value("department").compare("Nursing", Qt::CaseInsensitive) == 0) {
+            requiredByShift[row.value("shift_name")] += row.value("minimum_required").toInt();
+        }
     }
 
-    const QString employee = m_employeeEdit->text().trimmed().isEmpty() ? QString("Open Position") : m_employeeEdit->text().trimmed();
-    const QString status = m_statusEdit->text().trimmed().isEmpty() ? QString("Scheduled") : m_statusEdit->text().trimmed();
-
-    if (!m_db->addStaffingAssignment(m_dateEdit->text().trimmed(), m_departmentEdit->text().trimmed(), m_shiftEdit->text().trimmed(),
-                                     m_roleEdit->text().trimmed(), employee, status)) {
-        QMessageBox::warning(this, "Add staffing assignment", "Unable to save the assignment.");
-        return;
+    m_minimumTable->setRowCount(0);
+    for (auto it = requiredByShift.constBegin(); it != requiredByShift.constEnd(); ++it) {
+        const QString shift = it.key();
+        const int required = it.value();
+        const int entered = latestByShift.value(shift).value("nursing");
+        const int gap = qMax(0, required - entered);
+        const QString status = gap > 0 ? "Below minimum" : "At / above minimum";
+        const int r = m_minimumTable->rowCount();
+        m_minimumTable->insertRow(r);
+        const QStringList vals{shift, QString::number(required), QString::number(entered), QString::number(gap), status};
+        for (int c = 0; c < vals.size(); ++c) m_minimumTable->setItem(r, c, new QTableWidgetItem(vals[c]));
     }
-
-    m_dateEdit->clear();
-    m_departmentEdit->clear();
-    m_shiftEdit->clear();
-    m_roleEdit->clear();
-    m_employeeEdit->clear();
-    m_statusEdit->setText("Scheduled");
-    refreshTables();
-}
-
-void StaffingPage::handleMarkSelectedOpen() {
-    const int row = m_assignmentsTable->currentRow();
-    if (row < 0) {
-        QMessageBox::information(this, "Update staffing", "Select an assignment row first.");
-        return;
-    }
-    const int id = m_assignmentsTable->item(row, 0)->text().toInt();
-    if (!m_db->updateStaffingAssignmentStatus(id, "Open")) {
-        QMessageBox::warning(this, "Update staffing", "Unable to mark the selected assignment open.");
-        return;
-    }
-    refreshTables();
-}
-
-void StaffingPage::handleMarkSelectedFilled() {
-    const int row = m_assignmentsTable->currentRow();
-    if (row < 0) {
-        QMessageBox::information(this, "Update staffing", "Select an assignment row first.");
-        return;
-    }
-    const int id = m_assignmentsTable->item(row, 0)->text().toInt();
-    if (!m_db->updateStaffingAssignmentStatus(id, "Filled")) {
-        QMessageBox::warning(this, "Update staffing", "Unable to mark the selected assignment filled.");
-        return;
-    }
-    refreshTables();
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 55.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 54.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -48,7 +48,9 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/TherapyRehabPage.h
     src/ui/pages/TherapyRehabPage.cpp
     src/ui/pages/SocialServicesPage.h
+    src/ui/pages/HousekeepingLaundryPage.h
     src/ui/pages/SocialServicesPage.cpp
+    src/ui/pages/HousekeepingLaundryPage.cpp
     src/ui/pages/DepartmentDashboardsPage.h
     src/ui/pages/DepartmentDashboardsPage.cpp
     src/ui/pages/BackupRestorePage.h
@@ -113,6 +115,12 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/SurveyCommandCenterPage.cpp
     src/ui/pages/OutbreakCommandPage.h
     src/ui/pages/OutbreakCommandPage.cpp
+    src/ui/pages/TrainingPage.h
+    src/ui/pages/TrainingPage.cpp
+    src/ui/pages/RevenueCyclePage.h
+    src/ui/pages/RevenueCyclePage.cpp
+    src/ui/pages/ContractManagementPage.h
+    src/ui/pages/ContractManagementPage.cpp
     resources/resources.qrc
 )
 

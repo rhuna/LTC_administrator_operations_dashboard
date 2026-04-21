@@ -5,7 +5,6 @@
 #include "../ui/pages/BedBoardPage.h"
 #include "../ui/pages/BudgetPage.h"
 #include "../ui/pages/CompliancePage.h"
-#include "../ui/pages/CredentialingPage.h"
 #include "../ui/pages/DashboardPage.h"
 #include "../ui/pages/DietaryPage.h"
 #include "../ui/pages/EnvironmentalRoundsPage.h"
@@ -19,7 +18,6 @@
 #include "../ui/pages/QualityMeasuresPage.h"
 #include "../ui/pages/ReportsPage.h"
 #include "../ui/pages/ResidentsPage.h"
-#include "../ui/pages/RiskManagementPage.h"
 #include "../ui/pages/StaffingPage.h"
 #include "../ui/pages/SurveyReadinessPage.h"
 #include "../ui/pages/TasksPage.h"
@@ -30,7 +28,6 @@
 #include "../ui/pages/MdsTripleCheckPage.h"
 #include "../ui/pages/SurveyCommandCenterPage.h"
 #include "../ui/pages/OutbreakCommandPage.h"
-#include "../ui/pages/SearchFiltersPage.h"
 #include "../ui/pages/DashboardCustomizePage.h"
 #include "../ui/pages/CalendarPage.h"
 #include "../ui/pages/MetricsChartsPage.h"
@@ -39,7 +36,6 @@
 #include "../ui/pages/ExternalSyncReadinessPage.h"
 #include "../ui/pages/ReleaseCandidatePage.h"
 #include "../ui/pages/SopCenterPage.h"
-#include "../ui/pages/ShiftHandoffPage.h"
 #include "../ui/pages/CareConferencePage.h"
 #include "../ui/pages/TherapyRehabPage.h"
 #include "../ui/pages/SocialServicesPage.h"
@@ -47,6 +43,8 @@
 #include "../ui/pages/BackupRestorePage.h"
 #include "../ui/pages/AuditLogPage.h"
 #include "../ui/pages/FormsValidationPage.h"
+#include "../ui/pages/RevenueCyclePage.h"
+#include "../ui/pages/ContractManagementPage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -59,7 +57,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v55 Social Services / Discharge Planning");
+    setWindowTitle("LTC Administrator Operations Dashboard v59 Simplified Operations Layout");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -83,7 +81,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v55 keeps the single-facility line intact and adds a social services / discharge planning workspace so leaders can track family meetings, psychosocial follow-up, community resource coordination, and discharge-planning communication in one place.",
+        "v59 removes the extra search, shift handoff, and credentialing tabs, keeps staffing focused on numbers and ratios, folds grievances into Social Services, and expands Environmental Services to cover maintenance, laundry, and housekeeping from one page.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -104,7 +102,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
 
     auto* navLabel = new QLabel("Navigation", sidebar);
     navLabel->setObjectName("sidebarHeading");
-    auto* navHint = new QLabel(QString("%1 profile · streamlined navigation · pages scroll automatically on smaller screens.").arg(roleName), sidebar);
+    auto* navHint = new QLabel(QString("%1 profile · simplified tab set · pages scroll automatically on smaller screens.").arg(roleName), sidebar);
     navHint->setObjectName("sidebarHint");
     navHint->setWordWrap(true);
 
@@ -114,9 +112,8 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     nav->setSpacing(4);
 
     const QList<QPair<QString,QWidget*>> pages = {
-{"Dashboard", new DashboardPage(db)},
+        {"Dashboard", new DashboardPage(db)},
         {"Dashboard Setup", new DashboardCustomizePage(db)},
-        {"Search", new SearchFiltersPage(db)},
         {"Alerts", new AlertsPage(db)},
         {"Calendar", new CalendarPage(db)},
         {"Metrics & Trends", new MetricsChartsPage(db)},
@@ -125,10 +122,12 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"External Sync", new ExternalSyncReadinessPage(db)},
         {"Release Candidate", new ReleaseCandidatePage(db)},
         {"SOP / Quick Start", new SopCenterPage(db)},
-        {"Shift Handoff", new ShiftHandoffPage(db)},
         {"Care Conferences", new CareConferencePage(db)},
         {"Therapy / Rehab", new TherapyRehabPage(db)},
         {"Social Services", new SocialServicesPage(db)},
+        {"Environmental Services", new EnvironmentalRoundsPage(db)},
+        {"Revenue Cycle", new RevenueCyclePage(db)},
+        {"Contracts", new ContractManagementPage(db)},
         {"Department Views", new DepartmentDashboardsPage(db)},
         {"Residents", new ResidentsPage(db)},
         {"Admissions", new AdmissionsPage(db)},
@@ -142,11 +141,8 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"Survey Ready", new SurveyReadinessPage(db)},
         {"Quality", new QualityMeasuresPage(db)},
         {"Managed Care", new ManagedCarePage(db)},
-        {"Credentialing", new CredentialingPage(db)},
         {"Preparedness", new PreparednessPage(db)},
         {"Infection Control", new InfectionControlPage(db)},
-        {"Grievances", new RiskManagementPage(db)},
-        {"Environmental Rounds", new EnvironmentalRoundsPage(db)},
         {"Bed Board", new BedBoardPage(db)},
         {"Transportation", new TransportationPage(db)},
         {"Pharmacy", new PharmacyPage(db)},
@@ -167,13 +163,13 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     if (roleName == "Administrator") {
         for (const auto& pair : pages) allowed << pair.first;
     } else if (roleName == "Director of Nursing") {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Care Conferences","Therapy / Rehab","Environmental Services","Department Views","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Preparedness","Infection Control","Social Services","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else if (roleName == "Admissions Director") {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Care Conferences","Therapy / Rehab","Social Services","Environmental Services","Department Views","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else if (roleName == "Staffing Coordinator") {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Environmental Services","Department Views","Staffing","Tasks","Document Center","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Care Conferences","Therapy / Rehab","Social Services","Environmental Services","Department Views","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     }
 
     sidebarLayout->addWidget(navLabel);

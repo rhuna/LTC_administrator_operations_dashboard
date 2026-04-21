@@ -15,7 +15,7 @@
 #include <QTableView>
 #include <QVBoxLayout>
 
-#include "data/DatabaseManager.h"
+#include "../../data/DatabaseManager.h"
 
 EmergencyPreparednessPage::EmergencyPreparednessPage(DatabaseManager* db, QWidget* parent)
     : QWidget(parent),

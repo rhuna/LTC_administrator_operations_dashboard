@@ -1,3 +1,4 @@
+
 #pragma once
 #include <QWidget>
 
@@ -14,32 +15,30 @@ public:
 
 private slots:
     void refreshTables();
-    void handleAddAssignment();
-    void handleMarkSelectedOpen();
-    void handleMarkSelectedFilled();
+    void handleAddNumbers();
 
 private:
     DatabaseManager* m_db{nullptr};
     QLabel* m_snapshotLabel{nullptr};
-    QLabel* m_openCountLabel{nullptr};
-    QLabel* m_gapCountLabel{nullptr};
-    QLabel* m_filledCountLabel{nullptr};
-    QLabel* m_agencyCountLabel{nullptr};
-    QLabel* m_hprdLabel{nullptr};
+    QLabel* m_latestCensusLabel{nullptr};
+    QLabel* m_totalNursingLabel{nullptr};
+    QLabel* m_cnaRatioLabel{nullptr};
+    QLabel* m_licensedRatioLabel{nullptr};
+    QLabel* m_totalRatioLabel{nullptr};
+
     QLineEdit* m_dateEdit{nullptr};
-    QLineEdit* m_departmentEdit{nullptr};
     QLineEdit* m_shiftEdit{nullptr};
-    QLineEdit* m_roleEdit{nullptr};
-    QLineEdit* m_employeeEdit{nullptr};
-    QLineEdit* m_statusEdit{nullptr};
+    QLineEdit* m_censusEdit{nullptr};
+    QLineEdit* m_rnEdit{nullptr};
+    QLineEdit* m_lpnEdit{nullptr};
+    QLineEdit* m_cnaEdit{nullptr};
+    QLineEdit* m_agencyEdit{nullptr};
+    QLineEdit* m_notesEdit{nullptr};
+
     QPushButton* m_addButton{nullptr};
-    QPushButton* m_markOpenButton{nullptr};
-    QPushButton* m_markFilledButton{nullptr};
     QPushButton* m_refreshButton{nullptr};
-    QTableWidget* m_assignmentsTable{nullptr};
-    QTableWidget* m_shiftTotalsTable{nullptr};
-    QTableWidget* m_mixTable{nullptr};
-    QTableWidget* m_minimumsTable{nullptr};
-    QTableWidget* m_hoursTable{nullptr};
-    QTableWidget* m_hprdTable{nullptr};
+
+    QTableWidget* m_entriesTable{nullptr};
+    QTableWidget* m_ratioTable{nullptr};
+    QTableWidget* m_minimumTable{nullptr};
 };

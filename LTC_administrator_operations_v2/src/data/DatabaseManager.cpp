@@ -27,7 +27,7 @@ bool DatabaseManager::initialize() {
         return false;
     }
     QDir().mkpath(baseDir);
-    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v55_social_services.db");
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v58_staffing_numbers_ratios.db");
 
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
@@ -99,6 +99,15 @@ bool DatabaseManager::initialize() {
             "INSERT INTO social_services_items (review_date, resident_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-24', 'Lillian Brooks', 'Psychosocial', 'Adjustment-support review after recent room move', 'Social Services', 'Watch', 'Monitor mood, participation, and discharge outlook with interdisciplinary team.')"
         };
         if (!executeAll(socialSeeds)) return false;
+    }
+
+    if (tableIsEmpty("housekeeping_laundry_items")) {
+        const QStringList housekeepingSeeds = {
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Isolation Hall', 'Isolation Laundry', 'Isolation-bag pickup and wash-cycle compliance review', 'Housekeeping Lead', 'In Progress', 'Verify bagging process, wash separation, and shift handoff completion.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
+        };
+        if (!executeAll(housekeepingSeeds)) return false;
     }
 
     return true;
@@ -212,6 +221,7 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS staffing_assignments (id INTEGER PRIMARY KEY AUTOINCREMENT, work_date TEXT, department TEXT, shift_name TEXT, role_name TEXT, employee_name TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS staffing_minimums (id INTEGER PRIMARY KEY AUTOINCREMENT, department TEXT, shift_name TEXT, role_name TEXT, minimum_required INTEGER)",
         "CREATE TABLE IF NOT EXISTS staffing_changes (id INTEGER PRIMARY KEY AUTOINCREMENT, change_date TEXT, department TEXT, shift_name TEXT, change_type TEXT, position_name TEXT, employee_name TEXT, impact_level TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS staffing_number_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, entry_date TEXT, shift_name TEXT, resident_census INTEGER, rn_count INTEGER, lpn_count INTEGER, cna_count INTEGER, agency_count INTEGER, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, due_date TEXT, owner TEXT, task_name TEXT, priority TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS pips (id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT, owner TEXT, status TEXT, next_step TEXT)",
         "CREATE TABLE IF NOT EXISTS budget_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, department TEXT, variance TEXT, status TEXT)",
@@ -251,7 +261,11 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS service_registry (id INTEGER PRIMARY KEY AUTOINCREMENT, service_name TEXT, purpose TEXT, status TEXT, owner TEXT, notes TEXT, archived INTEGER DEFAULT 0)",
         "CREATE TABLE IF NOT EXISTS care_conference_items (id INTEGER PRIMARY KEY AUTOINCREMENT, conference_date TEXT, resident_name TEXT, contact_name TEXT, conference_type TEXT, owner_name TEXT, status TEXT, notes TEXT, summary_note TEXT)",
         "CREATE TABLE IF NOT EXISTS therapy_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, discipline TEXT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)",
-        "CREATE TABLE IF NOT EXISTS social_services_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, focus_area TEXT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)"
+        "CREATE TABLE IF NOT EXISTS social_services_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, focus_area TEXT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS housekeeping_laundry_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, area_name TEXT, focus_area TEXT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS revenue_cycle_items (id INTEGER PRIMARY KEY AUTOINCREMENT, resident_name TEXT, payer TEXT, item_name TEXT, ar_aging TEXT, owner TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS contracts (id INTEGER PRIMARY KEY AUTOINCREMENT, vendor_name TEXT, category TEXT, renewal_date TEXT, rate_schedule TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS training_items (id INTEGER PRIMARY KEY AUTOINCREMENT, area_name TEXT, employee TEXT, role TEXT, due_date TEXT, status TEXT, notes TEXT)"
     };
     return executeAll(ddl);
 }
@@ -265,6 +279,15 @@ bool DatabaseManager::executeAll(const QStringList& statements) const {
             return false;
         }
     }
+    if (tableIsEmpty("housekeeping_laundry_items")) {
+        const QStringList housekeepingSeeds = {
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Isolation Hall', 'Isolation Laundry', 'Isolation-bag pickup and wash-cycle compliance review', 'Housekeeping Lead', 'In Progress', 'Verify bagging process, wash separation, and shift handoff completion.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
+        };
+        if (!executeAll(housekeepingSeeds)) return false;
+    }
+
     return true;
 }
 
@@ -413,7 +436,17 @@ bool DatabaseManager::seedData() {
             "INSERT INTO staffing_changes (change_date, department, shift_name, change_type, position_name, employee_name, impact_level, status, notes) VALUES ('2026-04-20', 'Dietary', 'Evening', 'Agency Coverage', 'Cook', 'Agency Pool', 'Medium', 'Confirmed', 'Coverage confirmed for supper service')"
         })) return false;
     }
-    if (tableIsEmpty("tasks")) {
+    
+    if (tableIsEmpty("staffing_number_entries")) {
+        const QStringList staffingNumberSeeds = {
+            "INSERT INTO staffing_number_entries (entry_date, shift_name, resident_census, rn_count, lpn_count, cna_count, agency_count, notes) VALUES ('2026-04-20', 'Day', 82, 2, 4, 9, 1, 'Strong day coverage with one agency CNA.')",
+            "INSERT INTO staffing_number_entries (entry_date, shift_name, resident_census, rn_count, lpn_count, cna_count, agency_count, notes) VALUES ('2026-04-20', 'Evening', 82, 1, 3, 7, 1, 'Evening shift running lean on aides.')",
+            "INSERT INTO staffing_number_entries (entry_date, shift_name, resident_census, rn_count, lpn_count, cna_count, agency_count, notes) VALUES ('2026-04-20', 'Night', 82, 1, 2, 5, 0, 'Night shift baseline coverage.')"
+        };
+        if (!executeAll(staffingNumberSeeds)) return false;
+    }
+
+if (tableIsEmpty("tasks")) {
         if (!executeAll({
             "INSERT INTO tasks (due_date, owner, task_name, priority, status) VALUES ('2026-04-21', 'Administrator', 'Finalize IDT follow-up list', 'High', 'Open')",
             "INSERT INTO tasks (due_date, owner, task_name, priority, status) VALUES ('2026-04-22', 'Business Office', 'Resolve authorization gap', 'High', 'In Progress')"
@@ -584,6 +617,41 @@ if (tableIsEmpty("document_items")) {
         if (!executeAll(serviceRows)) return false;
     }
 
+    if (tableIsEmpty("training_items")) {
+        if (!executeAll({
+            "INSERT INTO training_items (area_name, employee, role, due_date, status, notes) VALUES ('Abuse Prevention In-Service', 'Taylor Brooks', 'LPN', '2026-04-25', 'Due Soon', 'Annual mandatory in-service — confirm sign-in sheet and post-test completion.')",
+            "INSERT INTO training_items (area_name, employee, role, due_date, status, notes) VALUES ('Infection Control Competency', 'Morgan Lee', 'CNA', '2026-04-23', 'Overdue', 'PPE donning/doffing return demonstration still outstanding.')",
+            "INSERT INTO training_items (area_name, employee, role, due_date, status, notes) VALUES ('New Employee Orientation', 'Chris Stone', 'CNA', '2026-04-28', 'In Progress', 'Days 1-3 complete; medication safety and elopement modules remain.')",
+            "INSERT INTO training_items (area_name, employee, role, due_date, status, notes) VALUES ('Dementia Care CEU', 'Pat Morgan', 'RN', '2026-05-01', 'Scheduled', 'Online module assigned; completion required before May survey window.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("revenue_cycle_items")) {
+        if (!executeAll({
+            "INSERT INTO revenue_cycle_items (resident_name, payer, item_name, ar_aging, owner, status) VALUES ('James Hill', 'PrimeCare', 'Auth extension for continued skilled stay', '0-30', 'Business Office', 'Pending Auth')",
+            "INSERT INTO revenue_cycle_items (resident_name, payer, item_name, ar_aging, owner, status) VALUES ('Evelyn Cross', 'SecureHealth MA', 'Denial appeal — level-of-care documentation', '31-60', 'Business Office', 'Appeal Filed')",
+            "INSERT INTO revenue_cycle_items (resident_name, payer, item_name, ar_aging, owner, status) VALUES ('Martha Lane', 'Medicare A', 'Triple-check billing hold pending MDS lock', '0-30', 'MDS Coordinator', 'At Risk')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("contracts")) {
+        if (!executeAll({
+            "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('Sunrise Staffing Agency', 'Agency Staffing', '2026-09-30', 'CNA $32/hr, LPN $48/hr, RN $62/hr', 'Administrator', 'Active', 'Notice period 60 days; rate escalation clause capped at 4% annually.')",
+            "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('Omni Pharmacy Services', 'Pharmacy', '2026-12-31', 'Flat monthly fee plus dispensing; controlled substance courier surcharge', 'DON', 'Active', 'Review prior-auth process and emergency supply SLA before renewal.')",
+            "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('Allied Therapy Group', 'Therapy', '2026-06-30', 'Per-discipline per-diem plus travel offset', 'Administrator', 'Up for Renewal', 'Negotiate managed-care auth support and productivity minimum before signing.')",
+            "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('ClearPath Dietary Consulting', 'Dietary', '2026-08-15', 'Monthly retainer plus per-resident IDT hours', 'Dietary Manager', 'Watch', 'Consultant coverage gap during summer; confirm backup coverage clause.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("housekeeping_laundry_items")) {
+        const QStringList housekeepingSeeds = {
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Isolation Hall', 'Isolation Laundry', 'Isolation-bag pickup and wash-cycle compliance review', 'Housekeeping Lead', 'In Progress', 'Verify bagging process, wash separation, and shift handoff completion.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
+        };
+        if (!executeAll(housekeepingSeeds)) return false;
+    }
+
     return true;
 }
 
@@ -608,12 +676,13 @@ bool DatabaseManager::authenticateUser(const QString& username, const QString& p
     if (fullName) *fullName = q.value(0).toString();
     if (role) *role = q.value(1).toString();
 
-    if (tableIsEmpty("survey_command_items")) {
-        if (!executeAll({
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Dining', 'Mock survey meal-service observation', 'Tray-line audit, observation notes, corrective-action log', 'Administrator', 'High', '2026-04-23', 'Open', 'Need current meal observation packet and leadership rounding notes before mock survey.')",
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Infection Prevention', 'Isolation cart readiness evidence binder', 'Cart checklist, PPE audit, line-list summary', 'Infection Preventionist', 'High', '2026-04-22', 'In Progress', 'Complete final PPE spot-checks and add current line-list to binder.')",
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Grievances', 'Plan-of-correction follow-up verification', 'Resident council minutes, grievance resolutions, service-recovery logs', 'Social Services', 'Medium', '2026-04-25', 'Watch', 'Need final signoff that grievance trend review was discussed in QAPI.')"
-        })) return false;
+    if (tableIsEmpty("housekeeping_laundry_items")) {
+        const QStringList housekeepingSeeds = {
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Isolation Hall', 'Isolation Laundry', 'Isolation-bag pickup and wash-cycle compliance review', 'Housekeeping Lead', 'In Progress', 'Verify bagging process, wash separation, and shift handoff completion.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
+        };
+        if (!executeAll(housekeepingSeeds)) return false;
     }
 
     return true;
@@ -687,6 +756,15 @@ bool DatabaseManager::admitResident(const QString& residentName, const QString& 
         }
     }
     logAuditEvent("Admissions", "Resident admitted", residentName, "System", QString("Admitted to room %1 with payer %2.").arg(room, payer));
+    if (tableIsEmpty("housekeeping_laundry_items")) {
+        const QStringList housekeepingSeeds = {
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Isolation Hall', 'Isolation Laundry', 'Isolation-bag pickup and wash-cycle compliance review', 'Housekeeping Lead', 'In Progress', 'Verify bagging process, wash separation, and shift handoff completion.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
+        };
+        if (!executeAll(housekeepingSeeds)) return false;
+    }
+
     return true;
 }
 
@@ -699,15 +777,6 @@ bool DatabaseManager::dischargeResident(int residentId, const QString& residentN
         addRecord("admissions", {{"resident_name", residentName}, {"referral_source", "Internal discharge"}, {"planned_date", QDate::currentDate().toString("yyyy-MM-dd")}, {"payer", ""}, {"diagnosis_summary", ""}, {"assessment_type", "Discharge"}, {"ard_date", QDate::currentDate().toString("yyyy-MM-dd")}, {"room_target", ""}, {"status", "Discharged"}, {"notes", "Generated from discharge action."}});
     }
     logAuditEvent("Residents", "Resident discharged", residentName, "System", "Resident marked discharged from current census.");
-
-    if (tableIsEmpty("survey_command_items")) {
-        if (!executeAll({
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Dining', 'Mock survey meal-service observation', 'Tray-line audit, observation notes, corrective-action log', 'Administrator', 'High', '2026-04-23', 'Open', 'Need current meal observation packet and leadership rounding notes before mock survey.')",
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Infection Prevention', 'Isolation cart readiness evidence binder', 'Cart checklist, PPE audit, line-list summary', 'Infection Preventionist', 'High', '2026-04-22', 'In Progress', 'Complete final PPE spot-checks and add current line-list to binder.')",
-            "INSERT INTO survey_command_items (focus_area, item_name, evidence_needed, owner, priority, due_date, status, notes) VALUES ('Grievances', 'Plan-of-correction follow-up verification', 'Resident council minutes, grievance resolutions, service-recovery logs', 'Social Services', 'Medium', '2026-04-25', 'Watch', 'Need final signoff that grievance trend review was discussed in QAPI.')"
-        })) return false;
-    }
-
 
     if (tableIsEmpty("diagnosis_items")) {
         if (!executeAll({
@@ -724,6 +793,15 @@ bool DatabaseManager::dischargeResident(int residentId, const QString& residentN
         })) return false;
     }
 
+    if (tableIsEmpty("housekeeping_laundry_items")) {
+        const QStringList housekeepingSeeds = {
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Isolation Hall', 'Isolation Laundry', 'Isolation-bag pickup and wash-cycle compliance review', 'Housekeeping Lead', 'In Progress', 'Verify bagging process, wash separation, and shift handoff completion.')",
+            "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-26', 'Room 118', 'Room Turnover', 'Discharge room deep-clean turnaround watch', 'EVS', 'Watch', 'Waiting on mattress turnaround and final odor-check signoff before bed-board release.')"
+        };
+        if (!executeAll(housekeepingSeeds)) return false;
+    }
+
     return true;
 }
 
@@ -731,6 +809,20 @@ bool DatabaseManager::addStaffingAssignment(const QString& workDate, const QStri
                                            const QString& roleName, const QString& employeeName, const QString& status) {
     return addRecord("staffing_assignments", {{"work_date", workDate}, {"department", department}, {"shift_name", shiftName},
                                              {"role_name", roleName}, {"employee_name", employeeName}, {"status", status}});
+}
+
+bool DatabaseManager::addStaffingNumbersEntry(const QString& entryDate, const QString& shiftName, int residentCensus,
+                                           int rnCount, int lpnCount, int cnaCount, int agencyCount, const QString& notes) {
+    return addRecord("staffing_number_entries", {
+        {"entry_date", entryDate},
+        {"shift_name", shiftName},
+        {"resident_census", QString::number(residentCensus)},
+        {"rn_count", QString::number(rnCount)},
+        {"lpn_count", QString::number(lpnCount)},
+        {"cna_count", QString::number(cnaCount)},
+        {"agency_count", QString::number(agencyCount)},
+        {"notes", notes}
+    });
 }
 
 bool DatabaseManager::updateStaffingAssignmentStatus(int assignmentId, const QString& status) {
@@ -962,6 +1054,9 @@ QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
         {"Workflow center", "Use Workflow Center to edit, archive, or delete operational records without hunting through every page."},
         {"Shift handoff", QString("%1 shift handoff item(s) remain open or on watch for the next leadership handoff.").arg(countWhere("shift_handoff_items", "status='Open' OR status='Watch' OR status='In Progress'"))},
         {"Reports", "Use the Reports workspace to export a daily summary, staffing CSV, and census snapshot for leadership review."},
-        {"Therapy / rehab", QString("%1 therapy or rehab coordination item(s) remain open, in progress, or on watch.").arg(countWhere("therapy_items", "status!='Closed' AND status!='Complete'"))}
+        {"Therapy / rehab", QString("%1 therapy or rehab coordination item(s) remain open, in progress, or on watch.").arg(countWhere("therapy_items", "status!='Closed' AND status!='Complete'"))},
+        {"Housekeeping / laundry", QString("%1 housekeeping or laundry item(s) remain open, in progress, or on watch.").arg(countWhere("housekeeping_laundry_items", "status!='Closed' AND status!='Complete'"))},
+        {"Revenue cycle", QString("%1 revenue cycle item(s) are open, pending auth, or at risk.").arg(countWhere("revenue_cycle_items", "status='Open' OR status='Pending Auth' OR status='Denial' OR status='At Risk'"))},
+        {"Contracts", QString("%1 contract(s) are up for renewal, on watch, or expired.").arg(countWhere("contracts", "status='Up for Renewal' OR status='Watch' OR status='Expired'"))}
     };
 }

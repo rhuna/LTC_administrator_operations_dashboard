@@ -23,13 +23,13 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* title = new QLabel("Executive dashboard", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up, now with saved dashboard preferences and a calendar view for scheduled work, plus a local audit trail for recent changes, a KPI trend engine for rolling executive measure review, an external sync readiness layer for future EMR/PCC work, and a release-candidate checklist for packaging, validation, rollout readiness, a built-in SOP / quick-start center for repeatable operations, and a therapy / rehab operations workspace for rehab starts, auth follow-up, and discharge-readiness coordination, plus a social services / discharge planning workspace for family meetings, psychosocial follow-up, and community resource coordination.",
+        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up, now with saved dashboard preferences and a calendar view for scheduled work, plus a local audit trail for recent changes, a KPI trend engine for rolling executive measure review, an external sync readiness layer for future EMR/PCC work, and a release-candidate checklist for packaging, validation, rollout readiness, a built-in SOP / quick-start center for repeatable operations, and a therapy / rehab operations workspace for rehab starts, auth follow-up, and discharge-readiness coordination, plus a social services / discharge planning workspace for family meetings, psychosocial follow-up, and community resource coordination, plus a revenue cycle workspace for billing queue, denial tracking, and A/R aging, a contract management workspace for vendor contracts and renewal tracking, and an upgraded budget and managed care module with full add/edit capability.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
 
     auto* snapshot = new QLabel(
-        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items")
+        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items · %14 revenue cycle items · %15 contracts needing attention")
             .arg(db->countWhere("residents", "status='Current'"))
             .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'"))
             .arg(db->countWhere("staffing_assignments", "status='Open'"))
@@ -42,7 +42,9 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
             .arg(db->countWhere("release_candidate_items"))
             .arg(db->countWhere("sop_items"))
             .arg(db->countWhere("therapy_items"))
-            .arg(db->countWhere("social_services_items")),
+            .arg(db->countWhere("social_services_items"))
+            .arg(db->countWhere("revenue_cycle_items", "status='Open' OR status='Pending Auth' OR status='Denial' OR status='At Risk'"))
+            .arg(db->countWhere("contracts", "status='Up for Renewal' OR status='Watch' OR status='Expired'")),
         hero);
     snapshot->setObjectName("dashboardSnapshot");
 

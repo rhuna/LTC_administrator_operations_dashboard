@@ -5,10 +5,10 @@
 
 class DatabaseManager;
 
-class BudgetPage : public QWidget {
+class RevenueCyclePage : public QWidget {
     Q_OBJECT
 public:
-    explicit BudgetPage(DatabaseManager* db, QWidget* parent = nullptr);
+    explicit RevenueCyclePage(DatabaseManager* db, QWidget* parent = nullptr);
 
 private:
     DatabaseManager* m_db;
