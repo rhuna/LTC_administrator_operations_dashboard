@@ -27,7 +27,7 @@ bool DatabaseManager::initialize() {
         return false;
     }
     QDir().mkpath(baseDir);
-    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v58_staffing_numbers_ratios.db");
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v61_consolidated_ops.db");
 
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");

@@ -9,7 +9,7 @@
 #include <QHBoxLayout>
 SurveyReadinessPage::SurveyReadinessPage(DatabaseManager* db, QWidget* parent) : QWidget(parent) {
     auto* root = new QVBoxLayout(this);
-    auto* heading = new QLabel("Survey Readiness", this);
+    auto* heading = new QLabel("Survey Readiness / Compliance", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     root->addWidget(heading);
     auto* tableWidget = new QTableWidget(this);
@@ -26,3 +26,19 @@ SurveyReadinessPage::SurveyReadinessPage(DatabaseManager* db, QWidget* parent) :
 
     root->addWidget(tableWidget);
 }
+
+    auto* complianceHeading = new QLabel("Compliance items", this);
+    complianceHeading->setStyleSheet("font-size: 16px; font-weight: 700;");
+    root->addWidget(complianceHeading);
+    auto* complianceTable = new QTableWidget(this);
+    complianceTable->setColumnCount(4);
+    complianceTable->setHorizontalHeaderLabels(QStringList{"item_name", "due_date", "owner", "status"});
+    complianceTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    auto complianceRows = db->fetchTable("compliance_items", QStringList{"item_name", "due_date", "owner", "status"});
+    for (const auto& row : complianceRows) {
+        int r = complianceTable->rowCount();
+        complianceTable->insertRow(r);
+        int c = 0;
+        for (const auto& key : QStringList{"item_name", "due_date", "owner", "status"}) complianceTable->setItem(r, c++, new QTableWidgetItem(row.value(key)));
+    }
+    root->addWidget(complianceTable);

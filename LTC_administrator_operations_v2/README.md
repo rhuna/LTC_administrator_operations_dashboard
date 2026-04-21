@@ -1,6 +1,6 @@
 # LTC Administrator Operations Dashboard
 
-## v59.0.0 — Financial & Billing Operations
+## v60.0.0 — Financial & Billing Operations
 
 **New pages:**
 - **Revenue Cycle** — Track payer mix, billing queue items, denial follow-up, and A/R aging with add/resolve/delete capability and a live summary strip.
@@ -11,9 +11,9 @@
 - **Managed Care** — Rebuilt with an authorization queue, auth expiry date column, color-coded status, and full add/approve/delete capability.
 
 **Quality fixes:**
-- Database file renamed from `v55_social_services` to `v59_financial_billing` to match the release.
+- Database file renamed from `v55_social_services` to `v60_financial_billing` to match the release.
 - `ReportsPage` version strings corrected from hardcoded `v25` to `54.0.0`.
-- `AppWindow` window title and subtitle updated to reflect v59 scope.
+- `AppWindow` window title and subtitle updated to reflect v60 scope.
 - CMakeLists bumped to `54.0.0`; missing `TrainingPage` source entries added.
 - Duplicate `survey_command_items` re-seeding removed from `authenticateUser()` and `dischargeResident()` — seeding now happens only once in `seedData()`.
 - `managed_care_items` schema migration added for new `auth_expiry` and `owner` columns on existing databases.

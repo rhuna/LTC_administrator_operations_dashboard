@@ -27,7 +27,7 @@ AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(p
     auto* heading = new QLabel("Admissions Waitlist", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     auto* subheading = new QLabel(
-        "Enter referral waitlist items with payer, diagnosis, and MDS details. You can import referral documents, mark referrals ready, push a referral into the MDS workflow, and admit directly from the waitlist.", this);
+        "Enter referral waitlist items with payer, diagnosis, MDS details, and target room. Admissions now also shows current room availability so you can choose an open room during admit planning.", this);
     subheading->setWordWrap(true);
     subheading->setStyleSheet("color: #5b6472;");
     root->addWidget(heading);
@@ -103,6 +103,22 @@ AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(p
     m_tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_tableWidget->setColumnHidden(0, true);
     root->addWidget(m_tableWidget, 1);
+
+    auto* roomHeading = new QLabel("Available / tracked rooms", this);
+    roomHeading->setStyleSheet("font-size: 16px; font-weight: 700;");
+    root->addWidget(roomHeading);
+
+    auto* roomTable = new QTableWidget(this);
+    const QStringList roomCols{"room_number", "status", "resident_name", "notes"};
+    roomTable->setColumnCount(roomCols.size());
+    roomTable->setHorizontalHeaderLabels({"Room", "Status", "Resident", "Notes"});
+    roomTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    for (const auto& roomRow : m_db->fetchTable("bed_board", roomCols)) {
+        const int rr = roomTable->rowCount();
+        roomTable->insertRow(rr);
+        for (int c = 0; c < roomCols.size(); ++c) roomTable->setItem(rr, c, new QTableWidgetItem(roomRow.value(roomCols[c])));
+    }
+    root->addWidget(roomTable);
 
     connect(m_addButton, &QPushButton::clicked, this, &AdmissionsPage::handleAddReferral);
     connect(m_sendToMdsButton, &QPushButton::clicked, this, &AdmissionsPage::handleSendToMds);

@@ -1,7 +1,7 @@
+
 #include "SocialServicesPage.h"
 #include "../../data/DatabaseManager.h"
 
-#include <QFormLayout>
 #include <QGroupBox>
 #include <QHeaderView>
 #include <QHBoxLayout>
@@ -18,12 +18,12 @@ SocialServicesPage::SocialServicesPage(DatabaseManager* db, QWidget* parent)
     root->setContentsMargins(8, 8, 8, 8);
     root->setSpacing(14);
 
-    auto* heading = new QLabel("Social Services / Discharge Planning / Grievances", this);
+    auto* heading = new QLabel("Social Services / Care Conferences / Grievances", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     root->addWidget(heading);
 
     auto* subtitle = new QLabel(
-        "Track discharge planning, family meetings, psychosocial follow-up, and grievances from one combined social-services workspace so you do not need a separate grievance tab.",
+        "Use one combined social-services workspace for discharge planning, family communication, care conferences, and grievances. Items added here can also be updated or deleted from the same page.",
         this);
     subtitle->setWordWrap(true);
     root->addWidget(subtitle);
@@ -31,12 +31,11 @@ SocialServicesPage::SocialServicesPage(DatabaseManager* db, QWidget* parent)
     auto* socialGroup = new QGroupBox("Social services worklist", this);
     auto* socialLayout = new QVBoxLayout(socialGroup);
     auto* socialTable = new QTableWidget(this);
-    const QStringList socialCols{
-        "review_date", "resident_name", "focus_area", "item_name", "owner", "status", "notes"
-    };
+    const QStringList socialCols{"id","review_date", "resident_name", "focus_area", "item_name", "owner", "status", "notes"};
     socialTable->setColumnCount(socialCols.size());
-    socialTable->setHorizontalHeaderLabels({"Date", "Resident", "Focus Area", "Item", "Owner", "Status", "Notes"});
+    socialTable->setHorizontalHeaderLabels({"ID","Date", "Resident", "Focus Area", "Item", "Owner", "Status", "Notes"});
     socialTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    socialTable->setColumnHidden(0, true);
     socialLayout->addWidget(socialTable);
 
     auto* socialForm = new QHBoxLayout();
@@ -52,29 +51,71 @@ SocialServicesPage::SocialServicesPage(DatabaseManager* db, QWidget* parent)
     owner->setPlaceholderText("Owner");
     auto* notes = new QLineEdit(this);
     notes->setPlaceholderText("Notes");
-    auto* socialButton = new QPushButton("Add Social Services Item", this);
+    auto* socialAdd = new QPushButton("Add", this);
+    auto* socialLoad = new QPushButton("Load Selected", this);
+    auto* socialUpdate = new QPushButton("Update Selected", this);
+    auto* socialDelete = new QPushButton("Delete Selected", this);
     socialForm->addWidget(dateEdit);
     socialForm->addWidget(residentName);
     socialForm->addWidget(focusArea);
     socialForm->addWidget(itemName);
     socialForm->addWidget(owner);
     socialForm->addWidget(notes);
-    socialForm->addWidget(socialButton);
+    socialForm->addWidget(socialAdd);
+    socialForm->addWidget(socialLoad);
+    socialForm->addWidget(socialUpdate);
+    socialForm->addWidget(socialDelete);
     socialLayout->addLayout(socialForm);
     root->addWidget(socialGroup);
 
+    auto* conferenceGroup = new QGroupBox("Care conferences", this);
+    auto* conferenceLayout = new QVBoxLayout(conferenceGroup);
+    auto* conferenceTable = new QTableWidget(this);
+    const QStringList conferenceCols{"id","conference_date", "resident_name", "contact_name", "conference_type", "owner_name", "status", "notes"};
+    conferenceTable->setColumnCount(conferenceCols.size());
+    conferenceTable->setHorizontalHeaderLabels({"ID","Date", "Resident", "Contact", "Type", "Owner", "Status", "Notes"});
+    conferenceTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    conferenceTable->setColumnHidden(0, true);
+    conferenceLayout->addWidget(conferenceTable);
+
+    auto* conferenceForm = new QHBoxLayout();
+    auto* conferenceDate = new QLineEdit(this);
+    conferenceDate->setPlaceholderText("YYYY-MM-DD");
+    auto* conferenceResident = new QLineEdit(this);
+    conferenceResident->setPlaceholderText("Resident");
+    auto* conferenceContact = new QLineEdit(this);
+    conferenceContact->setPlaceholderText("Contact / family");
+    auto* conferenceType = new QLineEdit(this);
+    conferenceType->setPlaceholderText("Quarterly / family / care plan");
+    auto* conferenceOwner = new QLineEdit(this);
+    conferenceOwner->setPlaceholderText("Owner");
+    auto* conferenceNotes = new QLineEdit(this);
+    conferenceNotes->setPlaceholderText("Notes");
+    auto* conferenceAdd = new QPushButton("Add", this);
+    auto* conferenceLoad = new QPushButton("Load Selected", this);
+    auto* conferenceUpdate = new QPushButton("Update Selected", this);
+    auto* conferenceDelete = new QPushButton("Delete Selected", this);
+    conferenceForm->addWidget(conferenceDate);
+    conferenceForm->addWidget(conferenceResident);
+    conferenceForm->addWidget(conferenceContact);
+    conferenceForm->addWidget(conferenceType);
+    conferenceForm->addWidget(conferenceOwner);
+    conferenceForm->addWidget(conferenceNotes);
+    conferenceForm->addWidget(conferenceAdd);
+    conferenceForm->addWidget(conferenceLoad);
+    conferenceForm->addWidget(conferenceUpdate);
+    conferenceForm->addWidget(conferenceDelete);
+    conferenceLayout->addLayout(conferenceForm);
+    root->addWidget(conferenceGroup);
+
     auto* grievanceGroup = new QGroupBox("Grievances / service recovery", this);
     auto* grievanceLayout = new QVBoxLayout(grievanceGroup);
-    auto* grievanceHint = new QLabel("Use this section for resident or family grievances so Social Services owns the follow-up from one place.", grievanceGroup);
-    grievanceHint->setWordWrap(true);
-    grievanceLayout->addWidget(grievanceHint);
     auto* grievanceTable = new QTableWidget(this);
-    const QStringList grievanceCols{
-        "report_date", "category", "resident_or_family", "owner", "priority", "status", "summary"
-    };
+    const QStringList grievanceCols{"id","report_date", "category", "resident_or_family", "owner", "status", "summary"};
     grievanceTable->setColumnCount(grievanceCols.size());
-    grievanceTable->setHorizontalHeaderLabels({"Date", "Category", "Resident / Family", "Owner", "Priority", "Status", "Summary"});
+    grievanceTable->setHorizontalHeaderLabels({"ID","Date", "Category", "Resident / Family", "Owner", "Status", "Summary"});
     grievanceTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    grievanceTable->setColumnHidden(0, true);
     grievanceLayout->addWidget(grievanceTable);
 
     auto* grievanceForm = new QHBoxLayout();
@@ -88,39 +129,46 @@ SocialServicesPage::SocialServicesPage(DatabaseManager* db, QWidget* parent)
     grievanceOwner->setPlaceholderText("Owner");
     auto* grievanceSummary = new QLineEdit(this);
     grievanceSummary->setPlaceholderText("Summary");
-    auto* grievanceButton = new QPushButton("Add Grievance", this);
+    auto* grievanceAdd = new QPushButton("Add", this);
+    auto* grievanceLoad = new QPushButton("Load Selected", this);
+    auto* grievanceUpdate = new QPushButton("Update Selected", this);
+    auto* grievanceDelete = new QPushButton("Delete Selected", this);
     grievanceForm->addWidget(grievanceDate);
     grievanceForm->addWidget(grievanceCategory);
     grievanceForm->addWidget(grievanceParty);
     grievanceForm->addWidget(grievanceOwner);
     grievanceForm->addWidget(grievanceSummary);
-    grievanceForm->addWidget(grievanceButton);
+    grievanceForm->addWidget(grievanceAdd);
+    grievanceForm->addWidget(grievanceLoad);
+    grievanceForm->addWidget(grievanceUpdate);
+    grievanceForm->addWidget(grievanceDelete);
     grievanceLayout->addLayout(grievanceForm);
     root->addWidget(grievanceGroup, 1);
 
     auto refreshTables = [=]() {
         socialTable->setRowCount(0);
-        const auto socialRows = db->fetchTable("social_services_items", socialCols);
-        for (const auto& row : socialRows) {
+        for (const auto& row : db->fetchTable("social_services_items", socialCols)) {
             const int r = socialTable->rowCount();
             socialTable->insertRow(r);
-            for (int c = 0; c < socialCols.size(); ++c) {
-                socialTable->setItem(r, c, new QTableWidgetItem(row.value(socialCols[c])));
-            }
+            for (int c = 0; c < socialCols.size(); ++c) socialTable->setItem(r, c, new QTableWidgetItem(row.value(socialCols[c])));
+        }
+
+        conferenceTable->setRowCount(0);
+        for (const auto& row : db->fetchTable("care_conference_items", conferenceCols)) {
+            const int r = conferenceTable->rowCount();
+            conferenceTable->insertRow(r);
+            for (int c = 0; c < conferenceCols.size(); ++c) conferenceTable->setItem(r, c, new QTableWidgetItem(row.value(conferenceCols[c])));
         }
 
         grievanceTable->setRowCount(0);
-        const auto grievanceRows = db->fetchTable("grievances", grievanceCols);
-        for (const auto& row : grievanceRows) {
+        for (const auto& row : db->fetchTable("grievances", grievanceCols)) {
             const int r = grievanceTable->rowCount();
             grievanceTable->insertRow(r);
-            for (int c = 0; c < grievanceCols.size(); ++c) {
-                grievanceTable->setItem(r, c, new QTableWidgetItem(row.value(grievanceCols[c])));
-            }
+            for (int c = 0; c < grievanceCols.size(); ++c) grievanceTable->setItem(r, c, new QTableWidgetItem(row.value(grievanceCols[c])));
         }
     };
 
-    QObject::connect(socialButton, &QPushButton::clicked, this, [=]() {
+    QObject::connect(socialAdd, &QPushButton::clicked, this, [=]() {
         QMap<QString, QString> values;
         values["review_date"] = dateEdit->text().trimmed();
         values["resident_name"] = residentName->text().trimmed();
@@ -130,17 +178,67 @@ SocialServicesPage::SocialServicesPage(DatabaseManager* db, QWidget* parent)
         values["status"] = "Open";
         values["notes"] = notes->text().trimmed();
         if (db->addRecord("social_services_items", values)) {
-            dateEdit->clear();
-            residentName->clear();
-            focusArea->clear();
-            itemName->clear();
-            owner->clear();
-            notes->clear();
+            dateEdit->clear(); residentName->clear(); focusArea->clear(); itemName->clear(); owner->clear(); notes->clear();
             refreshTables();
         }
     });
+    QObject::connect(socialLoad, &QPushButton::clicked, this, [=]() {
+        int row = socialTable->currentRow(); if (row < 0) return;
+        dateEdit->setText(socialTable->item(row,1)->text());
+        residentName->setText(socialTable->item(row,2)->text());
+        focusArea->setText(socialTable->item(row,3)->text());
+        itemName->setText(socialTable->item(row,4)->text());
+        owner->setText(socialTable->item(row,5)->text());
+        notes->setText(socialTable->item(row,7)->text());
+    });
+    QObject::connect(socialUpdate, &QPushButton::clicked, this, [=]() {
+        int row = socialTable->currentRow(); if (row < 0) return;
+        bool ok=false; int id=socialTable->item(row,0)->text().toInt(&ok); if(!ok) return;
+        QMap<QString, QString> values{{"review_date",dateEdit->text().trimmed()},{"resident_name",residentName->text().trimmed()},
+        {"focus_area",focusArea->text().trimmed()},{"item_name",itemName->text().trimmed()},{"owner",owner->text().trimmed()},{"notes",notes->text().trimmed()}};
+        if (db->updateRecordById("social_services_items", id, values)) refreshTables();
+    });
+    QObject::connect(socialDelete, &QPushButton::clicked, this, [=]() {
+        int row = socialTable->currentRow(); if (row < 0) return;
+        bool ok=false; int id=socialTable->item(row,0)->text().toInt(&ok); if(ok && db->deleteRecordById("social_services_items", id)) refreshTables();
+    });
 
-    QObject::connect(grievanceButton, &QPushButton::clicked, this, [=]() {
+    QObject::connect(conferenceAdd, &QPushButton::clicked, this, [=]() {
+        QMap<QString, QString> values;
+        values["conference_date"] = conferenceDate->text().trimmed();
+        values["resident_name"] = conferenceResident->text().trimmed();
+        values["contact_name"] = conferenceContact->text().trimmed();
+        values["conference_type"] = conferenceType->text().trimmed();
+        values["owner_name"] = conferenceOwner->text().trimmed();
+        values["status"] = "Open";
+        values["notes"] = conferenceNotes->text().trimmed();
+        if (db->addRecord("care_conference_items", values)) {
+            conferenceDate->clear(); conferenceResident->clear(); conferenceContact->clear(); conferenceType->clear(); conferenceOwner->clear(); conferenceNotes->clear();
+            refreshTables();
+        }
+    });
+    QObject::connect(conferenceLoad, &QPushButton::clicked, this, [=]() {
+        int row = conferenceTable->currentRow(); if (row < 0) return;
+        conferenceDate->setText(conferenceTable->item(row,1)->text());
+        conferenceResident->setText(conferenceTable->item(row,2)->text());
+        conferenceContact->setText(conferenceTable->item(row,3)->text());
+        conferenceType->setText(conferenceTable->item(row,4)->text());
+        conferenceOwner->setText(conferenceTable->item(row,5)->text());
+        conferenceNotes->setText(conferenceTable->item(row,7)->text());
+    });
+    QObject::connect(conferenceUpdate, &QPushButton::clicked, this, [=]() {
+        int row = conferenceTable->currentRow(); if (row < 0) return;
+        bool ok=false; int id=conferenceTable->item(row,0)->text().toInt(&ok); if(!ok) return;
+        QMap<QString, QString> values{{"conference_date",conferenceDate->text().trimmed()},{"resident_name",conferenceResident->text().trimmed()},
+        {"contact_name",conferenceContact->text().trimmed()},{"conference_type",conferenceType->text().trimmed()},{"owner_name",conferenceOwner->text().trimmed()},{"notes",conferenceNotes->text().trimmed()}};
+        if (db->updateRecordById("care_conference_items", id, values)) refreshTables();
+    });
+    QObject::connect(conferenceDelete, &QPushButton::clicked, this, [=]() {
+        int row = conferenceTable->currentRow(); if (row < 0) return;
+        bool ok=false; int id=conferenceTable->item(row,0)->text().toInt(&ok); if(ok && db->deleteRecordById("care_conference_items", id)) refreshTables();
+    });
+
+    QObject::connect(grievanceAdd, &QPushButton::clicked, this, [=]() {
         QMap<QString, QString> values;
         values["report_date"] = grievanceDate->text().trimmed();
         values["category"] = grievanceCategory->text().trimmed();
@@ -150,13 +248,28 @@ SocialServicesPage::SocialServicesPage(DatabaseManager* db, QWidget* parent)
         values["status"] = "Open";
         values["summary"] = grievanceSummary->text().trimmed();
         if (db->addRecord("grievances", values)) {
-            grievanceDate->clear();
-            grievanceCategory->clear();
-            grievanceParty->clear();
-            grievanceOwner->clear();
-            grievanceSummary->clear();
+            grievanceDate->clear(); grievanceCategory->clear(); grievanceParty->clear(); grievanceOwner->clear(); grievanceSummary->clear();
             refreshTables();
         }
+    });
+    QObject::connect(grievanceLoad, &QPushButton::clicked, this, [=]() {
+        int row = grievanceTable->currentRow(); if (row < 0) return;
+        grievanceDate->setText(grievanceTable->item(row,1)->text());
+        grievanceCategory->setText(grievanceTable->item(row,2)->text());
+        grievanceParty->setText(grievanceTable->item(row,3)->text());
+        grievanceOwner->setText(grievanceTable->item(row,4)->text());
+        grievanceSummary->setText(grievanceTable->item(row,6)->text());
+    });
+    QObject::connect(grievanceUpdate, &QPushButton::clicked, this, [=]() {
+        int row = grievanceTable->currentRow(); if (row < 0) return;
+        bool ok=false; int id=grievanceTable->item(row,0)->text().toInt(&ok); if(!ok) return;
+        QMap<QString, QString> values{{"report_date",grievanceDate->text().trimmed()},{"category",grievanceCategory->text().trimmed()},
+        {"resident_or_family",grievanceParty->text().trimmed()},{"owner",grievanceOwner->text().trimmed()},{"summary",grievanceSummary->text().trimmed()}};
+        if (db->updateRecordById("grievances", id, values)) refreshTables();
+    });
+    QObject::connect(grievanceDelete, &QPushButton::clicked, this, [=]() {
+        int row = grievanceTable->currentRow(); if (row < 0) return;
+        bool ok=false; int id=grievanceTable->item(row,0)->text().toInt(&ok); if(ok && db->deleteRecordById("grievances", id)) refreshTables();
     });
 
     refreshTables();
