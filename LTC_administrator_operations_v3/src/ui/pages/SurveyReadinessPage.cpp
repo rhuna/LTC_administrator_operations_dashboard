@@ -16,10 +16,14 @@ SurveyReadinessPage::SurveyReadinessPage(DatabaseManager* db, QWidget* parent)
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     root->addWidget(heading);
 
+    auto* surveyHeading = new QLabel("Survey readiness items", this);
+    surveyHeading->setStyleSheet("font-size: 16px; font-weight: 700;");
+    root->addWidget(surveyHeading);
+
     auto* surveyTable = new QTableWidget(this);
     const QStringList surveyCols{"focus_area", "owner", "risk_level", "status"};
     surveyTable->setColumnCount(surveyCols.size());
-    surveyTable->setHorizontalHeaderLabels({"Focus Area", "Owner", "Risk Level", "Status"});
+    surveyTable->setHorizontalHeaderLabels({"Focus Area", "Owner", "Risk", "Status"});
     surveyTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     const auto surveyRows = db->fetchTable("survey_items", surveyCols);
