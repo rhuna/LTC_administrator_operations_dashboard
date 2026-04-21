@@ -27,7 +27,7 @@ bool DatabaseManager::initialize() {
         return false;
     }
     QDir().mkpath(baseDir);
-    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v53_care_conference.db");
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v54_therapy_rehab.db");
 
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
@@ -82,6 +82,16 @@ bool DatabaseManager::initialize() {
     }
 
     if (!seedData()) return false;
+
+    if (tableIsEmpty("therapy_items")) {
+        const QStringList therapySeeds = {
+            "INSERT INTO therapy_items (review_date, resident_name, discipline, item_name, owner, status, notes) VALUES ('2026-04-22', 'Martha Lane', 'PT', 'Start-of-care mobility review and restorative carryover', 'Rehab Director', 'Open', 'Coordinate transfer-status update with nursing and family conference notes.')",
+            "INSERT INTO therapy_items (review_date, resident_name, discipline, item_name, owner, status, notes) VALUES ('2026-04-23', 'Samuel Price', 'OT', 'Managed-care authorization follow-up for ADL treatment block', 'Case Management', 'In Progress', 'Need payer response and updated estimated last-covered-day.')",
+            "INSERT INTO therapy_items (review_date, resident_name, discipline, item_name, owner, status, notes) VALUES ('2026-04-24', 'Lillian Brooks', 'ST', 'Discharge-readiness communication and home-safety recommendation review', 'Therapy Team', 'Watch', 'Hold final conference until family confirms equipment plan.')"
+        };
+        if (!executeAll(therapySeeds)) return false;
+    }
+
     return true;
 }
 
@@ -230,7 +240,8 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS sop_items (id INTEGER PRIMARY KEY AUTOINCREMENT, area_name TEXT, title_name TEXT, owner_name TEXT, status TEXT, last_reviewed TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS shift_handoff_items (id INTEGER PRIMARY KEY AUTOINCREMENT, handoff_date TEXT, shift_name TEXT, department TEXT, priority TEXT, owner_name TEXT, status TEXT, handoff_note TEXT)",
         "CREATE TABLE IF NOT EXISTS service_registry (id INTEGER PRIMARY KEY AUTOINCREMENT, service_name TEXT, purpose TEXT, status TEXT, owner TEXT, notes TEXT, archived INTEGER DEFAULT 0)",
-        "CREATE TABLE IF NOT EXISTS care_conference_items (id INTEGER PRIMARY KEY AUTOINCREMENT, conference_date TEXT, resident_name TEXT, contact_name TEXT, conference_type TEXT, owner_name TEXT, status TEXT, notes TEXT, summary_note TEXT)"
+        "CREATE TABLE IF NOT EXISTS care_conference_items (id INTEGER PRIMARY KEY AUTOINCREMENT, conference_date TEXT, resident_name TEXT, contact_name TEXT, conference_type TEXT, owner_name TEXT, status TEXT, notes TEXT, summary_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS therapy_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, resident_name TEXT, discipline TEXT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)"
     };
     return executeAll(ddl);
 }
@@ -940,6 +951,7 @@ QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
         {"Alerts", QString("%1 overdue and %2 due-soon item(s) need attention across due-date driven modules.").arg(overdueAlertCount()).arg(dueSoonAlertCount())},
         {"Workflow center", "Use Workflow Center to edit, archive, or delete operational records without hunting through every page."},
         {"Shift handoff", QString("%1 shift handoff item(s) remain open or on watch for the next leadership handoff.").arg(countWhere("shift_handoff_items", "status='Open' OR status='Watch' OR status='In Progress'"))},
-        {"Reports", "Use the Reports workspace to export a daily summary, staffing CSV, and census snapshot for leadership review."}
+        {"Reports", "Use the Reports workspace to export a daily summary, staffing CSV, and census snapshot for leadership review."},
+        {"Therapy / rehab", QString("%1 therapy or rehab coordination item(s) remain open, in progress, or on watch.").arg(countWhere("therapy_items", "status!='Closed' AND status!='Complete'"))}
     };
 }

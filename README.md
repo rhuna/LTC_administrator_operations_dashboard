@@ -1,5 +1,5 @@
 
-## v53 Shift Handoff Center
+## v54 Shift Handoff Center
 
 This snapshot intentionally skips the multi-facility direction for now and continues from the fixed v46 line.
 
@@ -7,8 +7,8 @@ This snapshot intentionally skips the multi-facility direction for now and conti
 - Service Layer / Integration Readiness module
 - `service_registry` SQLite table
 - seeded service rows for admissions, staffing, documents, and reporting
-- app version text updated to v53
-- local database file updated to `ltc_admin_dashboard_v53_service_layer.db`
+- app version text updated to v54
+- local database file updated to `ltc_admin_dashboard_v54_service_layer.db`
 
 ### Build
 ```bat
@@ -18,16 +18,20 @@ build_release_and_run.bat clean
 ```
 
 
-## v53 highlight
+## v54 highlight
 This snapshot adds an External Sync / EMR Readiness workspace so future PCC/EMR integration planning stays visible without changing the current single-facility workflow.
 
 
-## New in v53
+## New in v54
 - SOP / Quick Start Center module
 - seeded operating guides for admissions, staffing, reports, and backup workflows
 - dashboard visibility for SOP items
 
 
-## v53 additions
+## v54 additions
 - Care Conferences / Family Communication module
-- New local database file: `ltc_admin_dashboard_v53_care_conference.db`
+- New local database file: `ltc_admin_dashboard_v54_care_conference.db`
+
+
+## v54
+- Added Therapy / Rehab Operations module

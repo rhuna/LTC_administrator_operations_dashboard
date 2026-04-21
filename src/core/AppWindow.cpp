@@ -41,6 +41,7 @@
 #include "../ui/pages/SopCenterPage.h"
 #include "../ui/pages/ShiftHandoffPage.h"
 #include "../ui/pages/CareConferencePage.h"
+#include "../ui/pages/TherapyRehabPage.h"
 #include "../ui/pages/DepartmentDashboardsPage.h"
 #include "../ui/pages/BackupRestorePage.h"
 #include "../ui/pages/AuditLogPage.h"
@@ -57,7 +58,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v53 Care Conference Center");
+    setWindowTitle("LTC Administrator Operations Dashboard v54 Therapy / Rehab Operations");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -81,7 +82,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v53 keeps the single-facility line intact and adds a care conference center so leaders can track family communication, payer updates, interdisciplinary review, and resident conference follow-up in one place.",
+        "v54 keeps the single-facility line intact and adds a therapy / rehab operations workspace so leaders can track rehab starts, auth follow-up, restorative coordination, and discharge-readiness communication in one place.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -125,6 +126,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"SOP / Quick Start", new SopCenterPage(db)},
         {"Shift Handoff", new ShiftHandoffPage(db)},
         {"Care Conferences", new CareConferencePage(db)},
+        {"Therapy / Rehab", new TherapyRehabPage(db)},
         {"Department Views", new DepartmentDashboardsPage(db)},
         {"Residents", new ResidentsPage(db)},
         {"Admissions", new AdmissionsPage(db)},
@@ -163,13 +165,13 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     if (roleName == "Administrator") {
         for (const auto& pair : pages) allowed << pair.first;
     } else if (roleName == "Director of Nursing") {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else if (roleName == "Admissions Director") {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else if (roleName == "Staffing Coordinator") {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     } else {
-        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Department Views","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
+        allowed = {"Dashboard","Dashboard Setup","Search","Alerts","Calendar","Metrics & Trends","KPI Trend Engine","Service Layer","External Sync","Release Candidate","SOP / Quick Start","Shift Handoff","Care Conferences","Therapy / Rehab","Department Views","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Backup & Restore","Audit Log","Forms & Validation","Workflow Center"};
     }
 
     sidebarLayout->addWidget(navLabel);
