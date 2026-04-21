@@ -16,6 +16,9 @@ private slots:
     void handleAddReferral();
     void handleSendToMds();
     void handleAdmitSelected();
+    void handleMarkReady();
+    void handleNeedsDocs();
+    void handleImportReferralDocument();
 
 private:
     DatabaseManager* m_db{nullptr};
@@ -32,6 +35,9 @@ private:
     QPushButton* m_addButton{nullptr};
     QPushButton* m_sendToMdsButton{nullptr};
     QPushButton* m_admitButton{nullptr};
+    QPushButton* m_readyButton{nullptr};
+    QPushButton* m_needsDocsButton{nullptr};
+    QPushButton* m_importDocButton{nullptr};
     QPushButton* m_refreshButton{nullptr};
     QTableWidget* m_tableWidget{nullptr};
 };

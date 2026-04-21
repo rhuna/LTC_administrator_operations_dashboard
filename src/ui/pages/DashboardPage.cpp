@@ -23,28 +23,19 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* title = new QLabel("Executive dashboard", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "A simplified command center for census movement, referral waitlist intake, document intake, staffing coverage, bed availability, MDS / ARD / triple-check oversight, survey command follow-up, outbreak response workload, due-soon alerts, and operational follow-up.",
+        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
 
     auto* snapshot = new QLabel(
-        QString("%1 current residents · %2 open staffing assignments · %3 minimum staffing gaps · %4 uncovered minimum hours · %5 transport items · %6 pharmacy items · %7 dietary items · %8 open tasks · %9 census events · %10 MDS / triple-check items · %11 survey command items · %12 outbreak items · %13 overdue alerts · %14 document items · %15 waitlist referrals")
+        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures")
             .arg(db->countWhere("residents", "status='Current'"))
+            .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'"))
             .arg(db->countWhere("staffing_assignments", "status='Open'"))
             .arg(db->countMinimumStaffingGaps())
-            .arg(db->estimatedMinimumHoursGap())
-            .arg(db->countWhere("transport_items", "status!='Returned' AND status!='Closed'"))
-            .arg(db->countWhere("pharmacy_items", "status='Open' OR status='Watch' OR status='In Progress'"))
-            .arg(db->countWhere("dietary_items", "status='Open' OR status='Watch' OR status='In Progress'"))
-            .arg(db->countWhere("tasks", "status!='Complete'"))
-            .arg(db->countWhere("census_events", "status!='Closed'"))
-            .arg(db->countWhere("mds_items", "status!='Closed' AND status!='Complete'"))
-            .arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'"))
-            .arg(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'"))
             .arg(db->overdueAlertCount())
-            .arg(db->countWhere("document_items", "status!='Closed'"))
-            .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'")),
+            .arg(db->countWhere("quality_measures", "status='Off Target'")),
         hero);
     snapshot->setObjectName("dashboardSnapshot");
 
@@ -52,6 +43,30 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     heroLayout->addWidget(subtitle);
     heroLayout->addWidget(snapshot);
     root->addWidget(hero);
+
+    auto* summaryStrip = new QFrame(this);
+    summaryStrip->setObjectName("summaryStrip");
+    auto* summaryLayout = new QHBoxLayout(summaryStrip);
+    summaryLayout->setContentsMargins(16, 12, 16, 12);
+    summaryLayout->setSpacing(18);
+    auto addSummary = [&](const QString& label, const QString& value) {
+        auto* wrap = new QVBoxLayout();
+        auto* l = new QLabel(label, summaryStrip);
+        l->setObjectName("panelHint");
+        auto* v = new QLabel(value, summaryStrip);
+        v->setStyleSheet("font-size:20px; font-weight:700; color:#102a43;");
+        wrap->addWidget(l);
+        wrap->addWidget(v);
+        summaryLayout->addLayout(wrap);
+    };
+    addSummary("Ready referrals", QString::number(db->countWhere("admissions", "status='Ready'")));
+    addSummary("Needs docs", QString::number(db->countWhere("admissions", "status='Needs Docs'")));
+    addSummary("Open beds / turnovers", QString::number(db->countWhere("bed_board", "status!='Closed'")));
+    addSummary("Open incidents", QString::number(db->countWhere("incidents", "status!='Closed'")));
+    addSummary("Open quality follow-ups", QString::number(db->countWhere("quality_followups", "status!='Closed' AND status!='Complete'")));
+    addSummary("Outbreak items", QString::number(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
+    summaryLayout->addStretch();
+    root->addWidget(summaryStrip);
 
     auto* kpiGrid = new QGridLayout();
     kpiGrid->setHorizontalSpacing(12);
@@ -77,7 +92,9 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     kpiGrid->addWidget(new KpiCard("Due soon alerts", QString::number(db->dueSoonAlertCount()), this), 6, 0);
     kpiGrid->addWidget(new KpiCard("Document items", QString::number(db->countWhere("document_items", "status!='Closed'")), this), 6, 1);
     kpiGrid->addWidget(new KpiCard("Waitlist referrals", QString::number(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'")), this), 6, 2);
-    kpiGrid->addWidget(new KpiCard("Outbreak items", QString::number(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")), this), 7, 0);
+    kpiGrid->addWidget(new KpiCard("Referrals ready", QString::number(db->countWhere("admissions", "status='Ready'")), this), 7, 0);
+    kpiGrid->addWidget(new KpiCard("Needs documents", QString::number(db->countWhere("admissions", "status='Needs Docs'")), this), 7, 1);
+    kpiGrid->addWidget(new KpiCard("Outbreak items", QString::number(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")), this), 7, 2);
     root->addLayout(kpiGrid);
 
     auto* lowerRow = new QHBoxLayout();
@@ -103,29 +120,17 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     quickHint->setWordWrap(true);
     auto* quickList = new QListWidget(quickBox);
     quickList->setObjectName("actionList");
-    quickList->addItem(QString("%1 assignment(s) still marked open").arg(db->countWhere("staffing_assignments", "status='Open'")));
-    quickList->addItem(QString("%1 minimum staffing group(s) are below required coverage").arg(db->countMinimumStaffingGaps()));
-    quickList->addItem(QString("%1 assignment(s) are currently agency-covered").arg(db->countWhere("staffing_assignments", "employee_name LIKE '%Agency%' OR employee_name LIKE '%Pool%'")));
-    quickList->addItem(QString("Estimated nursing HPRD is %1").arg(QString::number(db->estimatedNursingHprd(), 'f', 2)));
-    quickList->addItem(QString("%1 minimum uncovered staffing hours remain").arg(db->estimatedMinimumHoursGap()));
-    quickList->addItem(QString("%1 bed-board or room-turnover item(s) remain open").arg(db->countWhere("bed_board", "status!='Closed'")));
-    quickList->addItem(QString("%1 census event(s) are still open, planned, or under review").arg(db->countWhere("census_events", "status!='Closed'")));
-    quickList->addItem(QString("%1 incident(s) still open or under review").arg(db->countWhere("incidents", "status!='Closed'")));
-    quickList->addItem(QString("%1 managed-care item(s) at risk or open").arg(db->countWhere("managed_care_items", "status='At Risk' OR status='Open'")));
-    quickList->addItem(QString("%1 credentialing item(s) due soon or open").arg(db->countWhere("credentialing_items", "status!='Closed'")));
-    quickList->addItem(QString("%1 preparedness item(s) due soon or open").arg(db->countWhere("preparedness_items", "status!='Closed'")));
-    quickList->addItem(QString("%1 infection-control item(s) open or on watch").arg(db->countWhere("infection_control_items", "status='Open' OR status='Watch'")));
-    quickList->addItem(QString("%1 transportation or outside-appointment item(s) still need follow-up").arg(db->countWhere("transport_items", "status!='Returned' AND status!='Closed'")));
-    quickList->addItem(QString("%1 waitlist referral(s) are still pending review or admit").arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'")));
-    quickList->addItem(QString("%1 document item(s) are open or still being assembled").arg(db->countWhere("document_items", "status!='Closed'")));
-    quickList->addItem(QString("%1 MDS / ARD / triple-check item(s) remain open, in progress, or on watch").arg(db->countWhere("mds_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 survey command item(s) are still open for mock survey, evidence, or plan-of-correction follow-up").arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 outbreak-response item(s) remain open, in progress, or on watch").arg(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 pharmacy or medication-system item(s) are open or on watch").arg(db->countWhere("pharmacy_items", "status='Open' OR status='Watch' OR status='In Progress'")));
-    quickList->addItem(QString("%1 dietary or nutrition item(s) are open or on watch").arg(db->countWhere("dietary_items", "status='Open' OR status='Watch' OR status='In Progress'")));
-    quickList->addItem(QString("%1 overdue alert(s) need immediate attention across due-date driven modules").arg(db->overdueAlertCount()));
-    quickList->addItem(QString("%1 due-soon alert(s) are approaching in the next three days").arg(db->dueSoonAlertCount()));
-    quickList->addItem("Reports workspace can export a daily summary, census CSV, and staffing CSV for leadership review");
+    quickList->addItem(QString("%1 assignment(s) are still open").arg(db->countWhere("staffing_assignments", "status='Open'")));
+    quickList->addItem(QString("%1 staffing group(s) are below minimum coverage").arg(db->countMinimumStaffingGaps()));
+    quickList->addItem(QString("%1 referral(s) are marked ready for admit").arg(db->countWhere("admissions", "status='Ready'")));
+    quickList->addItem(QString("%1 referral(s) still need documents").arg(db->countWhere("admissions", "status='Needs Docs'")));
+    quickList->addItem(QString("%1 document item(s) remain open").arg(db->countWhere("document_items", "status!='Closed'")));
+    quickList->addItem(QString("%1 MDS / triple-check item(s) remain open").arg(db->countWhere("mds_items", "status!='Closed' AND status!='Complete'")));
+    quickList->addItem(QString("%1 survey command item(s) remain open").arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
+    quickList->addItem(QString("%1 outbreak item(s) remain open").arg(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
+    quickList->addItem(QString("%1 quality measure(s) are off target").arg(db->countWhere("quality_measures", "status='Off Target'")));
+    quickList->addItem(QString("%1 overdue alert(s) need immediate attention").arg(db->overdueAlertCount()));
+    quickList->addItem("Reports workspace can export a daily summary, census CSV, and staffing CSV.");
     quickLayout->addWidget(quickHint);
     quickLayout->addWidget(quickList);
 

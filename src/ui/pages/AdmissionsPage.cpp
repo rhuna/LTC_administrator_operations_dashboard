@@ -1,6 +1,11 @@
 #include "AdmissionsPage.h"
 #include "../../data/DatabaseManager.h"
 
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QHeaderView>
@@ -12,6 +17,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QVBoxLayout>
+#include <QStandardPaths>
 
 AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(parent), m_db(db) {
     auto* root = new QVBoxLayout(this);
@@ -21,7 +27,7 @@ AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(p
     auto* heading = new QLabel("Admissions Waitlist", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     auto* subheading = new QLabel(
-        "Enter referral waitlist items with payer, diagnosis, and MDS details. You can push a referral into the MDS workflow and admit directly from the waitlist.", this);
+        "Enter referral waitlist items with payer, diagnosis, and MDS details. You can import referral documents, mark referrals ready, push a referral into the MDS workflow, and admit directly from the waitlist.", this);
     subheading->setWordWrap(true);
     subheading->setStyleSheet("color: #5b6472;");
     root->addWidget(heading);
@@ -45,7 +51,7 @@ AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(p
     m_nameEdit->setPlaceholderText("Resident name");
     m_sourceEdit->setPlaceholderText("Referral source");
     m_dateEdit->setPlaceholderText("YYYY-MM-DD");
-    m_statusEdit->setPlaceholderText("Waitlisted / Pending / Accepted");
+    m_statusEdit->setPlaceholderText("Waitlisted / Pending / Accepted / Ready / Needs Docs");
     m_statusEdit->setText("Waitlisted");
     m_roomEdit->setPlaceholderText("Target room for admit action");
     m_payerEdit->setPlaceholderText("Payer");
@@ -68,10 +74,16 @@ AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(p
     auto* buttonRow = new QHBoxLayout();
     m_addButton = new QPushButton("Add to Waitlist", formCard);
     m_sendToMdsButton = new QPushButton("Send Selected to MDS", formCard);
+    m_readyButton = new QPushButton("Mark Ready", formCard);
+    m_needsDocsButton = new QPushButton("Needs Docs", formCard);
+    m_importDocButton = new QPushButton("Import Referral Document", formCard);
     m_admitButton = new QPushButton("Admit Selected", formCard);
     m_refreshButton = new QPushButton("Refresh", formCard);
     buttonRow->addWidget(m_addButton);
     buttonRow->addWidget(m_sendToMdsButton);
+    buttonRow->addWidget(m_readyButton);
+    buttonRow->addWidget(m_needsDocsButton);
+    buttonRow->addWidget(m_importDocButton);
     buttonRow->addWidget(m_admitButton);
     buttonRow->addWidget(m_refreshButton);
     buttonRow->addStretch();
@@ -94,6 +106,9 @@ AdmissionsPage::AdmissionsPage(DatabaseManager* db, QWidget* parent) : QWidget(p
 
     connect(m_addButton, &QPushButton::clicked, this, &AdmissionsPage::handleAddReferral);
     connect(m_sendToMdsButton, &QPushButton::clicked, this, &AdmissionsPage::handleSendToMds);
+    connect(m_readyButton, &QPushButton::clicked, this, &AdmissionsPage::handleMarkReady);
+    connect(m_needsDocsButton, &QPushButton::clicked, this, &AdmissionsPage::handleNeedsDocs);
+    connect(m_importDocButton, &QPushButton::clicked, this, &AdmissionsPage::handleImportReferralDocument);
     connect(m_admitButton, &QPushButton::clicked, this, &AdmissionsPage::handleAdmitSelected);
     connect(m_refreshButton, &QPushButton::clicked, this, &AdmissionsPage::refreshTable);
 
@@ -188,6 +203,80 @@ void AdmissionsPage::handleSendToMds() {
     }
 
     QMessageBox::information(this, "Send to MDS", "Referral details were pushed into diagnosis tracking and the MDS queue.");
+}
+
+void AdmissionsPage::handleMarkReady() {
+    const int row = m_tableWidget->currentRow();
+    if (row < 0) {
+        QMessageBox::information(this, "Mark ready", "Select a waitlist row first.");
+        return;
+    }
+    const int admissionId = m_tableWidget->item(row, 0)->text().toInt();
+    if (!m_db->updateRecordById("admissions", admissionId, {{"status", "Ready"}})) {
+        QMessageBox::warning(this, "Mark ready", "Unable to mark the selected referral ready.");
+        return;
+    }
+    refreshTable();
+}
+
+void AdmissionsPage::handleNeedsDocs() {
+    const int row = m_tableWidget->currentRow();
+    if (row < 0) {
+        QMessageBox::information(this, "Needs docs", "Select a waitlist row first.");
+        return;
+    }
+    const int admissionId = m_tableWidget->item(row, 0)->text().toInt();
+    if (!m_db->updateRecordById("admissions", admissionId, {{"status", "Needs Docs"}})) {
+        QMessageBox::warning(this, "Needs docs", "Unable to update the selected referral status.");
+        return;
+    }
+    refreshTable();
+}
+
+void AdmissionsPage::handleImportReferralDocument() {
+    const int row = m_tableWidget->currentRow();
+    if (row < 0) {
+        QMessageBox::information(this, "Import referral document", "Select a waitlist row first.");
+        return;
+    }
+
+    const QString residentName = m_tableWidget->item(row, 1)->text();
+    const QString chosen = QFileDialog::getOpenFileName(this, "Select referral document to import");
+    if (chosen.isEmpty()) {
+        return;
+    }
+
+    const QString storageRoot = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("documents");
+    QDir().mkpath(storageRoot);
+    const QFileInfo info(chosen);
+    const QString stampedName = QString("%1_%2").arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"), info.fileName());
+    const QString targetPath = QDir(storageRoot).filePath(stampedName);
+    if (QFile::exists(targetPath)) {
+        QFile::remove(targetPath);
+    }
+    if (!QFile::copy(chosen, targetPath)) {
+        QMessageBox::warning(this, "Import referral document", "Unable to copy the selected file into the local document store.");
+        return;
+    }
+
+    const bool ok = m_db->addRecord("document_items", {
+        {"module_name", "Admissions"},
+        {"document_name", info.fileName()},
+        {"document_type", "Referral Intake"},
+        {"linked_item", residentName},
+        {"owner", "Admissions Director"},
+        {"status", "Open"},
+        {"file_path", targetPath},
+        {"imported_on", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm")},
+        {"notes", "Imported from the admissions waitlist workflow."}
+    });
+
+    if (!ok) {
+        QMessageBox::warning(this, "Import referral document", "Unable to register the imported referral document.");
+        return;
+    }
+
+    QMessageBox::information(this, "Import referral document", "Referral document imported and linked to the selected waitlist item.");
 }
 
 void AdmissionsPage::handleAdmitSelected() {

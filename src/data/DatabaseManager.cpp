@@ -13,7 +13,7 @@ DatabaseManager::~DatabaseManager() {
 }
 
 bool DatabaseManager::initialize() {
-    const QString dbPath = QDir(QCoreApplication::applicationDirPath()).filePath("ltc_admin_dashboard_v33_referral_doc.db");
+    const QString dbPath = QDir(QCoreApplication::applicationDirPath()).filePath("ltc_admin_dashboard_v38_search_filters.db");
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
     } else {
@@ -38,7 +38,10 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS huddle_items (id INTEGER PRIMARY KEY AUTOINCREMENT, huddle_date TEXT, shift_name TEXT, department TEXT, topic TEXT, owner TEXT, priority TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS incidents (id INTEGER PRIMARY KEY AUTOINCREMENT, incident_date TEXT, resident_name TEXT, incident_type TEXT, severity TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS survey_items (id INTEGER PRIMARY KEY AUTOINCREMENT, focus_area TEXT, owner TEXT, risk_level TEXT, status TEXT)",
-        "CREATE TABLE IF NOT EXISTS quality_measures (id INTEGER PRIMARY KEY AUTOINCREMENT, measure_name TEXT, current_value TEXT, target_value TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS quality_measures (id INTEGER PRIMARY KEY AUTOINCREMENT, measure_name TEXT, category TEXT, current_value TEXT, target_value TEXT, trend TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS quality_followups (id INTEGER PRIMARY KEY AUTOINCREMENT, measure_name TEXT, focus_area TEXT, owner TEXT, due_date TEXT, status TEXT, action_step TEXT)",
+        "CREATE TABLE IF NOT EXISTS quality_monthly_snapshots (id INTEGER PRIMARY KEY AUTOINCREMENT, month_label TEXT, measure_name TEXT, current_value TEXT, target_value TEXT, variance_note TEXT, trend TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS quality_focus_areas (id INTEGER PRIMARY KEY AUTOINCREMENT, focus_area TEXT, driver TEXT, owner TEXT, status TEXT, next_review TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS managed_care_items (id INTEGER PRIMARY KEY AUTOINCREMENT, resident_name TEXT, payer TEXT, item_name TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS credentialing_items (id INTEGER PRIMARY KEY AUTOINCREMENT, employee_name TEXT, item_name TEXT, due_date TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS preparedness_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, due_date TEXT, owner TEXT, status TEXT)",
@@ -186,8 +189,19 @@ bool DatabaseManager::seedData() {
     }
     if (tableIsEmpty("quality_measures")) {
         if (!executeAll({
-            "INSERT INTO quality_measures (measure_name, current_value, target_value, status) VALUES ('30-day rehospitalization', '18.4%', '<= 15.0%', 'Off Target')",
-            "INSERT INTO quality_measures (measure_name, current_value, target_value, status) VALUES ('Long-stay UTI rate', '3.2%', '<= 2.5%', 'Watch')"
+            "INSERT INTO quality_measures (measure_name, category, current_value, target_value, trend, status, notes) VALUES ('30-day rehospitalization', 'Short Stay', '18.4%', '<= 15.0%', 'Rising', 'Off Target', 'Hospital return trend increased after weekend admits and CHF readmissions.')",
+            "INSERT INTO quality_measures (measure_name, category, current_value, target_value, trend, status, notes) VALUES ('Long-stay UTI rate', 'Long Stay', '3.2%', '<= 2.5%', 'Improving', 'Watch', 'Hydration and catheter review actions are in progress on one hall.')",
+            "INSERT INTO quality_measures (measure_name, category, current_value, target_value, trend, status, notes) VALUES ('Falls with major injury', 'Safety', '2', '0', 'Flat', 'Off Target', 'Two major-injury falls remain under root-cause review and environmental follow-up.')",
+            "INSERT INTO quality_measures (measure_name, category, current_value, target_value, trend, status, notes) VALUES ('Significant weight loss', 'Nutrition', '7.1%', '<= 5.0%', 'Rising', 'Watch', 'Dietary supplement acceptance and meal cueing remain focus items for high-risk residents.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("quality_followups")) {
+        if (!executeAll({
+            "INSERT INTO quality_followups (measure_name, focus_area, owner, due_date, status, action_step) VALUES ('30-day rehospitalization', 'Transition-of-care calls', 'DON', '2026-04-24', 'Open', 'Audit return-to-hospital cases and verify provider follow-up within 24 hours of admission.')",
+            "INSERT INTO quality_followups (measure_name, focus_area, owner, due_date, status, action_step) VALUES ('Long-stay UTI rate', 'Hydration rounding', 'Infection Preventionist', '2026-04-25', 'In Progress', 'Reinforce hydration rounds and review catheter necessity on affected residents.')",
+            "INSERT INTO quality_followups (measure_name, focus_area, owner, due_date, status, action_step) VALUES ('Falls with major injury', 'Post-fall root cause reviews', 'Administrator', '2026-04-23', 'Open', 'Complete interdisciplinary root-cause review and validate environmental corrections.')",
+            "INSERT INTO quality_followups (measure_name, focus_area, owner, due_date, status, action_step) VALUES ('Significant weight loss', 'High-risk nutrition watch list', 'Dietitian', '2026-04-26', 'Watch', 'Review weekly weights, supplement tolerance, and care-plan triggers.')"
         })) return false;
     }
     if (tableIsEmpty("managed_care_items")) {

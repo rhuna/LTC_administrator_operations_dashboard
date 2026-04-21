@@ -30,6 +30,7 @@
 #include "../ui/pages/MdsTripleCheckPage.h"
 #include "../ui/pages/SurveyCommandCenterPage.h"
 #include "../ui/pages/OutbreakCommandPage.h"
+#include "../ui/pages/SearchFiltersPage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -42,9 +43,9 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v33 Referral + Document Intake");
-    resize(1440, 920);
-    setMinimumSize(1180, 760);
+    setWindowTitle("LTC Administrator Operations Dashboard v38 Search & Filters");
+    resize(1500, 940);
+    setMinimumSize(1220, 780);
 
     auto* shell = new QWidget(this);
     auto* shellLayout = new QVBoxLayout(shell);
@@ -66,7 +67,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "Enhanced v33 workspace with role-aware sign-in, actual document intake, a richer referral waitlist, admit-from-waitlist support, diagnosis carry-forward, MDS / ARD / triple-check intake, survey command tools, outbreak tracking, workflow cleanup, and due-soon alerts.",
+        "v38 adds a search-and-filters workspace so administrators can find residents, referrals, staffing issues, quality measures, documents, MDS items, survey-command tasks, and outbreak follow-up from one calm, scroll-friendly desktop shell.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -85,9 +86,9 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     sidebarLayout->setContentsMargins(12, 14, 12, 14);
     sidebarLayout->setSpacing(10);
 
-    auto* navLabel = new QLabel("Modules", sidebar);
+    auto* navLabel = new QLabel("Navigation", sidebar);
     navLabel->setObjectName("sidebarHeading");
-    auto* navHint = new QLabel(QString("%1 access profile. Pages scroll automatically on smaller screens.").arg(roleName), sidebar);
+    auto* navHint = new QLabel(QString("%1 profile · streamlined navigation · pages scroll automatically on smaller screens.").arg(roleName), sidebar);
     navHint->setObjectName("sidebarHint");
     navHint->setWordWrap(true);
 
@@ -98,18 +99,19 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
 
     const QList<QPair<QString,QWidget*>> pages = {
         {"Dashboard", new DashboardPage(db)},
+        {"Search", new SearchFiltersPage(db)},
         {"Alerts", new AlertsPage(db)},
         {"Residents", new ResidentsPage(db)},
         {"Admissions", new AdmissionsPage(db)},
         {"Staffing", new StaffingPage(db)},
         {"Tasks", new TasksPage(db)},
-        {"QAPI / PIP", new QapiPage(db)},
-        {"Budget / Labor", new BudgetPage(db)},
+        {"QAPI", new QapiPage(db)},
+        {"Budget", new BudgetPage(db)},
         {"Compliance", new CompliancePage(db)},
         {"Huddle", new HuddlePage(db)},
         {"Incidents", new IncidentsPage(db)},
-        {"Survey Readiness", new SurveyReadinessPage(db)},
-        {"Quality Measures", new QualityMeasuresPage(db)},
+        {"Survey Ready", new SurveyReadinessPage(db)},
+        {"Quality", new QualityMeasuresPage(db)},
         {"Managed Care", new ManagedCarePage(db)},
         {"Credentialing", new CredentialingPage(db)},
         {"Preparedness", new PreparednessPage(db)},
@@ -118,14 +120,14 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"Environmental Rounds", new EnvironmentalRoundsPage(db)},
         {"Bed Board", new BedBoardPage(db)},
         {"Transportation", new TransportationPage(db)},
-        {"Pharmacy / Meds", new PharmacyPage(db)},
-        {"Dietary / Nutrition", new DietaryPage(db)},
+        {"Pharmacy", new PharmacyPage(db)},
+        {"Dietary", new DietaryPage(db)},
         {"Document Center", new DocumentCenterPage(db)},
         {"Census Management", new CensusManagementPage(db)},
-        {"MDS / Triple Check", new MdsTripleCheckPage(db)},
-        {"Survey Command Center", new SurveyCommandCenterPage(db)},
+        {"MDS", new MdsTripleCheckPage(db)},
+        {"Survey Cmd", new SurveyCommandCenterPage(db)},
         {"Outbreak Command", new OutbreakCommandPage(db)},
-        {"Reports & Export", new ReportsPage(db)},
+        {"Reports", new ReportsPage(db)},
         {"Workflow Center", new WorkflowCenterPage(db)}
     };
 
@@ -133,13 +135,13 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     if (roleName == "Administrator") {
         for (const auto& pair : pages) allowed << pair.first;
     } else if (roleName == "Director of Nursing") {
-        allowed = {"Dashboard","Alerts","Residents","Admissions","Staffing","Tasks","QAPI / PIP","Huddle","Incidents","Survey Readiness","Quality Measures","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy / Meds","Dietary / Nutrition","Document Center","Census Management","MDS / Triple Check","Survey Command Center","Outbreak Command","Reports & Export","Workflow Center"};
+        allowed = {"Dashboard","Search","Alerts","Residents","Admissions","Staffing","Tasks","QAPI","Huddle","Incidents","Survey Ready","Quality","Credentialing","Preparedness","Infection Control","Grievances","Pharmacy","Dietary","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Workflow Center"};
     } else if (roleName == "Admissions Director") {
-        allowed = {"Dashboard","Alerts","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS / Triple Check","Survey Command Center","Outbreak Command","Reports & Export","Workflow Center"};
+        allowed = {"Dashboard","Search","Alerts","Residents","Admissions","Tasks","Managed Care","Bed Board","Transportation","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Workflow Center"};
     } else if (roleName == "Staffing Coordinator") {
-        allowed = {"Dashboard","Alerts","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports & Export","Workflow Center"};
+        allowed = {"Dashboard","Search","Alerts","Staffing","Tasks","Credentialing","Preparedness","Document Center","Reports","Workflow Center"};
     } else {
-        allowed = {"Dashboard","Alerts","Residents","Admissions","Staffing","Quality Measures","Document Center","Census Management","MDS / Triple Check","Survey Command Center","Outbreak Command","Reports & Export","Workflow Center"};
+        allowed = {"Dashboard","Search","Alerts","Residents","Admissions","Staffing","Quality","Document Center","Census Management","MDS","Survey Cmd","Outbreak Command","Reports","Workflow Center"};
     }
 
     sidebarLayout->addWidget(navLabel);
@@ -169,7 +171,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
 
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 1);
-    splitter->setSizes(QList<int>{260, 1120});
+    splitter->setSizes(QList<int>{240, 1220});
 
     shellLayout->addWidget(splitter, 1);
     setCentralWidget(shell);

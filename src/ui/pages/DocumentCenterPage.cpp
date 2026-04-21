@@ -26,7 +26,7 @@ DocumentCenterPage::DocumentCenterPage(DatabaseManager* db, QWidget* parent)
     root->addWidget(heading);
 
     auto* subtitle = new QLabel(
-        "Import actual files into the dashboard's local document store and track which operational item they belong to.",
+        "Import actual files into the dashboard's local document store, including referral packets from the waitlist workflow, and track which operational item they belong to.",
         this);
     subtitle->setWordWrap(true);
     root->addWidget(subtitle);

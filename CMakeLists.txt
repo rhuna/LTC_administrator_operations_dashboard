@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 33.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 38.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,6 +23,8 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/DashboardPage.cpp
     src/ui/pages/AlertsPage.h
     src/ui/pages/AlertsPage.cpp
+    src/ui/pages/SearchFiltersPage.h
+    src/ui/pages/SearchFiltersPage.cpp
     src/ui/pages/ResidentsPage.h
     src/ui/pages/ResidentsPage.cpp
     src/ui/pages/AdmissionsPage.h

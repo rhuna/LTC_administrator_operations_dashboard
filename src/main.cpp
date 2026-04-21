@@ -8,24 +8,24 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     app.setApplicationName("LTC Administrator Operations Dashboard");
-    app.setApplicationVersion("33.1.0");
+    app.setApplicationVersion("37.0.0");
     app.setStyleSheet(R"(
         QWidget {
-            background: #f4f7fb;
+            background: #f6f8fb;
             color: #1f2937;
             font-family: "Segoe UI", "Inter", sans-serif;
-            font-size: 13px;
+            font-size: 12px;
         }
         QMainWindow, QScrollArea, QStackedWidget {
-            background: #f4f7fb;
+            background: #f6f8fb;
         }
-        QFrame#appHeader, QFrame#sidebarCard, QGroupBox, QFrame#kpiCard, QFrame#loginCard {
+        QFrame#appHeader, QFrame#sidebarCard, QGroupBox, QFrame#kpiCard, QFrame#loginCard, QFrame#summaryStrip {
             background: #ffffff;
             border: 1px solid #d9e2ec;
-            border-radius: 16px;
+            border-radius: 18px;
         }
         QLabel#appTitle {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
             color: #102a43;
         }
@@ -47,11 +47,12 @@ int main(int argc, char *argv[]) {
             padding: 2px;
         }
         QListWidget#sideNav::item {
-            background: #f8fafc;
-            border: 1px solid #e5edf5;
+            background: #fbfcfe;
+            border: 1px solid #e7eef5;
             border-radius: 12px;
-            padding: 10px 12px;
-            margin: 2px 0px;
+            padding: 9px 12px;
+            margin: 3px 0px;
+            min-height: 22px;
         }
         QListWidget#sideNav::item:selected {
             background: #d9eafc;
@@ -94,7 +95,7 @@ int main(int argc, char *argv[]) {
             left: 14px;
             padding: 0 6px;
         }
-        QLineEdit, QTextEdit, QTableWidget, QListWidget#actionList, QComboBox {
+        QLineEdit, QTextEdit, QTableWidget, QListWidget#actionList, QComboBox, QDateEdit {
             background: #ffffff;
             border: 1px solid #d9e2ec;
             border-radius: 10px;
@@ -140,3 +141,4 @@ int main(int argc, char *argv[]) {
     window.show();
     return app.exec();
 }
+
