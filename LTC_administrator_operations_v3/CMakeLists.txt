@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 65.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 81.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -29,6 +29,24 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/DashboardCustomizePage.cpp
     src/ui/pages/CalendarPage.h
     src/ui/pages/CalendarPage.cpp
+    src/ui/pages/LeadershipRoundsPage.h
+    src/ui/pages/LeadershipRoundsPage.cpp
+    src/ui/pages/ExecutiveFollowUpBoardPage.h
+    src/ui/pages/ExecutiveFollowUpBoardPage.cpp
+    src/ui/pages/MorningMeetingBoardPage.h
+    src/ui/pages/MorningMeetingBoardPage.cpp
+    src/ui/pages/DepartmentPulseBoardPage.h
+    src/ui/pages/DepartmentPulseBoardPage.cpp
+    src/ui/pages/BarrierEscalationBoardPage.h
+    src/ui/pages/BarrierEscalationBoardPage.cpp
+    src/ui/pages/SurveyRecoveryBoardPage.h
+    src/ui/pages/SurveyRecoveryBoardPage.cpp
+    src/ui/pages/EvidenceBinderBoardPage.h
+    src/ui/pages/EvidenceBinderBoardPage.cpp
+    src/ui/pages/MockSurveyDrillBoardPage.h
+    src/ui/pages/SurveyEntranceConferenceBoardPage.h
+    src/ui/pages/MockSurveyDrillBoardPage.cpp
+    src/ui/pages/SurveyEntranceConferenceBoardPage.cpp
     src/ui/pages/MetricsChartsPage.h
     src/ui/pages/MetricsChartsPage.cpp
     src/ui/pages/KpiTrendEnginePage.h
@@ -115,6 +133,18 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/MdsTripleCheckPage.cpp
     src/ui/pages/SurveyCommandCenterPage.h
     src/ui/pages/SurveyCommandCenterPage.cpp
+    src/ui/pages/AlertsEscalationCenterPage.h
+    src/ui/pages/AlertsEscalationCenterPage.cpp
+    src/ui/pages/SurveyLiveResponseTrackerPage.h
+    src/ui/pages/SurveyLiveResponseTrackerPage.cpp
+    src/ui/pages/SurveyDocumentRequestLogPage.h
+    src/ui/pages/SurveyDocumentRequestLogPage.cpp
+    src/ui/pages/ResidentTracerManagerPage.h
+    src/ui/pages/ResidentTracerManagerPage.cpp
+    src/ui/pages/PlanOfCorrectionBuilderPage.h
+    src/ui/pages/PlanOfCorrectionBuilderPage.cpp
+    src/ui/pages/ExecutivePrintExportCenterPage.h
+    src/ui/pages/ExecutivePrintExportCenterPage.cpp
     src/ui/pages/OutbreakCommandPage.h
     src/ui/pages/OutbreakCommandPage.cpp
     src/ui/pages/TrainingPage.h

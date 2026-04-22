@@ -2,6 +2,8 @@
 #include "../../data/DatabaseManager.h"
 #include "../widgets/KpiCard.h"
 
+#include <QDate>
+#include <QTime>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -23,13 +25,13 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* title = new QLabel("Executive dashboard", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up, now with saved dashboard preferences and a calendar view for scheduled work, plus a local audit trail for recent changes, a KPI trend engine for rolling executive measure review, an external sync readiness layer for future EMR/PCC work, and a release-candidate checklist for packaging, validation, rollout readiness, a built-in SOP / quick-start center for repeatable operations, and a therapy / rehab operations workspace for rehab starts, auth follow-up, and discharge-readiness coordination, plus a social services / discharge planning workspace for family meetings, psychosocial follow-up, and community resource coordination, plus a revenue cycle workspace for billing queue, denial tracking, and A/R aging, a contract management workspace for vendor contracts and renewal tracking, and an upgraded budget and managed care module with full add/edit capability.",
+        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up, now with saved dashboard preferences and a calendar view for scheduled work, plus a local audit trail for recent changes, a KPI trend engine for rolling executive measure review, an external sync readiness layer for future EMR/PCC work, and a release-candidate checklist for packaging, validation, rollout readiness, a built-in SOP / quick-start center for repeatable operations, and a therapy / rehab operations workspace for rehab starts, auth follow-up, and discharge-readiness coordination, plus a social services / discharge planning workspace for family meetings, psychosocial follow-up, and community resource coordination, plus a revenue cycle workspace for billing queue, denial tracking, and A/R aging, a contract management workspace for vendor contracts and renewal tracking, an upgraded budget and managed care module with full add/edit capability, and a Survey Command Center that rolls the major survey-readiness boards into one live leadership control room, plus a plan-of-correction builder for formal survey follow-up work, and an executive print/export center for packet prep, briefing sheets, and leadership handoff materials, plus an alerts and escalation center for overdue, blocked, critical, and due-now visibility across the survey workflow.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
 
     auto* snapshot = new QLabel(
-        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items · %14 revenue cycle items · %15 contracts needing attention")
+        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items · %14 revenue cycle items · %15 contracts needing attention · %16 leadership-round follow-ups · %17 executive follow-up board items · %18 department pulse items · %19 evidence binder items · %20 mock survey drill items · %21 survey command items · %22 live survey requests · %23 survey document requests · %24 resident tracers · %25 plan-of-correction items · %26 executive print/export packets · %27 alert-center items")
             .arg(db->countWhere("residents", "status='Current'"))
             .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'"))
             .arg(db->countWhere("staffing_assignments", "status='Open'"))
@@ -44,7 +46,19 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
             .arg(db->countWhere("therapy_items"))
             .arg(db->countWhere("social_services_items"))
             .arg(db->countWhere("revenue_cycle_items", "status='Open' OR status='Pending Auth' OR status='Denial' OR status='At Risk'"))
-            .arg(db->countWhere("contracts", "status='Up for Renewal' OR status='Watch' OR status='Expired'")),
+            .arg(db->countWhere("contracts", "status='Up for Renewal' OR status='Watch' OR status='Expired'"))
+            .arg(db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'"))
+            .arg(db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'"))
+            .arg(db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'"))
+            .arg(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'"))
+            .arg(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'"))
+            .arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'"))
+            .arg(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'"))
+            .arg(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'"))
+            .arg(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'"))
+            .arg(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'"))
+            .arg(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'"))
+            .arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")),
         hero);
     snapshot->setObjectName("dashboardSnapshot");
 
@@ -104,6 +118,20 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     addSummary("Ready to deploy", QString::number(db->countWhere("release_candidate_items", "status='Ready' OR status='Complete'")));
     addSummary("SOP items", QString::number(db->countWhere("sop_items")));
     addSummary("Social services", QString::number(db->countWhere("social_services_items")));
+    addSummary("Rounds follow-up", QString::number(db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'")));
+    addSummary("Exec follow-up", QString::number(db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'")));
+    addSummary("Morning board", QString::number(db->countWhere("morning_meeting_items", "status='Open' OR status='In Progress' OR status='Blocked'")));
+    addSummary("Dept pulse", QString::number(db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'")));
+    addSummary("Barriers", QString::number(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'")));
+    addSummary("Evidence binder", QString::number(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'")));
+    addSummary("Mock survey drill", QString::number(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'")));
+    addSummary("Entrance conf.", QString::number(db->countWhere("survey_entrance_conference_items", "status='Open' OR status='Assigned' OR status='Assembling'")));
+    addSummary("Survey command", QString::number(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
+    addSummary("Live requests", QString::number(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'")));
+    addSummary("Doc requests", QString::number(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'")));
+    addSummary("Resident tracers", QString::number(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")));
+    addSummary("Print/export", QString::number(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
+    addSummary("Alert center", QString::number(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
     summaryLayout->addStretch();
     root->addWidget(summaryStrip);
 
@@ -146,6 +174,42 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     kpiGrid->addWidget(new KpiCard("SOP items", QString::number(db->countWhere("sop_items")), this), 11, 0);
     kpiGrid->addWidget(new KpiCard("Active SOPs", QString::number(db->countWhere("sop_items", "status='Active'")), this), 11, 1);
     kpiGrid->addWidget(new KpiCard("SOPs need update", QString::number(db->countWhere("sop_items", "status='Needs Update'")), this), 11, 2);
+    kpiGrid->addWidget(new KpiCard("Barrier items", QString::number(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'")), this), 12, 0);
+    kpiGrid->addWidget(new KpiCard("Urgent barriers", QString::number(db->countWhere("barrier_escalations", "severity='High' OR severity='Critical'")), this), 12, 1);
+    kpiGrid->addWidget(new KpiCard("Removed barriers", QString::number(db->countWhere("barrier_escalations", "status='Removed'")), this), 12, 2);
+    kpiGrid->addWidget(new KpiCard("Recovery items", QString::number(db->countWhere("survey_recovery_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence'")), this), 13, 0);
+    kpiGrid->addWidget(new KpiCard("Overdue recovery", QString::number(db->countWhere("survey_recovery_items", QString("(status='Open' OR status='In Progress' OR status='Awaiting Evidence') AND due_date < '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 13, 1);
+    kpiGrid->addWidget(new KpiCard("Completed recovery", QString::number(db->countWhere("survey_recovery_items", "status='Complete'")), this), 13, 2);
+    kpiGrid->addWidget(new KpiCard("Binder items", QString::number(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'")), this), 14, 0);
+    kpiGrid->addWidget(new KpiCard("Due binder items", QString::number(db->countWhere("evidence_binder_items", QString("(status='Open' OR status='Collecting') AND due_date <= '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 14, 1);
+    kpiGrid->addWidget(new KpiCard("Ready binder items", QString::number(db->countWhere("evidence_binder_items", "status='Ready' OR readiness='Ready'")), this), 14, 2);
+    kpiGrid->addWidget(new KpiCard("Mock drill items", QString::number(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'")), this), 15, 0);
+    kpiGrid->addWidget(new KpiCard("Due mock drills", QString::number(db->countWhere("mock_survey_drills", QString("(status='Open' OR status='Assigned' OR status='In Drill') AND due_date <= '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 15, 1);
+    kpiGrid->addWidget(new KpiCard("Completed drills", QString::number(db->countWhere("mock_survey_drills", "status='Complete'")), this), 15, 2);
+    kpiGrid->addWidget(new KpiCard("Entrance items", QString::number(db->countWhere("survey_entrance_conference_items", "status='Open' OR status='Assigned' OR status='Assembling'")), this), 16, 0);
+    kpiGrid->addWidget(new KpiCard("Due entrance items", QString::number(db->countWhere("survey_entrance_conference_items", QString("(status='Open' OR status='Assigned' OR status='Assembling') AND due_date <= '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 16, 1);
+    kpiGrid->addWidget(new KpiCard("Ready packets", QString::number(db->countWhere("survey_entrance_conference_items", "status='Ready'")), this), 16, 2);
+    kpiGrid->addWidget(new KpiCard("Survey command items", QString::number(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")), this), 17, 0);
+    kpiGrid->addWidget(new KpiCard("High-priority command", QString::number(db->countWhere("survey_command_items", "priority='High' AND status!='Closed' AND status!='Complete'")), this), 17, 1);
+    kpiGrid->addWidget(new KpiCard("Command complete", QString::number(db->countWhere("survey_command_items", "status='Complete' OR status='Closed'")), this), 17, 2);
+    kpiGrid->addWidget(new KpiCard("Live survey requests", QString::number(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'")), this), 18, 0);
+    kpiGrid->addWidget(new KpiCard("Live requests overdue", QString::number(db->countWhere("survey_live_requests", QString("(status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon') AND request_date < '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd"))) + db->countWhere("survey_live_requests", QString("(status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon') AND request_date='%1' AND due_time < '%2'").arg(QDate::currentDate().toString("yyyy-MM-dd"), QTime::currentTime().toString("HH:mm")))), this), 18, 1);
+    kpiGrid->addWidget(new KpiCard("Requests delivered", QString::number(db->countWhere("survey_live_requests", "status='Delivered' OR status='Closed'")), this), 18, 2);
+    kpiGrid->addWidget(new KpiCard("Survey doc requests", QString::number(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'")), this), 19, 0);
+    kpiGrid->addWidget(new KpiCard("Doc due today", QString::number(db->countWhere("survey_document_requests", QString("(status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing') AND due_date <= '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 19, 1);
+    kpiGrid->addWidget(new KpiCard("Doc missing", QString::number(db->countWhere("survey_document_requests", "status='Missing'")), this), 19, 2);
+    kpiGrid->addWidget(new KpiCard("Resident tracers", QString::number(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")), this), 20, 0);
+    kpiGrid->addWidget(new KpiCard("High-risk tracers", QString::number(db->countWhere("resident_tracer_items", "(status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated') AND (risk_level='High' OR risk_level='Critical')")), this), 20, 1);
+    kpiGrid->addWidget(new KpiCard("Tracer follow-up", QString::number(db->countWhere("resident_tracer_items", "status='Needs Follow-Up' OR status='Escalated'")), this), 20, 2);
+    kpiGrid->addWidget(new KpiCard("POC open", QString::number(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'")), this), 21, 0);
+    kpiGrid->addWidget(new KpiCard("POC overdue", QString::number(db->countWhere("plan_of_correction_items", QString("(status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review') AND due_date < '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 21, 1);
+    kpiGrid->addWidget(new KpiCard("POC awaiting evidence", QString::number(db->countWhere("plan_of_correction_items", "status='Awaiting Evidence' OR status='Under Review'")), this), 21, 2);
+    kpiGrid->addWidget(new KpiCard("Exec packets", QString::number(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")), this), 22, 0);
+    kpiGrid->addWidget(new KpiCard("Packets due now", QString::number(db->countWhere("executive_export_packets", QString("(status='Drafting' OR status='Waiting on Input' OR status='Ready') AND due_date <= '%1'").arg(QDate::currentDate().toString("yyyy-MM-dd")))), this), 22, 1);
+    kpiGrid->addWidget(new KpiCard("Packets exported", QString::number(db->countWhere("executive_export_packets", "status='Exported' OR status='Printed' OR status='Delivered'")), this), 22, 2);
+    kpiGrid->addWidget(new KpiCard("Alert-center open", QString::number(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")), this), 23, 0);
+    kpiGrid->addWidget(new KpiCard("Critical alerts", QString::number(db->countWhere("alerts_escalation_items", "(status='Open' OR status='Due Today' OR status='Blocked') AND severity='Critical'")), this), 23, 1);
+    kpiGrid->addWidget(new KpiCard("Blocked alerts", QString::number(db->countWhere("alerts_escalation_items", "status='Blocked'")), this), 23, 2);
     root->addLayout(kpiGrid);
 
     auto* lowerRow = new QHBoxLayout();
@@ -187,6 +251,22 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     quickList->addItem(QString("%1 sync readiness profile(s) are documented for future EMR/PCC integration work.").arg(db->countWhere("external_sync_profiles")));
     quickList->addItem(QString("%1 release-readiness item(s) are tracked for packaging and rollout.").arg(db->countWhere("release_candidate_items")));
     quickList->addItem(QString("%1 SOP / quick-start item(s) are available for training and repeatable operations.").arg(db->countWhere("sop_items")));
+    quickList->addItem(QString("%1 leadership round item(s) are still open, in progress, or on watch.").arg(db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'")));
+    quickList->addItem(QString("%1 executive follow-up item(s) are still active on the leadership closure board.").arg(db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'")));
+    quickList->addItem(QString("%1 morning meeting item(s) are active on today's execution board.").arg(db->countWhere("morning_meeting_items", "status='Open' OR status='In Progress' OR status='Blocked'")));
+    quickList->addItem(QString("%1 department pulse item(s) are open, watched, or blocked across departments.").arg(db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'")));
+    quickList->addItem(QString("%1 barrier escalation item(s) are still open, assigned, or waiting for removal.").arg(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'")));
+    quickList->addItem(QString("%1 survey recovery item(s) are open, in progress, or awaiting evidence on the corrective-action board.").arg(db->countWhere("survey_recovery_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence'")));
+    quickList->addItem(QString("%1 evidence binder item(s) are still open or collecting for survey-proof readiness.").arg(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'")));
+    quickList->addItem(QString("%1 mock survey drill item(s) are still open, assigned, or in active drill before survey walk-throughs.").arg(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'")));
+    quickList->addItem(QString("%1 entrance-conference item(s) are still open, assigned, or assembling before surveyor arrival.").arg(db->countWhere("survey_entrance_conference_items", "status='Open' OR status='Assigned' OR status='Assembling'")));
+    quickList->addItem(QString("%1 survey command item(s) remain active in the cross-board survey control room.").arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
+    quickList->addItem(QString("%1 live survey request(s) remain open, assigned, gathering, or due soon during active survey response.").arg(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'")));
+    quickList->addItem(QString("%1 survey document request(s) remain open, locating, printing, ready to deliver, or missing during active survey response.").arg(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'")));
+    quickList->addItem(QString("%1 resident tracer item(s) remain open, in progress, needing follow-up, or escalated across resident-centered survey tracers.").arg(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")));
+    quickList->addItem(QString("%1 plan-of-correction item(s) remain open, in progress, awaiting evidence, or under review for formal survey follow-up.").arg(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'")));
+    quickList->addItem(QString("%1 executive packet(s) remain drafting, waiting on input, or ready for print/export across leadership operations.").arg(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
+    quickList->addItem(QString("%1 alert-center item(s) remain open, due today, or blocked across the survey urgency layer.").arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
     quickList->addItem("Reports workspace can export a daily summary, census CSV, and staffing CSV.");
     quickLayout->addWidget(quickHint);
     quickLayout->addWidget(quickList);

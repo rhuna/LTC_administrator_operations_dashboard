@@ -23,6 +23,22 @@
 #include "../ui/pages/TasksPage.h"
 #include "../ui/pages/TransportationPage.h"
 #include "../ui/pages/CalendarPage.h"
+#include "../ui/pages/LeadershipRoundsPage.h"
+#include "../ui/pages/ExecutiveFollowUpBoardPage.h"
+#include "../ui/pages/MorningMeetingBoardPage.h"
+#include "../ui/pages/DepartmentPulseBoardPage.h"
+#include "../ui/pages/BarrierEscalationBoardPage.h"
+#include "../ui/pages/SurveyRecoveryBoardPage.h"
+#include "../ui/pages/EvidenceBinderBoardPage.h"
+#include "../ui/pages/MockSurveyDrillBoardPage.h"
+#include "../ui/pages/SurveyEntranceConferenceBoardPage.h"
+#include "../ui/pages/SurveyCommandCenterPage.h"
+#include "../ui/pages/AlertsEscalationCenterPage.h"
+#include "../ui/pages/SurveyLiveResponseTrackerPage.h"
+#include "../ui/pages/SurveyDocumentRequestLogPage.h"
+#include "../ui/pages/ResidentTracerManagerPage.h"
+#include "../ui/pages/PlanOfCorrectionBuilderPage.h"
+#include "../ui/pages/ExecutivePrintExportCenterPage.h"
 #include "../ui/pages/TreatmentsPage.h"
 
 #include <QAbstractScrollArea>
@@ -36,7 +52,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v65 Live Operations");
+    setWindowTitle("LTC Administrator Operations Dashboard v81 Alerts & Escalation Center");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -60,7 +76,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v65 uses a streamlined, non-duplicated tab layout: staffing is live numbers and ratios, medical records carries pharmacy / isolations / vaccinations / infection-control, DON carries incidents / interventions / reportables, and treatments tracks wounds.",
+        "v81 adds an alerts and escalation center so leadership can see overdue, blocked, critical, and due-now issues across the major survey boards in one urgency-focused operational workspace.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -95,6 +111,22 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
         {"Dashboard Setup", new DashboardCustomizePage(db)},
         {"Alerts", new AlertsPage(db)},
         {"Calendar", new CalendarPage(db)},
+        {"Leadership Rounds", new LeadershipRoundsPage(db)},
+        {"Executive Follow-Up", new ExecutiveFollowUpBoardPage(db)},
+        {"Morning Meeting", new MorningMeetingBoardPage(db)},
+        {"Department Pulse", new DepartmentPulseBoardPage(db)},
+        {"Barrier Escalation", new BarrierEscalationBoardPage(db)},
+        {"Survey Recovery", new SurveyRecoveryBoardPage(db)},
+        {"Evidence Binder", new EvidenceBinderBoardPage(db)},
+        {"Mock Survey Drill", new MockSurveyDrillBoardPage(db)},
+        {"Entrance Conference", new SurveyEntranceConferenceBoardPage(db)},
+        {"Survey Command Center", new SurveyCommandCenterPage(db)},
+        {"Alerts & Escalation", new AlertsEscalationCenterPage(db)},
+        {"Live Survey Response", new SurveyLiveResponseTrackerPage(db)},
+        {"Survey Document Requests", new SurveyDocumentRequestLogPage(db)},
+        {"Resident Tracer Manager", new ResidentTracerManagerPage(db)},
+        {"Plan of Correction", new PlanOfCorrectionBuilderPage(db)},
+        {"Executive Print & Export", new ExecutivePrintExportCenterPage(db)},
         {"Residents", new ResidentsPage(db)},
         {"Admissions", new AdmissionsPage(db)},
         {"HR / Staffing", new StaffingPage(db)},

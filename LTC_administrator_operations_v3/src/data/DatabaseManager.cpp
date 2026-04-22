@@ -27,7 +27,7 @@ bool DatabaseManager::initialize() {
         return false;
     }
     QDir().mkpath(baseDir);
-    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v61_consolidated_ops.db");
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v81_alerts_escalation_center.db");
 
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
@@ -144,6 +144,22 @@ bool DatabaseManager::initialize() {
     if (tableIsEmpty("wound_treatments")) {
         if (!executeAll({
             "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("plan_of_correction_items")) {
+        if (!executeAll({
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F689', 'Accident prevention / supervision', 'Resident tracer and late-fall huddle found inconsistent post-fall intervention carryover between shifts.', 'DON', '2026-04-25', 'High', 'Open', 'Shift-to-shift follow-through and care-plan reinforcement were inconsistent.', 'Retrain charge nurses, validate intervention carryover, and complete three post-fall audits on each hall.', 'Attach audit tools, retraining roster, and 7-day monitoring summary before closure.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F812', 'Food safety / meal service', 'Kitchen tracer showed inconsistent final-temp documentation on one meal-service line review.', 'Dietary Manager', '2026-04-24', 'Moderate', 'Awaiting Evidence', 'Temperature checks occurred but the documentation step was not consistently closed in real time.', 'Reinforce line-lead signoff, repeat meal-service checks for three days, and review with dietary team.', 'Upload corrected logs and observation sheets to binder section before submission.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F842', 'Resident records / documentation', 'Document request log showed one record packet was missing a current physician-order reconciliation printout at first pull.', 'Medical Records', '2026-04-23', 'Low', 'Under Review', 'Record packet preparation workflow did not include a final reconciliation checkpoint before survey delivery.', 'Add final packet checklist step, spot-check the next five record pulls, and document completion in command center.', 'Keep completed checklist samples and command-center follow-up notes as evidence of sustained correction.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("executive_export_packets")) {
+        if (!executeAll({
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Survey leadership huddle packet', 'Administrator / DON / department heads', 'Live survey requests, document pulls, barriers, resident tracers, and today''s corrective actions', 'Administrator', '2026-04-21', 'Print Packet', 'Ready', 'Prepare one printed copy for the noon leadership huddle and one spare for the command center binder.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Plan-of-correction working packet', 'Administrator / QAPI / corporate support', 'Open POC items, evidence plan detail, owners, and due dates', 'QAPI Nurse', '2026-04-22', 'PDF Packet', 'Drafting', 'Need final evidence notes from dietary and nursing before exporting the packet.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Resident tracer briefing summary', 'Leadership / survey escort team', 'High-risk tracers, unresolved follow-up, and resident rooms requiring immediate visibility', 'Administrator', '2026-04-21', 'Briefing Sheet', 'Waiting on Input', 'Add the last two tracer updates from the command center before printing.')"
         })) return false;
     }
 
@@ -308,6 +324,21 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS housekeeping_laundry_items (id INTEGER PRIMARY KEY AUTOINCREMENT, review_date TEXT, area_name TEXT, focus_area TEXT, item_name TEXT, owner TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS revenue_cycle_items (id INTEGER PRIMARY KEY AUTOINCREMENT, resident_name TEXT, payer TEXT, item_name TEXT, ar_aging TEXT, owner TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS contracts (id INTEGER PRIMARY KEY AUTOINCREMENT, vendor_name TEXT, category TEXT, renewal_date TEXT, rate_schedule TEXT, owner TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS leadership_rounds (id INTEGER PRIMARY KEY AUTOINCREMENT, round_date TEXT, shift_name TEXT, area_name TEXT, owner_name TEXT, priority TEXT, status TEXT, followup_date TEXT, round_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS executive_followups (id INTEGER PRIMARY KEY AUTOINCREMENT, due_date TEXT, focus_area TEXT, item_name TEXT, owner_name TEXT, priority TEXT, status TEXT, source_name TEXT)",
+        "CREATE TABLE IF NOT EXISTS morning_meeting_items (id INTEGER PRIMARY KEY AUTOINCREMENT, board_date TEXT, department_name TEXT, item_name TEXT, owner_name TEXT, due_time TEXT, priority TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS department_pulse_items (id INTEGER PRIMARY KEY AUTOINCREMENT, checkin_date TEXT, department_name TEXT, leader_name TEXT, current_state TEXT, blocker_note TEXT, risk_level TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS barrier_escalations (id INTEGER PRIMARY KEY AUTOINCREMENT, entry_date TEXT, department_name TEXT, owner_name TEXT, barrier_name TEXT, target_outcome TEXT, action_note TEXT, severity TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS survey_recovery_items (id INTEGER PRIMARY KEY AUTOINCREMENT, plan_date TEXT, focus_area TEXT, issue_name TEXT, owner_name TEXT, due_date TEXT, priority TEXT, status TEXT, evidence_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS evidence_binder_items (id INTEGER PRIMARY KEY AUTOINCREMENT, prep_date TEXT, binder_section TEXT, evidence_item TEXT, owner_name TEXT, due_date TEXT, readiness TEXT, status TEXT, location_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS mock_survey_drills (id INTEGER PRIMARY KEY AUTOINCREMENT, drill_date TEXT, drill_type TEXT, focus_area TEXT, owner_name TEXT, due_date TEXT, priority TEXT, status TEXT, coaching_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS survey_entrance_conference_items (id INTEGER PRIMARY KEY AUTOINCREMENT, prep_date TEXT, request_item TEXT, owner_name TEXT, location_note TEXT, due_date TEXT, priority TEXT, status TEXT, details_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS survey_live_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, request_date TEXT, request_time TEXT, request_source TEXT, request_category TEXT, request_description TEXT, owner_name TEXT, due_time TEXT, priority TEXT, status TEXT, delivery_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS survey_document_requests (id INTEGER PRIMARY KEY AUTOINCREMENT, request_date TEXT, request_time TEXT, request_source TEXT, document_type TEXT, document_name TEXT, owner_name TEXT, source_location TEXT, due_date TEXT, priority TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS resident_tracer_items (id INTEGER PRIMARY KEY AUTOINCREMENT, tracer_date TEXT, resident_name TEXT, room_number TEXT, tracer_type TEXT, focus_area TEXT, department_name TEXT, owner_name TEXT, risk_level TEXT, status TEXT, tracer_note TEXT, followup_action TEXT)",
+        "CREATE TABLE IF NOT EXISTS plan_of_correction_items (id INTEGER PRIMARY KEY AUTOINCREMENT, finding_date TEXT, citation_tag TEXT, focus_area TEXT, finding_text TEXT, owner_name TEXT, due_date TEXT, severity TEXT, status TEXT, root_cause TEXT, corrective_action TEXT, evidence_plan TEXT)",
+        "CREATE TABLE IF NOT EXISTS executive_export_packets (id INTEGER PRIMARY KEY AUTOINCREMENT, pack_date TEXT, packet_name TEXT, audience_name TEXT, content_scope TEXT, owner_name TEXT, due_date TEXT, format_name TEXT, status TEXT, notes TEXT)",
+        "CREATE TABLE IF NOT EXISTS alerts_escalation_items (id INTEGER PRIMARY KEY AUTOINCREMENT, alert_date TEXT, board_name TEXT, item_name TEXT, owner_name TEXT, due_date TEXT, severity TEXT, status TEXT, escalation_note TEXT)",
         "CREATE TABLE IF NOT EXISTS training_items (id INTEGER PRIMARY KEY AUTOINCREMENT, area_name TEXT, employee TEXT, role TEXT, due_date TEXT, status TEXT, notes TEXT)"
     };
     return executeAll(ddl);
@@ -365,6 +396,22 @@ bool DatabaseManager::executeAll(const QStringList& statements) const {
     if (tableIsEmpty("wound_treatments")) {
         if (!executeAll({
             "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("plan_of_correction_items")) {
+        if (!executeAll({
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F689', 'Accident prevention / supervision', 'Resident tracer and late-fall huddle found inconsistent post-fall intervention carryover between shifts.', 'DON', '2026-04-25', 'High', 'Open', 'Shift-to-shift follow-through and care-plan reinforcement were inconsistent.', 'Retrain charge nurses, validate intervention carryover, and complete three post-fall audits on each hall.', 'Attach audit tools, retraining roster, and 7-day monitoring summary before closure.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F812', 'Food safety / meal service', 'Kitchen tracer showed inconsistent final-temp documentation on one meal-service line review.', 'Dietary Manager', '2026-04-24', 'Moderate', 'Awaiting Evidence', 'Temperature checks occurred but the documentation step was not consistently closed in real time.', 'Reinforce line-lead signoff, repeat meal-service checks for three days, and review with dietary team.', 'Upload corrected logs and observation sheets to binder section before submission.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F842', 'Resident records / documentation', 'Document request log showed one record packet was missing a current physician-order reconciliation printout at first pull.', 'Medical Records', '2026-04-23', 'Low', 'Under Review', 'Record packet preparation workflow did not include a final reconciliation checkpoint before survey delivery.', 'Add final packet checklist step, spot-check the next five record pulls, and document completion in command center.', 'Keep completed checklist samples and command-center follow-up notes as evidence of sustained correction.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("executive_export_packets")) {
+        if (!executeAll({
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Survey leadership huddle packet', 'Administrator / DON / department heads', 'Live survey requests, document pulls, barriers, resident tracers, and today''s corrective actions', 'Administrator', '2026-04-21', 'Print Packet', 'Ready', 'Prepare one printed copy for the noon leadership huddle and one spare for the command center binder.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Plan-of-correction working packet', 'Administrator / QAPI / corporate support', 'Open POC items, evidence plan detail, owners, and due dates', 'QAPI Nurse', '2026-04-22', 'PDF Packet', 'Drafting', 'Need final evidence notes from dietary and nursing before exporting the packet.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Resident tracer briefing summary', 'Leadership / survey escort team', 'High-risk tracers, unresolved follow-up, and resident rooms requiring immediate visibility', 'Administrator', '2026-04-21', 'Briefing Sheet', 'Waiting on Input', 'Add the last two tracer updates from the command center before printing.')"
         })) return false;
     }
 
@@ -687,6 +734,23 @@ if (tableIsEmpty("document_items")) {
     }
 
 
+
+    if (tableIsEmpty("survey_document_requests")) {
+        if (!executeAll({
+            "INSERT INTO survey_document_requests (request_date, request_time, request_source, document_type, document_name, owner_name, source_location, due_date, priority, status, notes) VALUES ('2026-04-21', '09:10', 'Surveyor team', 'Policy', 'Abuse reporting policy with last review signature', 'Administrator', 'Policy manual binder / admin office', '2026-04-21', 'Urgent', 'Locating', 'Need clean printed copy with current revision date visible before hand-off.')",
+            "INSERT INTO survey_document_requests (request_date, request_time, request_source, document_type, document_name, owner_name, source_location, due_date, priority, status, notes) VALUES ('2026-04-21', '09:35', 'Life safety surveyor', 'Log', 'Fire drill log for the last 12 months', 'Maintenance Director', 'Preparedness shared drive / emergency binder', '2026-04-21', 'High', 'Ready to Deliver', 'Logs compiled and highlighted; waiting on final print packet.')",
+            "INSERT INTO survey_document_requests (request_date, request_time, request_source, document_type, document_name, owner_name, source_location, due_date, priority, status, notes) VALUES ('2026-04-21', '10:05', 'Surveyor team', 'Roster', 'Current staff schedule with call-offs and agency usage', 'Staffing Coordinator', 'Staffing dashboard export', '2026-04-21', 'Urgent', 'Missing', 'Need overnight revision with agency replacement notation before delivery.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("resident_tracer_items")) {
+        if (!executeAll({
+            "INSERT INTO resident_tracer_items (tracer_date, resident_name, room_number, tracer_type, focus_area, department_name, owner_name, risk_level, status, tracer_note, followup_action) VALUES ('2026-04-21', 'Mary Adams', '214A', 'Medication pass tracer', 'Medication administration / observation', 'Nursing', 'DON', 'High', 'Needs Follow-Up', 'Tracer found one late-signature risk and surveyor attention around med-cart workflow timing.', 'Re-educate med-pass sequence, validate narcotic documentation, and repeat spot observation this afternoon.')",
+            "INSERT INTO resident_tracer_items (tracer_date, resident_name, room_number, tracer_type, focus_area, department_name, owner_name, risk_level, status, tracer_note, followup_action) VALUES ('2026-04-21', 'James Hill', '118B', 'Resident rights tracer', 'Call light response / dignity / grievance awareness', 'Nursing / Social Services', 'Administrator', 'Moderate', 'Open', 'Resident tracer touched call-light timeliness and whether the resident knows how to voice concerns.', 'Round with charge nurse and social services to reinforce service-recovery follow-up and response-time coaching.')",
+            "INSERT INTO resident_tracer_items (tracer_date, resident_name, room_number, tracer_type, focus_area, department_name, owner_name, risk_level, status, tracer_note, followup_action) VALUES ('2026-04-21', 'Evelyn Cross', '302', 'Dining tracer', 'Meal service / choice / adaptive setup', 'Dietary', 'Dietary Manager', 'Low', 'Resolved', 'Meal setup concern was corrected during tracer and resident preference card was updated.', 'Completed in real time; no additional escalation needed beyond documenting the correction.')"
+        })) return false;
+    }
+
     if (tableIsEmpty("service_registry")) {
         const QStringList serviceRows = {
             "INSERT INTO service_registry (service_name, purpose, status, owner, notes) VALUES ('AdmissionsPipelineService', 'Waitlist intake, admit-from-referral, MDS carry-forward', 'Ready', 'Admissions', 'Supports current referral-to-admit workflow.')",
@@ -695,6 +759,26 @@ if (tableIsEmpty("document_items")) {
             "INSERT INTO service_registry (service_name, purpose, status, owner, notes) VALUES ('ReportingExportService', 'Daily summary, CSV export, print support', 'Ready', 'Administrator', 'Backs reports/export and printing workflows.')"
         };
         if (!executeAll(serviceRows)) return false;
+    }
+
+
+    if (tableIsEmpty("evidence_binder_items")) {
+        const QStringList evidenceSeeds = {
+            "INSERT INTO evidence_binder_items (prep_date, binder_section, evidence_item, owner_name, due_date, readiness, status, location_note) VALUES ('2026-04-21', 'Abuse / Neglect', 'Updated abuse reporting investigation log', 'Social Services Director', '2026-04-22', 'In Review', 'Collecting', 'Draft log in shared survey folder; final validation pending administrator review.')",
+            "INSERT INTO evidence_binder_items (prep_date, binder_section, evidence_item, owner_name, due_date, readiness, status, location_note) VALUES ('2026-04-21', 'Infection Prevention', 'Hand hygiene audit summary with last 30 days of observations', 'Infection Preventionist', '2026-04-21', 'Missing', 'Open', 'Need current month roll-up and initials on audit sheets before binder print.')",
+            "INSERT INTO evidence_binder_items (prep_date, binder_section, evidence_item, owner_name, due_date, readiness, status, location_note) VALUES ('2026-04-20', 'Quality Assurance', 'QAPI meeting minutes and active PIP tracker', 'Administrator', '2026-04-21', 'Ready', 'Ready', 'Printed packet stored in survey command binder tab 5.')"
+        };
+        if (!executeAll(evidenceSeeds)) return false;
+    }
+
+
+    if (tableIsEmpty("mock_survey_drills")) {
+        const QStringList mockSurveyDrillSeeds = {
+            "INSERT INTO mock_survey_drills (drill_date, drill_type, focus_area, owner_name, due_date, priority, status, coaching_note) VALUES ('2026-04-21', 'Resident interview drill', 'Resident rights / grievance response', 'Social Services Director', '2026-04-21', 'High', 'Assigned', 'Coach front-line team on how to answer surveyor questions about grievance follow-up and resident voice.')",
+            "INSERT INTO mock_survey_drills (drill_date, drill_type, focus_area, owner_name, due_date, priority, status, coaching_note) VALUES ('2026-04-21', 'Tracer walk', 'Infection prevention / PPE', 'Infection Preventionist', '2026-04-22', 'High', 'Open', 'Run a hall tracer and validate hand hygiene cueing, PPE placement, and clean-dirty workflow.')",
+            "INSERT INTO mock_survey_drills (drill_date, drill_type, focus_area, owner_name, due_date, priority, status, coaching_note) VALUES ('2026-04-20', 'Dining observation drill', 'Dining service / dignity', 'Dietary Manager', '2026-04-21', 'Medium', 'In Drill', 'Watch meal pass and resident choice language during service; reinforce dignity and pacing expectations.')"
+        };
+        if (!executeAll(mockSurveyDrillSeeds)) return false;
     }
 
     if (tableIsEmpty("training_items")) {
@@ -720,6 +804,30 @@ if (tableIsEmpty("document_items")) {
             "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('Omni Pharmacy Services', 'Pharmacy', '2026-12-31', 'Flat monthly fee plus dispensing; controlled substance courier surcharge', 'DON', 'Active', 'Review prior-auth process and emergency supply SLA before renewal.')",
             "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('Allied Therapy Group', 'Therapy', '2026-06-30', 'Per-discipline per-diem plus travel offset', 'Administrator', 'Up for Renewal', 'Negotiate managed-care auth support and productivity minimum before signing.')",
             "INSERT INTO contracts (vendor_name, category, renewal_date, rate_schedule, owner, status, notes) VALUES ('ClearPath Dietary Consulting', 'Dietary', '2026-08-15', 'Monthly retainer plus per-resident IDT hours', 'Dietary Manager', 'Watch', 'Consultant coverage gap during summer; confirm backup coverage clause.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("leadership_rounds")) {
+        if (!executeAll({
+            "INSERT INTO leadership_rounds (round_date, shift_name, area_name, owner_name, priority, status, followup_date, round_note) VALUES ('2026-04-21', 'Morning Leadership Rounds', 'Staffing', 'Administrator', 'High', 'Open', '2026-04-22', 'Night-shift call-off created a day-shift CNA coverage watch; confirm agency backup before 10:00 huddle.')",
+            "INSERT INTO leadership_rounds (round_date, shift_name, area_name, owner_name, priority, status, followup_date, round_note) VALUES ('2026-04-21', 'Morning Leadership Rounds', 'Admissions', 'Admissions Director', 'High', 'In Progress', '2026-04-21', 'One orthopedic referral is clinically ready but still missing final therapy documentation for admit move-forward.')",
+            "INSERT INTO leadership_rounds (round_date, shift_name, area_name, owner_name, priority, status, followup_date, round_note) VALUES ('2026-04-21', 'Morning Leadership Rounds', 'Survey Readiness', 'DON', 'Medium', 'Watch', '2026-04-23', 'Dining observation binder improved, but grievance evidence packet still needs final verification before mock survey.')"
+        })) return false;
+    }
+
+if (tableIsEmpty("morning_meeting_items")) {
+    if (!executeAll({
+        "INSERT INTO morning_meeting_items (board_date, department_name, item_name, owner_name, due_time, priority, status) VALUES ('2026-04-21', 'Staffing', 'Confirm agency backup for day-shift CNA call-off before daily stand-up closes', 'Administrator', '10:00', 'Critical', 'Open')",
+        "INSERT INTO morning_meeting_items (board_date, department_name, item_name, owner_name, due_time, priority, status) VALUES ('2026-04-21', 'Admissions', 'Close missing therapy documents so orthopedic referral can move to admit-ready', 'Admissions Director', '11:30', 'High', 'In Progress')",
+        "INSERT INTO morning_meeting_items (board_date, department_name, item_name, owner_name, due_time, priority, status) VALUES ('2026-04-21', 'Survey Readiness', 'Finish grievance evidence packet verification for mock-survey binder', 'DON', '14:00', 'High', 'Blocked')"
+    })) return false;
+}
+
+    if (tableIsEmpty("department_pulse_items")) {
+        if (!executeAll({
+            "INSERT INTO department_pulse_items (checkin_date, department_name, leader_name, current_state, blocker_note, risk_level, status) VALUES ('2026-04-21', 'Nursing', 'DON', 'Coverage stable for the next shift, but med-cart readiness still needs noon confirmation.', 'Confirm narcotic count handoff before 12:00.', 'Moderate', 'Watching')",
+            "INSERT INTO department_pulse_items (checkin_date, department_name, leader_name, current_state, blocker_note, risk_level, status) VALUES ('2026-04-21', 'Admissions', 'Admissions Director', 'Referral pipeline is healthy, but one high-value admit remains delayed on final therapy documents.', 'Escalate missing therapy packet with hospital case manager.', 'High', 'Open')",
+            "INSERT INTO department_pulse_items (checkin_date, department_name, leader_name, current_state, blocker_note, risk_level, status) VALUES ('2026-04-21', 'Environmental Services', 'EVS Director', 'Room-turn timelines are slipping behind discharge pace.', 'Need housekeeping and laundry crossover support for two fast-turn rooms.', 'Critical', 'Blocked')"
         })) return false;
     }
 
@@ -766,6 +874,22 @@ if (tableIsEmpty("document_items")) {
     if (tableIsEmpty("wound_treatments")) {
         if (!executeAll({
             "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("plan_of_correction_items")) {
+        if (!executeAll({
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F689', 'Accident prevention / supervision', 'Resident tracer and late-fall huddle found inconsistent post-fall intervention carryover between shifts.', 'DON', '2026-04-25', 'High', 'Open', 'Shift-to-shift follow-through and care-plan reinforcement were inconsistent.', 'Retrain charge nurses, validate intervention carryover, and complete three post-fall audits on each hall.', 'Attach audit tools, retraining roster, and 7-day monitoring summary before closure.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F812', 'Food safety / meal service', 'Kitchen tracer showed inconsistent final-temp documentation on one meal-service line review.', 'Dietary Manager', '2026-04-24', 'Moderate', 'Awaiting Evidence', 'Temperature checks occurred but the documentation step was not consistently closed in real time.', 'Reinforce line-lead signoff, repeat meal-service checks for three days, and review with dietary team.', 'Upload corrected logs and observation sheets to binder section before submission.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F842', 'Resident records / documentation', 'Document request log showed one record packet was missing a current physician-order reconciliation printout at first pull.', 'Medical Records', '2026-04-23', 'Low', 'Under Review', 'Record packet preparation workflow did not include a final reconciliation checkpoint before survey delivery.', 'Add final packet checklist step, spot-check the next five record pulls, and document completion in command center.', 'Keep completed checklist samples and command-center follow-up notes as evidence of sustained correction.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("executive_export_packets")) {
+        if (!executeAll({
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Survey leadership huddle packet', 'Administrator / DON / department heads', 'Live survey requests, document pulls, barriers, resident tracers, and today''s corrective actions', 'Administrator', '2026-04-21', 'Print Packet', 'Ready', 'Prepare one printed copy for the noon leadership huddle and one spare for the command center binder.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Plan-of-correction working packet', 'Administrator / QAPI / corporate support', 'Open POC items, evidence plan detail, owners, and due dates', 'QAPI Nurse', '2026-04-22', 'PDF Packet', 'Drafting', 'Need final evidence notes from dietary and nursing before exporting the packet.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Resident tracer briefing summary', 'Leadership / survey escort team', 'High-risk tracers, unresolved follow-up, and resident rooms requiring immediate visibility', 'Administrator', '2026-04-21', 'Briefing Sheet', 'Waiting on Input', 'Add the last two tracer updates from the command center before printing.')"
         })) return false;
     }
 
@@ -836,6 +960,22 @@ bool DatabaseManager::authenticateUser(const QString& username, const QString& p
     if (tableIsEmpty("wound_treatments")) {
         if (!executeAll({
             "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("plan_of_correction_items")) {
+        if (!executeAll({
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F689', 'Accident prevention / supervision', 'Resident tracer and late-fall huddle found inconsistent post-fall intervention carryover between shifts.', 'DON', '2026-04-25', 'High', 'Open', 'Shift-to-shift follow-through and care-plan reinforcement were inconsistent.', 'Retrain charge nurses, validate intervention carryover, and complete three post-fall audits on each hall.', 'Attach audit tools, retraining roster, and 7-day monitoring summary before closure.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F812', 'Food safety / meal service', 'Kitchen tracer showed inconsistent final-temp documentation on one meal-service line review.', 'Dietary Manager', '2026-04-24', 'Moderate', 'Awaiting Evidence', 'Temperature checks occurred but the documentation step was not consistently closed in real time.', 'Reinforce line-lead signoff, repeat meal-service checks for three days, and review with dietary team.', 'Upload corrected logs and observation sheets to binder section before submission.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F842', 'Resident records / documentation', 'Document request log showed one record packet was missing a current physician-order reconciliation printout at first pull.', 'Medical Records', '2026-04-23', 'Low', 'Under Review', 'Record packet preparation workflow did not include a final reconciliation checkpoint before survey delivery.', 'Add final packet checklist step, spot-check the next five record pulls, and document completion in command center.', 'Keep completed checklist samples and command-center follow-up notes as evidence of sustained correction.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("executive_export_packets")) {
+        if (!executeAll({
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Survey leadership huddle packet', 'Administrator / DON / department heads', 'Live survey requests, document pulls, barriers, resident tracers, and today''s corrective actions', 'Administrator', '2026-04-21', 'Print Packet', 'Ready', 'Prepare one printed copy for the noon leadership huddle and one spare for the command center binder.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Plan-of-correction working packet', 'Administrator / QAPI / corporate support', 'Open POC items, evidence plan detail, owners, and due dates', 'QAPI Nurse', '2026-04-22', 'PDF Packet', 'Drafting', 'Need final evidence notes from dietary and nursing before exporting the packet.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Resident tracer briefing summary', 'Leadership / survey escort team', 'High-risk tracers, unresolved follow-up, and resident rooms requiring immediate visibility', 'Administrator', '2026-04-21', 'Briefing Sheet', 'Waiting on Input', 'Add the last two tracer updates from the command center before printing.')"
         })) return false;
     }
 
@@ -956,6 +1096,30 @@ bool DatabaseManager::admitResident(const QString& residentName, const QString& 
         })) return false;
     }
 
+    if (tableIsEmpty("plan_of_correction_items")) {
+        if (!executeAll({
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F689', 'Accident prevention / supervision', 'Resident tracer and late-fall huddle found inconsistent post-fall intervention carryover between shifts.', 'DON', '2026-04-25', 'High', 'Open', 'Shift-to-shift follow-through and care-plan reinforcement were inconsistent.', 'Retrain charge nurses, validate intervention carryover, and complete three post-fall audits on each hall.', 'Attach audit tools, retraining roster, and 7-day monitoring summary before closure.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F812', 'Food safety / meal service', 'Kitchen tracer showed inconsistent final-temp documentation on one meal-service line review.', 'Dietary Manager', '2026-04-24', 'Moderate', 'Awaiting Evidence', 'Temperature checks occurred but the documentation step was not consistently closed in real time.', 'Reinforce line-lead signoff, repeat meal-service checks for three days, and review with dietary team.', 'Upload corrected logs and observation sheets to binder section before submission.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F842', 'Resident records / documentation', 'Document request log showed one record packet was missing a current physician-order reconciliation printout at first pull.', 'Medical Records', '2026-04-23', 'Low', 'Under Review', 'Record packet preparation workflow did not include a final reconciliation checkpoint before survey delivery.', 'Add final packet checklist step, spot-check the next five record pulls, and document completion in command center.', 'Keep completed checklist samples and command-center follow-up notes as evidence of sustained correction.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("executive_export_packets")) {
+        if (!executeAll({
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Survey leadership huddle packet', 'Administrator / DON / department heads', 'Live survey requests, document pulls, barriers, resident tracers, and today''s corrective actions', 'Administrator', '2026-04-21', 'Print Packet', 'Ready', 'Prepare one printed copy for the noon leadership huddle and one spare for the command center binder.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Plan-of-correction working packet', 'Administrator / QAPI / corporate support', 'Open POC items, evidence plan detail, owners, and due dates', 'QAPI Nurse', '2026-04-22', 'PDF Packet', 'Drafting', 'Need final evidence notes from dietary and nursing before exporting the packet.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Resident tracer briefing summary', 'Leadership / survey escort team', 'High-risk tracers, unresolved follow-up, and resident rooms requiring immediate visibility', 'Administrator', '2026-04-21', 'Briefing Sheet', 'Waiting on Input', 'Add the last two tracer updates from the command center before printing.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("alerts_escalation_items")) {
+        if (!executeAll({
+            "INSERT INTO alerts_escalation_items (alert_date, board_name, item_name, owner_name, due_date, severity, status, escalation_note) VALUES ('2026-04-21', 'Survey Live Response', 'Two surveyor requests are due before noon and still waiting on supporting printouts.', 'Administrator', '2026-04-21', 'Critical', 'Due Today', 'Escalate to medical records and unit clerk support so packet assembly clears before the next surveyor check-in.')",
+            "INSERT INTO alerts_escalation_items (alert_date, board_name, item_name, owner_name, due_date, severity, status, escalation_note) VALUES ('2026-04-21', 'Survey Document Requests', 'Abuse policy binder copy remains missing from the first request pull.', 'Medical Records', '2026-04-21', 'Critical', 'Blocked', 'Need the current approved policy version and binder location confirmed immediately.')",
+            "INSERT INTO alerts_escalation_items (alert_date, board_name, item_name, owner_name, due_date, severity, status, escalation_note) VALUES ('2026-04-21', 'Resident Tracer Manager', 'High-risk tracer follow-up on Room 212 still needs nursing and dietary closure notes.', 'DON', '2026-04-22', 'High', 'Open', 'Coordinate both departments before the next leadership huddle so the tracer can move to resolved.')"
+        })) return false;
+    }
+
     return true;
 }
 
@@ -1027,6 +1191,22 @@ bool DatabaseManager::dischargeResident(int residentId, const QString& residentN
     if (tableIsEmpty("wound_treatments")) {
         if (!executeAll({
             "INSERT INTO wound_treatments (review_date, resident_name, wound_name, location, status, notes) VALUES ('2026-04-21', 'Alice Brown', 'Stage 2 pressure injury', 'Coccyx', 'Open', 'Weekly wound review and treatment follow-up.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("plan_of_correction_items")) {
+        if (!executeAll({
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F689', 'Accident prevention / supervision', 'Resident tracer and late-fall huddle found inconsistent post-fall intervention carryover between shifts.', 'DON', '2026-04-25', 'High', 'Open', 'Shift-to-shift follow-through and care-plan reinforcement were inconsistent.', 'Retrain charge nurses, validate intervention carryover, and complete three post-fall audits on each hall.', 'Attach audit tools, retraining roster, and 7-day monitoring summary before closure.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F812', 'Food safety / meal service', 'Kitchen tracer showed inconsistent final-temp documentation on one meal-service line review.', 'Dietary Manager', '2026-04-24', 'Moderate', 'Awaiting Evidence', 'Temperature checks occurred but the documentation step was not consistently closed in real time.', 'Reinforce line-lead signoff, repeat meal-service checks for three days, and review with dietary team.', 'Upload corrected logs and observation sheets to binder section before submission.')",
+            "INSERT INTO plan_of_correction_items (finding_date, citation_tag, focus_area, finding_text, owner_name, due_date, severity, status, root_cause, corrective_action, evidence_plan) VALUES ('2026-04-21', 'F842', 'Resident records / documentation', 'Document request log showed one record packet was missing a current physician-order reconciliation printout at first pull.', 'Medical Records', '2026-04-23', 'Low', 'Under Review', 'Record packet preparation workflow did not include a final reconciliation checkpoint before survey delivery.', 'Add final packet checklist step, spot-check the next five record pulls, and document completion in command center.', 'Keep completed checklist samples and command-center follow-up notes as evidence of sustained correction.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("executive_export_packets")) {
+        if (!executeAll({
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Survey leadership huddle packet', 'Administrator / DON / department heads', 'Live survey requests, document pulls, barriers, resident tracers, and today''s corrective actions', 'Administrator', '2026-04-21', 'Print Packet', 'Ready', 'Prepare one printed copy for the noon leadership huddle and one spare for the command center binder.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Plan-of-correction working packet', 'Administrator / QAPI / corporate support', 'Open POC items, evidence plan detail, owners, and due dates', 'QAPI Nurse', '2026-04-22', 'PDF Packet', 'Drafting', 'Need final evidence notes from dietary and nursing before exporting the packet.')",
+            "INSERT INTO executive_export_packets (pack_date, packet_name, audience_name, content_scope, owner_name, due_date, format_name, status, notes) VALUES ('2026-04-21', 'Resident tracer briefing summary', 'Leadership / survey escort team', 'High-risk tracers, unresolved follow-up, and resident rooms requiring immediate visibility', 'Administrator', '2026-04-21', 'Briefing Sheet', 'Waiting on Input', 'Add the last two tracer updates from the command center before printing.')"
         })) return false;
     }
 
@@ -1279,6 +1459,20 @@ QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
         {"Dietary", QString("%1 dietary or nutrition item(s) are open or on watch.").arg(countWhere("dietary_items", "status='Open' OR status='Watch' OR status='In Progress'"))},
         {"Outbreak command", QString("%1 outbreak-response item(s) remain open, in progress, or on watch.").arg(countWhere("outbreak_items", "status!='Closed' AND status!='Complete'"))},
         {"Alerts", QString("%1 overdue and %2 due-soon item(s) need attention across due-date driven modules.").arg(overdueAlertCount()).arg(dueSoonAlertCount())},
+        {"Leadership rounds", QString("%1 executive follow-up item(s) are open, in progress, or on watch from the new rounds brief.").arg(countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'"))},
+        {"Executive follow-up", QString("%1 follow-up board item(s) remain open, in progress, on watch, or blocked for leadership closure.").arg(countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'"))},
+        {"Morning meeting", QString("%1 daily-priority item(s) are active on the morning-meeting board.").arg(countWhere("morning_meeting_items", "status='Open' OR status='In Progress' OR status='Blocked'"))},
+        {"Department pulse", QString("%1 department pulse item(s) are active with open, watching, or blocked status across the building.").arg(countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'"))},
+        {"Barrier escalation", QString("%1 barrier item(s) remain open, assigned, or waiting for removal across the building.").arg(countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'"))},
+        {"Survey recovery", QString("%1 corrective-action item(s) remain open, in progress, or awaiting evidence on the survey recovery board.").arg(countWhere("survey_recovery_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence'"))},
+        {"Evidence binder", QString("%1 evidence item(s) are still open or collecting for survey-proof readiness.").arg(countWhere("evidence_binder_items", "status='Open' OR status='Collecting'"))},
+        {"Mock survey drill", QString("%1 mock survey drill item(s) remain open, assigned, or actively in drill for survey-practice readiness.").arg(countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'"))},
+        {"Entrance conference", QString("%1 entrance-conference item(s) remain open, assigned, or assembling for survey arrival staging.").arg(countWhere("survey_entrance_conference_items", "status='Open' OR status='Assigned' OR status='Assembling'"))},
+        {"Live survey requests", QString("%1 live survey request(s) remain open, assigned, gathering, or due soon during active survey response.").arg(countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'"))},
+        {"Survey document requests", QString("%1 survey document request(s) remain open, locating, printing, ready to deliver, or missing during survey-day operations.").arg(countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'"))},
+        {"Resident tracers", QString("%1 resident tracer item(s) remain open, in progress, needing follow-up, or escalated across active survey tracers.").arg(countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'"))},
+        {"Plan of correction", QString("%1 plan-of-correction item(s) remain open, in progress, awaiting evidence, or under review across survey follow-up work.").arg(countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'"))},
+        {"Executive print/export", QString("%1 packet(s) remain drafting, waiting on input, or ready inside the executive print/export center.").arg(countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'"))},
         {"Workflow center", "Use Workflow Center to edit, archive, or delete operational records without hunting through every page."},
         {"Shift handoff", QString("%1 shift handoff item(s) remain open or on watch for the next leadership handoff.").arg(countWhere("shift_handoff_items", "status='Open' OR status='Watch' OR status='In Progress'"))},
         {"Reports", "Use the Reports workspace to export a daily summary, staffing CSV, and census snapshot for leadership review."},
