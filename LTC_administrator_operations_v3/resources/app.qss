@@ -25,7 +25,7 @@ QPushButton#NavButton {
     border: none;
     text-align: left;
     padding: 12px 14px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 14px;
 }
 
@@ -38,25 +38,25 @@ QPushButton#NavButton:checked {
     font-weight: 600;
 }
 
-QFrame#CardFrame {
+QFrame#CardFrame, QFrame#kpiCard, QFrame#summaryStrip, QGroupBox#heroPanel {
     background: white;
     border: 1px solid #dce4ee;
-    border-radius: 14px;
+    border-radius: 16px;
 }
 
-QLabel#CardTitle {
+QLabel#CardTitle, QLabel#kpiTitle {
     color: #506172;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-QLabel#CardValue {
+QLabel#CardValue, QLabel#kpiValue, QLabel#summaryValue {
     color: #17324d;
     font-size: 28px;
     font-weight: 700;
 }
 
-QLabel#PageTitle {
+QLabel#PageTitle, QLabel#dashboardTitle {
     color: #17324d;
     font-size: 24px;
     font-weight: 700;
@@ -78,8 +78,8 @@ QTableView, QTableWidget, QListWidget {
 QHeaderView::section {
     background: #edf3f8;
     color: #17324d;
-    font-weight: 600;
-    padding: 6px;
+    font-weight: 700;
+    padding: 8px;
     border: none;
     border-right: 1px solid #d9e4ef;
     border-bottom: 1px solid #d9e4ef;
@@ -97,7 +97,7 @@ QPushButton {
     color: white;
     border: none;
     padding: 10px 14px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: 600;
 }
 
@@ -107,7 +107,7 @@ QPushButton:hover {
 
 QGroupBox {
     border: 1px solid #dce4ee;
-    border-radius: 12px;
+    border-radius: 14px;
     margin-top: 12px;
     background: white;
     font-weight: 700;

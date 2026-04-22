@@ -1,15 +1,23 @@
-# LTC Administrator Operations Dashboard
+# LTC Administrator Operations Dashboard v88 - Cross-Page Shared Records
 
-## v81.0.0 — Alerts & Escalation Center
+## v88 Cross-Page Shared Records
 
-### What is new in v81
-- Added a new **Alerts & Escalation** page for logging, triaging, and resolving urgent cross-board issues.
-- Added a new **alerts_escalation_items** SQLite table with seeded sample rows.
-- Wired the new page into the sidebar navigation.
-- Updated the **Survey Command Center** so it includes alert-center counts, critical-alert counts, blocked-alert counts, and due-now urgency rollups.
-- Updated the main dashboard snapshot, summary strip, KPI cards, and quick-glance list to include alert-center workload.
-- Updated app/window/version labeling to **81.0.0**.
-- Updated the local SQLite database filename to a **v81-specific** path.
+This version builds on the connected workspace and live-refresh foundation by adding a shared-record bridge layer. Related items can now be represented as cross-page records so one operational issue is visible in multiple relevant tabs inside the same global workspace.
 
-### v81 focus
-This version adds an urgency layer across the survey workflow so leadership can see what is overdue, blocked, critical, or due right now before the next huddle, packet pull, tracer follow-up, or surveyor request handoff.
+### What is new in v88
+- Added a new `shared_record_links` SQLite table with seeded cross-page linkage examples.
+- Added DatabaseManager helpers for shared-record retrieval and workspace-level shared-record highlights.
+- Updated the global insight panels so each hub now shows both:
+  - connected summary rollups
+  - cross-page shared records that should stay visible in multiple tabs
+- Updated app and database versioning to **88.0.0**.
+- Updated the local SQLite filename to a **v88-specific** database path.
+
+### Shared-record examples included
+- Daily operations barrier visible in pulse, huddle, and alerts
+- Executive follow-up visible from rounds into huddle
+- Survey request linked across command center, documents, exports, and alerts
+- Resident tracer linked into plan of correction and survey command
+- Resident incident linked across care tabs
+- Support task linked across tasks, calendar, and alerts
+- Document packet linked across documents, reports, and setup

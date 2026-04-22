@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 81.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 88.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,6 +19,8 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/dialogs/LoginDialog.cpp
     src/ui/widgets/KpiCard.h
     src/ui/widgets/KpiCard.cpp
+    src/ui/widgets/GlobalInsightPanel.h
+    src/ui/widgets/GlobalInsightPanel.cpp
     src/ui/pages/DashboardPage.h
     src/ui/pages/DashboardPage.cpp
     src/ui/pages/AlertsPage.h
@@ -145,6 +147,10 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/PlanOfCorrectionBuilderPage.cpp
     src/ui/pages/ExecutivePrintExportCenterPage.h
     src/ui/pages/ExecutivePrintExportCenterPage.cpp
+    src/ui/pages/LeadershipHuddleGeneratorPage.h
+    src/ui/pages/LeadershipHuddleGeneratorPage.cpp
+    src/ui/pages/GroupedWorkspacePage.h
+    src/ui/pages/GroupedWorkspacePage.cpp
     src/ui/pages/OutbreakCommandPage.h
     src/ui/pages/OutbreakCommandPage.cpp
     src/ui/pages/TrainingPage.h

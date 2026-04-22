@@ -1,14 +1,16 @@
 #pragma once
 #include <QList>
+#include <QObject>
 #include <QMap>
 #include <QPair>
 #include <QSqlDatabase>
 #include <QString>
 #include <QStringList>
 
-class DatabaseManager {
+class DatabaseManager : public QObject {
+    Q_OBJECT
 public:
-    DatabaseManager();
+    explicit DatabaseManager(QObject* parent = nullptr);
     ~DatabaseManager();
 
     bool initialize();
@@ -46,6 +48,13 @@ public:
     QList<QMap<QString, QString>> auditLogItems() const;
     QList<QMap<QString, QString>> validationAlerts() const;
     QString lastErrorText() const;
+
+    QList<QMap<QString, QString>> sharedRecordLinksForContext(const QString& contextKey) const;
+    QList<QPair<QString, QString>> sharedRecordHighlights(const QString& contextKey) const;
+
+
+signals:
+    void dataChanged(const QString& tableName);
 
 private:
     QSqlDatabase m_db;

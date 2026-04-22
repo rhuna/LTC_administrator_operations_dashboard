@@ -32,7 +32,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     heading->setObjectName("dashboardTitle");
 
     auto* subtitle = new QLabel(
-        "A live survey-operations control room that rolls Survey Recovery, Evidence Binder, Mock Survey Drill, Entrance Conference, Barrier Escalation, Executive Follow-Up, live survey requests, document pulls, resident tracers, plan-of-correction work, executive print/export packets, and alert-center escalation items into one leadership view. Use it to spot what is overdue, blocked, urgent, missing, and still not ready before or during survey activity.",
+        "A live survey-operations control room that rolls Survey Recovery, Evidence Binder, Mock Survey Drill, Entrance Conference, Barrier Escalation, Executive Follow-Up, live survey requests, document pulls, resident tracers, plan-of-correction work, executive print/export packets, alert-center escalation items, and leadership huddle agendas into one leadership view. Use it to spot what is overdue, blocked, urgent, missing, and still not ready before or during survey activity.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
@@ -49,7 +49,8 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     const int pocOpen = db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'");
     const int exportOpen = db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'");
     const int alertOpen = db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'");
-    const int commandOpen = recoveryOpen + binderOpen + drillOpen + entranceOpen + barrierOpen + execOpen + liveOpen + documentOpen + tracerOpen + pocOpen + exportOpen + alertOpen;
+    const int huddleOpen = db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'");
+    const int commandOpen = recoveryOpen + binderOpen + drillOpen + entranceOpen + barrierOpen + execOpen + liveOpen + documentOpen + tracerOpen + pocOpen + exportOpen + alertOpen + huddleOpen;
 
     const int overdueRecovery = db->countWhere("survey_recovery_items", QString("(status='Open' OR status='In Progress' OR status='Awaiting Evidence') AND due_date < '%1'").arg(today));
     const int dueBinder = db->countWhere("evidence_binder_items", QString("(status='Open' OR status='Collecting') AND due_date <= '%1'").arg(today));
@@ -72,7 +73,8 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     const int alertCritical = db->countWhere("alerts_escalation_items", "(status='Open' OR status='Due Today' OR status='Blocked') AND severity='Critical'");
     const int alertBlocked = db->countWhere("alerts_escalation_items", "status='Blocked'");
     const int alertDue = db->countWhere("alerts_escalation_items", QString("(status='Open' OR status='Due Today' OR status='Blocked') AND due_date <= '%1'").arg(today));
-    const int dueNow = overdueRecovery + dueBinder + dueDrills + dueEntrance + urgentBarriers + blockedExec + liveDueSoon + liveOverdue + documentDueToday + documentMissing + tracerHighRisk + tracerFollowup + pocOverdue + pocEvidence + exportDue + exportReady + alertCritical + alertBlocked + alertDue;
+    const int huddleDue = db->countWhere("leadership_huddle_agendas", QString("(status='Drafting' OR status='Ready') AND (huddle_date < '%1' OR (huddle_date='%1' AND due_time <= '%2'))").arg(today, nowTime));
+    const int dueNow = overdueRecovery + dueBinder + dueDrills + dueEntrance + urgentBarriers + blockedExec + liveDueSoon + liveOverdue + documentDueToday + documentMissing + tracerHighRisk + tracerFollowup + pocOverdue + pocEvidence + exportDue + exportReady + alertCritical + alertBlocked + alertDue + huddleDue;
 
     const int totalCompleteUnits = db->countWhere("evidence_binder_items", "status='Ready' OR readiness='Ready'")
         + db->countWhere("mock_survey_drills", "status='Complete'")
@@ -85,7 +87,8 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
         + db->countWhere("resident_tracer_items", "status='Resolved' OR status='Closed'")
         + db->countWhere("plan_of_correction_items", "status='Complete' OR status='Submitted'")
         + db->countWhere("executive_export_packets", "status='Exported' OR status='Printed' OR status='Delivered'")
-        + db->countWhere("alerts_escalation_items", "status='Resolved'");
+        + db->countWhere("alerts_escalation_items", "status='Resolved'")
+        + db->countWhere("leadership_huddle_agendas", "status='Completed'");
     const int readinessBase = commandOpen + totalCompleteUnits;
     const int readinessScore = readinessBase > 0 ? (totalCompleteUnits * 100) / readinessBase : 100;
 
@@ -130,6 +133,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     addSummary("Doc missing", QString::number(documentMissing));
     addSummary("Tracers", QString::number(tracerOpen));
     addSummary("Tracer risk", QString::number(tracerHighRisk));
+    addSummary("Huddles", QString::number(huddleOpen));
     addSummary("POC open", QString::number(pocOpen));
     addSummary("POC due", QString::number(pocOverdue + pocEvidence));
     addSummary("Packets", QString::number(exportOpen));
@@ -180,6 +184,9 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     kpiGrid->addWidget(new KpiCard("Alert-center open", QString::number(alertOpen), this), 11, 0);
     kpiGrid->addWidget(new KpiCard("Critical alerts", QString::number(alertCritical), this), 11, 1);
     kpiGrid->addWidget(new KpiCard("Blocked alerts", QString::number(alertBlocked), this), 11, 2);
+    kpiGrid->addWidget(new KpiCard("Huddle agendas", QString::number(huddleOpen), this), 12, 0);
+    kpiGrid->addWidget(new KpiCard("Huddles due now", QString::number(huddleDue), this), 12, 1);
+    kpiGrid->addWidget(new KpiCard("Huddles completed", QString::number(db->countWhere("leadership_huddle_agendas", "status='Completed'")), this), 12, 2);
     root->addLayout(kpiGrid);
 
     auto* lowerRow = new QHBoxLayout();
@@ -202,6 +209,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     urgentList->addItem(QString("%1 document request(s) are due today and %2 are marked missing or blocked.").arg(documentDueToday).arg(documentMissing));
     urgentList->addItem(QString("%1 packet(s) are due now and %2 are ready to print/export.").arg(exportDue).arg(exportReady));
     urgentList->addItem(QString("%1 alert-center item(s) are open, %2 are critical, and %3 are blocked.").arg(alertOpen).arg(alertCritical).arg(alertBlocked));
+    urgentList->addItem(QString("%1 leadership huddle agenda(s) are open and %2 are due now for the next executive stand-up.").arg(huddleOpen).arg(huddleDue));
     urgentList->addItem("Use this screen as the morning huddle / survey-day coordination board.");
     urgentLayout->addWidget(urgentHint);
     urgentLayout->addWidget(urgentList);
@@ -217,7 +225,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     priorityTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     priorityTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     priorityTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    priorityTable->setRowCount(11);
+    priorityTable->setRowCount(12);
 
     auto setPriorityRow = [&](int row, const QString& board, const QString& priority, int count) {
         priorityTable->setItem(row, 0, new QTableWidgetItem(board));
@@ -236,6 +244,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     setPriorityRow(8, "Plan of Correction", "Open and evidence-pending corrective actions", pocOverdue + pocEvidence);
     setPriorityRow(9, "Executive Print & Export", "Packets due or ready to hand off", exportDue + exportReady);
     setPriorityRow(10, "Alerts & Escalation", "Critical, blocked, or due-now urgency items", alertCritical + alertBlocked + alertDue);
+    setPriorityRow(11, "Leadership Huddle Generator", "Agendas that must be finalized before the next stand-up", huddleOpen + huddleDue);
 
     priorityLayout->addWidget(priorityHint);
     priorityLayout->addWidget(priorityTable);
@@ -256,7 +265,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     detailTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     detailTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     detailTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    detailTable->setRowCount(11);
+    detailTable->setRowCount(12);
 
     auto setDetailRow = [&](int row, const QString& board, int open, int dueBlocked, int ready, const QString& read) {
         detailTable->setItem(row, 0, new QTableWidgetItem(board));
@@ -277,6 +286,7 @@ SurveyCommandCenterPage::SurveyCommandCenterPage(DatabaseManager* db, QWidget* p
     setDetailRow(8, "Plan of Correction", pocOpen, pocOverdue + pocEvidence, db->countWhere("plan_of_correction_items", "status='Complete' OR status='Submitted'"), "Converts findings into owned corrective action with evidence and monitoring plans.");
     setDetailRow(9, "Executive Print & Export", exportOpen, exportDue + exportReady, db->countWhere("executive_export_packets", "status='Exported' OR status='Printed' OR status='Delivered'"), "Queues leadership packets, briefing sheets, and snapshot exports for huddles and survey operations.");
     setDetailRow(10, "Alerts & Escalation", alertOpen, alertCritical + alertBlocked + alertDue, db->countWhere("alerts_escalation_items", "status='Resolved'"), "Aggregates the urgency layer so leadership can see critical, overdue, and blocked items without opening each source board.");
+    setDetailRow(11, "Leadership Huddle Generator", huddleOpen, huddleDue, db->countWhere("leadership_huddle_agendas", "status='Completed'"), "Turns live command-center pressure into a practical agenda for the next leadership stand-up or survey response huddle.");
 
     detailLayout->addWidget(detailHint);
     detailLayout->addWidget(detailTable);

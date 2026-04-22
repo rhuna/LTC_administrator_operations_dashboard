@@ -15,7 +15,7 @@
 #include <QVariant>
 #include <algorithm>
 
-DatabaseManager::DatabaseManager() {}
+DatabaseManager::DatabaseManager(QObject* parent) : QObject(parent) {}
 DatabaseManager::~DatabaseManager() {
     if (m_db.isOpen()) m_db.close();
 }
@@ -27,7 +27,7 @@ bool DatabaseManager::initialize() {
         return false;
     }
     QDir().mkpath(baseDir);
-    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v81_alerts_escalation_center.db");
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v88_cross_page_shared_records.db");
 
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
@@ -277,6 +277,7 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS staffing_number_entries (id INTEGER PRIMARY KEY AUTOINCREMENT, entry_date TEXT, shift_name TEXT, resident_census INTEGER, rn_count INTEGER, lpn_count INTEGER, cna_count INTEGER, agency_count INTEGER, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, due_date TEXT, owner TEXT, task_name TEXT, priority TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS alerts_items (id INTEGER PRIMARY KEY AUTOINCREMENT, alert_date TEXT, module_name TEXT, item_name TEXT, owner TEXT, status TEXT)",
+        "CREATE TABLE IF NOT EXISTS shared_record_links (id INTEGER PRIMARY KEY AUTOINCREMENT, context_key TEXT, source_table TEXT, source_label TEXT, linked_tabs TEXT, owner TEXT, status TEXT, urgency TEXT, note_text TEXT)",
         "CREATE TABLE IF NOT EXISTS pips (id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT, owner TEXT, status TEXT, next_step TEXT)",
         "CREATE TABLE IF NOT EXISTS budget_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, department TEXT, variance TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS compliance_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, due_date TEXT, owner TEXT, status TEXT)",
@@ -339,6 +340,7 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS plan_of_correction_items (id INTEGER PRIMARY KEY AUTOINCREMENT, finding_date TEXT, citation_tag TEXT, focus_area TEXT, finding_text TEXT, owner_name TEXT, due_date TEXT, severity TEXT, status TEXT, root_cause TEXT, corrective_action TEXT, evidence_plan TEXT)",
         "CREATE TABLE IF NOT EXISTS executive_export_packets (id INTEGER PRIMARY KEY AUTOINCREMENT, pack_date TEXT, packet_name TEXT, audience_name TEXT, content_scope TEXT, owner_name TEXT, due_date TEXT, format_name TEXT, status TEXT, notes TEXT)",
         "CREATE TABLE IF NOT EXISTS alerts_escalation_items (id INTEGER PRIMARY KEY AUTOINCREMENT, alert_date TEXT, board_name TEXT, item_name TEXT, owner_name TEXT, due_date TEXT, severity TEXT, status TEXT, escalation_note TEXT)",
+        "CREATE TABLE IF NOT EXISTS leadership_huddle_agendas (id INTEGER PRIMARY KEY AUTOINCREMENT, huddle_date TEXT, huddle_name TEXT, audience_name TEXT, owner_name TEXT, due_time TEXT, status TEXT, top_priorities TEXT, facilitator_notes TEXT)",
         "CREATE TABLE IF NOT EXISTS training_items (id INTEGER PRIMARY KEY AUTOINCREMENT, area_name TEXT, employee TEXT, role TEXT, due_date TEXT, status TEXT, notes TEXT)"
     };
     return executeAll(ddl);
@@ -442,6 +444,19 @@ bool DatabaseManager::seedData() {
             "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 08:10', 'Staffing', 'Assignment status updated', 'Day shift CNA coverage', 'Jordan Lane', 'Open day-shift CNA coverage escalated to agency pool after call-off.')",
             "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 09:20', 'Quality', 'Follow-up added', '30-day rehospitalization rate', 'Alex Carter', 'Root-cause review added to the quality follow-up worklist for weekly stand-up.')",
             "INSERT INTO audit_log (log_date, module_name, action_name, item_name, actor_name, details) VALUES ('2026-04-20 11:35', 'Backup & Restore', 'Backup created', 'Local database snapshot', 'System', 'Timestamped local backup created before restore testing.')"
+        })) return false;
+    }
+
+
+    if (tableIsEmpty("shared_record_links")) {
+        if (!executeAll({
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('daily', 'barrier_escalations', 'Agency staffing barrier', 'Department Pulse|Morning Meeting|Leadership Huddle|Alerts', 'Staffing Office', 'Open', 'High', 'The same staffing barrier should remain visible in the pulse, huddle, and alert views until removed.')",
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('daily', 'executive_followups', 'Weekend cart audit follow-up', 'Leadership Rounds|Executive Follow-Up|Leadership Huddle', 'DON', 'Assigned', 'Medium', 'Follow-up created from rounds should stay visible in the shared huddle agenda until closed.')",
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('survey', 'survey_live_requests', 'Surveyor request: abuse policy and in-service sign-in', 'Survey Command Center|Document Requests|Print & Export|Alerts & Escalation', 'Administrator', 'In Progress', 'Critical', 'A live survey request should remain connected to document pull, export, and escalation views.')",
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('survey', 'resident_tracer_items', 'Tracer for resident in Room 214', 'Resident Tracers|Plan of Correction|Survey Command Center', 'Clinical Lead', 'Needs Follow-Up', 'High', 'Tracer findings should continue driving command-center pressure and POC planning.')",
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('resident', 'incidents', 'Fall follow-up for Room 109', 'Residents|Treatments|Medical Records|Social Services', 'Unit Manager', 'Open', 'High', 'Resident issues should stay connected across the clinical follow-up tabs.')",
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('support', 'tasks', 'Generator preventive maintenance', 'Tasks|Environmental Services|Calendar|Alerts', 'Maintenance', 'Open', 'Medium', 'Support tasks should stay visible in the operational tabs that need the same action.')",
+            "INSERT INTO shared_record_links (context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text) VALUES ('docs', 'documents', 'Emergency binder master packet', 'Document Center|Reports|Dashboard Setup', 'Administrator', 'Watching', 'Medium', 'Key documents should remain visible across reporting and setup views until ready.')"
         })) return false;
     }
 
@@ -998,6 +1013,7 @@ bool DatabaseManager::addRecord(const QString& tableName, const QMap<QString, QS
         const QString itemName = values.value("resident_name", values.value("item_name", values.value("task_name", values.value("document_name", values.value("issue_name", values.value("project_name", "Record"))))));
         logAuditEvent(tableName, "Record added", itemName, "System", QString("Inserted record into %1.").arg(tableName));
     }
+    if (ok) emit dataChanged(tableName);
     return ok;
 }
 
@@ -1015,6 +1031,7 @@ bool DatabaseManager::updateRecordById(const QString& tableName, int id, const Q
     if (ok && tableName != "audit_log") {
         logAuditEvent(tableName, "Record updated", QString("ID %1").arg(id), "System", QString("Updated %1 field(s) in %2.").arg(values.size()).arg(tableName));
     }
+    if (ok) emit dataChanged(tableName);
     return ok;
 }
 
@@ -1027,6 +1044,7 @@ bool DatabaseManager::deleteRecordById(const QString& tableName, int id) {
     if (ok && tableName != "audit_log") {
         logAuditEvent(tableName, "Record deleted", QString("ID %1").arg(id), "System", QString("Deleted record from %1.").arg(tableName));
     }
+    if (ok) emit dataChanged(tableName);
     return ok;
 }
 
@@ -1050,6 +1068,8 @@ bool DatabaseManager::admitResident(const QString& residentName, const QString& 
         }
     }
     logAuditEvent("Admissions", "Resident admitted", residentName, "System", QString("Admitted to room %1 with payer %2.").arg(room, payer));
+    emit dataChanged("residents");
+    emit dataChanged("admissions");
     if (tableIsEmpty("housekeeping_laundry_items")) {
         const QStringList housekeepingSeeds = {
             "INSERT INTO housekeeping_laundry_items (review_date, area_name, focus_area, item_name, owner, status, notes) VALUES ('2026-04-25', 'Room 212 / Laundry', 'Laundry', 'Linen shortage follow-up for new admission bed setup', 'Laundry Supervisor', 'Open', 'Need complete linen cart refill and par-level check before evening admit.')",
@@ -1117,6 +1137,14 @@ bool DatabaseManager::admitResident(const QString& residentName, const QString& 
             "INSERT INTO alerts_escalation_items (alert_date, board_name, item_name, owner_name, due_date, severity, status, escalation_note) VALUES ('2026-04-21', 'Survey Live Response', 'Two surveyor requests are due before noon and still waiting on supporting printouts.', 'Administrator', '2026-04-21', 'Critical', 'Due Today', 'Escalate to medical records and unit clerk support so packet assembly clears before the next surveyor check-in.')",
             "INSERT INTO alerts_escalation_items (alert_date, board_name, item_name, owner_name, due_date, severity, status, escalation_note) VALUES ('2026-04-21', 'Survey Document Requests', 'Abuse policy binder copy remains missing from the first request pull.', 'Medical Records', '2026-04-21', 'Critical', 'Blocked', 'Need the current approved policy version and binder location confirmed immediately.')",
             "INSERT INTO alerts_escalation_items (alert_date, board_name, item_name, owner_name, due_date, severity, status, escalation_note) VALUES ('2026-04-21', 'Resident Tracer Manager', 'High-risk tracer follow-up on Room 212 still needs nursing and dietary closure notes.', 'DON', '2026-04-22', 'High', 'Open', 'Coordinate both departments before the next leadership huddle so the tracer can move to resolved.')"
+        })) return false;
+    }
+
+    if (tableIsEmpty("leadership_huddle_agendas")) {
+        if (!executeAll({
+            "INSERT INTO leadership_huddle_agendas (huddle_date, huddle_name, audience_name, owner_name, due_time, status, top_priorities, facilitator_notes) VALUES ('2026-04-21', 'Daily Survey Leadership Huddle', 'Administrator / DON / department heads', 'Administrator', '09:00', 'Ready', 'Review live survey requests, missing document pulls, high-risk resident tracers, and open alert-center escalations before surveyor check-in.', 'Administrator opens, DON covers resident-tracer risk, medical records covers missing packet pulls, and QAPI closes with due-today corrective actions.')",
+            "INSERT INTO leadership_huddle_agendas (huddle_date, huddle_name, audience_name, owner_name, due_time, status, top_priorities, facilitator_notes) VALUES ('2026-04-21', 'Noon Command Center Reset', 'Administrator / survey escort team', 'DON', '12:00', 'Drafting', 'Reset owners on any still-open survey requests, review new tracer findings, confirm packet readiness, and identify blocked requests that need escalation.', 'Use command-center counts first, then assign an owner and next deadline for each blocker before the next round.')",
+            "INSERT INTO leadership_huddle_agendas (huddle_date, huddle_name, audience_name, owner_name, due_time, status, top_priorities, facilitator_notes) VALUES ('2026-04-22', 'Post-Survey Debrief Huddle', 'Executive response team', 'QAPI Nurse', '15:30', 'Completed', 'Capture findings, convert issues into plan-of-correction work, and decide which packet outputs leadership needs by end of day.', 'Close with evidence owners, monitoring plan expectations, and the time for the next executive review.')"
         })) return false;
     }
 
@@ -1210,6 +1238,7 @@ bool DatabaseManager::dischargeResident(int residentId, const QString& residentN
         })) return false;
     }
 
+    emit dataChanged("residents");
     return true;
 }
 
@@ -1481,4 +1510,42 @@ QList<QPair<QString, QString>> DatabaseManager::actionCenterItems() const {
         {"Revenue cycle", QString("%1 revenue cycle item(s) are open, pending auth, or at risk.").arg(countWhere("revenue_cycle_items", "status='Open' OR status='Pending Auth' OR status='Denial' OR status='At Risk'"))},
         {"Contracts", QString("%1 contract(s) are up for renewal, on watch, or expired.").arg(countWhere("contracts", "status='Up for Renewal' OR status='Watch' OR status='Expired'"))}
     };
+}
+
+
+QList<QMap<QString, QString>> DatabaseManager::sharedRecordLinksForContext(const QString& contextKey) const {
+    QList<QMap<QString, QString>> rows;
+    QSqlQuery q(m_db);
+    q.prepare("SELECT id, context_key, source_table, source_label, linked_tabs, owner, status, urgency, note_text "
+              "FROM shared_record_links WHERE context_key = :context ORDER BY "
+              "CASE urgency WHEN 'Critical' THEN 1 WHEN 'High' THEN 2 WHEN 'Medium' THEN 3 ELSE 4 END, id ASC");
+    q.bindValue(":context", contextKey);
+    if (!q.exec()) return rows;
+
+    while (q.next()) {
+        QMap<QString, QString> row;
+        row["id"] = q.value(0).toString();
+        row["context_key"] = q.value(1).toString();
+        row["source_table"] = q.value(2).toString();
+        row["source_label"] = q.value(3).toString();
+        row["linked_tabs"] = q.value(4).toString();
+        row["owner"] = q.value(5).toString();
+        row["status"] = q.value(6).toString();
+        row["urgency"] = q.value(7).toString();
+        row["note_text"] = q.value(8).toString();
+        rows.append(row);
+    }
+    return rows;
+}
+
+QList<QPair<QString, QString>> DatabaseManager::sharedRecordHighlights(const QString& contextKey) const {
+    QList<QPair<QString, QString>> items;
+    const auto rows = sharedRecordLinksForContext(contextKey);
+    for (const auto& row : rows) {
+        const QString title = QString("%1 · %2").arg(row.value("urgency"), row.value("source_label"));
+        const QString body = QString("%1 | owner: %2 | visible in: %3")
+                                 .arg(row.value("status"), row.value("owner"), row.value("linked_tabs"));
+        items.append(qMakePair(title, body));
+    }
+    return items;
 }

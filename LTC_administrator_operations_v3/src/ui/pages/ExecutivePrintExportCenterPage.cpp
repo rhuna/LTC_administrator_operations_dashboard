@@ -217,8 +217,7 @@ void ExecutivePrintExportCenterPage::exportSnapshot() {
         QMessageBox::warning(this, "Export failed", "The JSON snapshot could not be created.");
         return;
     }
-    QMessageBox::information(this, "Snapshot created", QString("JSON snapshot exported to:
-%1").arg(path));
+    QMessageBox::information(this, "Snapshot created", QString("JSON snapshot exported to:\n%1").arg(path));
 }
 
 void ExecutivePrintExportCenterPage::refreshBoard() {

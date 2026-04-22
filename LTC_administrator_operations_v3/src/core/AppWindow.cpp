@@ -39,7 +39,9 @@
 #include "../ui/pages/ResidentTracerManagerPage.h"
 #include "../ui/pages/PlanOfCorrectionBuilderPage.h"
 #include "../ui/pages/ExecutivePrintExportCenterPage.h"
+#include "../ui/pages/LeadershipHuddleGeneratorPage.h"
 #include "../ui/pages/TreatmentsPage.h"
+#include "../ui/pages/GroupedWorkspacePage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -52,14 +54,14 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v81 Alerts & Escalation Center");
+    setWindowTitle("LTC Administrator Operations Dashboard v87 Live Global Refresh");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
     auto* shell = new QWidget(this);
     auto* shellLayout = new QVBoxLayout(shell);
-    shellLayout->setContentsMargins(20, 18, 20, 18);
-    shellLayout->setSpacing(14);
+    shellLayout->setContentsMargins(22, 20, 22, 20);
+    shellLayout->setSpacing(16);
 
     auto* header = new QFrame(shell);
     header->setObjectName("appHeader");
@@ -76,7 +78,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v81 adds an alerts and escalation center so leadership can see overdue, blocked, critical, and due-now issues across the major survey boards in one urgency-focused operational workspace.",
+        "v87 keeps the unified hubs and now refreshes shared counts live after changes, so related tabs reflect one another immediately instead of waiting for a manual refresh.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -97,7 +99,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
 
     auto* navLabel = new QLabel("Navigation", sidebar);
     navLabel->setObjectName("sidebarHeading");
-    auto* navHint = new QLabel(QString("%1 profile · streamlined module set · pages scroll automatically on smaller screens.").arg(roleName), sidebar);
+    auto* navHint = new QLabel(QString("%1 profile · connected workspaces · shared counts and cross-tab workflow signals.").arg(roleName), sidebar);
     navHint->setObjectName("sidebarHint");
     navHint->setWordWrap(true);
 
@@ -108,44 +110,80 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
 
     const QList<QPair<QString,QWidget*>> pages = {
         {"Dashboard", new DashboardPage(db)},
-        {"Dashboard Setup", new DashboardCustomizePage(db)},
-        {"Alerts", new AlertsPage(db)},
-        {"Calendar", new CalendarPage(db)},
-        {"Leadership Rounds", new LeadershipRoundsPage(db)},
-        {"Executive Follow-Up", new ExecutiveFollowUpBoardPage(db)},
-        {"Morning Meeting", new MorningMeetingBoardPage(db)},
-        {"Department Pulse", new DepartmentPulseBoardPage(db)},
-        {"Barrier Escalation", new BarrierEscalationBoardPage(db)},
-        {"Survey Recovery", new SurveyRecoveryBoardPage(db)},
-        {"Evidence Binder", new EvidenceBinderBoardPage(db)},
-        {"Mock Survey Drill", new MockSurveyDrillBoardPage(db)},
-        {"Entrance Conference", new SurveyEntranceConferenceBoardPage(db)},
-        {"Survey Command Center", new SurveyCommandCenterPage(db)},
-        {"Alerts & Escalation", new AlertsEscalationCenterPage(db)},
-        {"Live Survey Response", new SurveyLiveResponseTrackerPage(db)},
-        {"Survey Document Requests", new SurveyDocumentRequestLogPage(db)},
-        {"Resident Tracer Manager", new ResidentTracerManagerPage(db)},
-        {"Plan of Correction", new PlanOfCorrectionBuilderPage(db)},
-        {"Executive Print & Export", new ExecutivePrintExportCenterPage(db)},
-        {"Residents", new ResidentsPage(db)},
-        {"Admissions", new AdmissionsPage(db)},
-        {"HR / Staffing", new StaffingPage(db)},
-        {"Tasks", new TasksPage(db)},
-        {"Huddle", new HuddlePage(db)},
-        {"Social Services", new SocialServicesPage(db)},
-        {"Environmental Services", new EnvironmentalRoundsPage(db)},
-        {"Medical Records", new PharmacyPage(db)},
-        {"MDS", new MdsTripleCheckPage(db)},
-        {"DON", new IncidentsPage(db)},
-        {"Treatments", new TreatmentsPage(db)},
-        {"QAPI", new QapiPage(db)},
-        {"Budget", new BudgetPage(db)},
-        {"Survey Ready", new SurveyReadinessPage(db)},
-        {"Quality", new QualityMeasuresPage(db)},
-        {"Transportation", new TransportationPage(db)},
-        {"Dietary", new DietaryPage(db)},
-        {"Document Center", new DocumentCenterPage(db)},
-        {"Reports", new ReportsPage(db)}
+        {"Daily Operations Hub", new GroupedWorkspacePage(
+            db,
+            "daily",
+            "Daily Operations Hub",
+            "Daily leadership workflows are grouped together here so rounds, follow-up, morning priorities, barriers, and huddle prep live in one place instead of across separate top-level tabs.",
+            {
+                {"Leadership Rounds", new LeadershipRoundsPage(db)},
+                {"Executive Follow-Up", new ExecutiveFollowUpBoardPage(db)},
+                {"Morning Meeting", new MorningMeetingBoardPage(db)},
+                {"Department Pulse", new DepartmentPulseBoardPage(db)},
+                {"Barrier Escalation", new BarrierEscalationBoardPage(db)},
+                {"Alerts", new AlertsPage(db)},
+                {"Calendar", new CalendarPage(db)},
+                {"Leadership Huddle", new LeadershipHuddleGeneratorPage(db)}
+            })},
+        {"Survey Management Hub", new GroupedWorkspacePage(
+            db,
+            "survey",
+            "Survey Management Hub",
+            "Survey readiness, live survey response, documentation, tracers, correction planning, and executive packet prep are consolidated here so the full survey workflow stays under one workspace.",
+            {
+                {"Command Center", new SurveyCommandCenterPage(db)},
+                {"Survey Recovery", new SurveyRecoveryBoardPage(db)},
+                {"Evidence Binder", new EvidenceBinderBoardPage(db)},
+                {"Mock Drill", new MockSurveyDrillBoardPage(db)},
+                {"Entrance Conference", new SurveyEntranceConferenceBoardPage(db)},
+                {"Alerts & Escalation", new AlertsEscalationCenterPage(db)},
+                {"Live Response", new SurveyLiveResponseTrackerPage(db)},
+                {"Document Requests", new SurveyDocumentRequestLogPage(db)},
+                {"Resident Tracers", new ResidentTracerManagerPage(db)},
+                {"Plan of Correction", new PlanOfCorrectionBuilderPage(db)},
+                {"Print & Export", new ExecutivePrintExportCenterPage(db)},
+                {"Survey Ready", new SurveyReadinessPage(db)}
+            })},
+        {"Resident Care Hub", new GroupedWorkspacePage(
+            db,
+            "resident",
+            "Resident Care Hub",
+            "Resident-facing operations are grouped together so admissions, care documentation, clinical follow-up, support services, and unit-level coordination are easier to find.",
+            {
+                {"Residents", new ResidentsPage(db)},
+                {"Admissions", new AdmissionsPage(db)},
+                {"Treatments", new TreatmentsPage(db)},
+                {"Medical Records", new PharmacyPage(db)},
+                {"MDS", new MdsTripleCheckPage(db)},
+                {"DON / Incidents", new IncidentsPage(db)},
+                {"Social Services", new SocialServicesPage(db)},
+                {"Dietary", new DietaryPage(db)},
+                {"Transportation", new TransportationPage(db)}
+            })},
+        {"Operations Support Hub", new GroupedWorkspacePage(
+            db,
+            "ops",
+            "Operations Support Hub",
+            "Support workflows that help the building run day to day are grouped here so staffing, task follow-through, quality oversight, and environmental readiness stay together.",
+            {
+                {"HR / Staffing", new StaffingPage(db)},
+                {"Tasks", new TasksPage(db)},
+                {"Huddle", new HuddlePage(db)},
+                {"Environmental Services", new EnvironmentalRoundsPage(db)},
+                {"QAPI", new QapiPage(db)},
+                {"Quality", new QualityMeasuresPage(db)},
+                {"Budget", new BudgetPage(db)}
+            })},
+        {"Documents, Reports & Setup", new GroupedWorkspacePage(
+            db,
+            "docs",
+            "Documents, Reports & Setup",
+            "Reference, reporting, and dashboard-configuration tools are grouped under one workspace so administrative support items do not crowd the main operational navigation.",
+            {
+                {"Document Center", new DocumentCenterPage(db)},
+                {"Reports", new ReportsPage(db)},
+                {"Dashboard Setup", new DashboardCustomizePage(db)}
+            })}
     };
 
     QStringList allowed;

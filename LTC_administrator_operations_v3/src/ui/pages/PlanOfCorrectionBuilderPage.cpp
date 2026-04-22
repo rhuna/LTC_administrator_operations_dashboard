@@ -261,13 +261,11 @@ void PlanOfCorrectionBuilderPage::refreshBoard() {
         const QString action = row.value("corrective_action").trimmed();
         const QString evidence = row.value("evidence_plan").trimmed();
         if (!action.isEmpty()) {
-            if (!tip.isEmpty()) tip += "
-";
+            if (!tip.isEmpty()) tip += "\n";
             tip += "Action: " + action;
         }
         if (!evidence.isEmpty()) {
-            if (!tip.isEmpty()) tip += "
-";
+            if (!tip.isEmpty()) tip += "\n";
             tip += "Evidence: " + evidence;
         }
         if (!tip.isEmpty()) findingItem->setToolTip(tip);

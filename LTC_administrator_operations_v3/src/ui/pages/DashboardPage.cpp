@@ -25,13 +25,13 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* title = new QLabel("Executive dashboard", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "A simplified command center for census, referral readiness, staffing coverage, survey work, outbreak workload, quality analytics, documents, and due-soon follow-up, now with saved dashboard preferences and a calendar view for scheduled work, plus a local audit trail for recent changes, a KPI trend engine for rolling executive measure review, an external sync readiness layer for future EMR/PCC work, and a release-candidate checklist for packaging, validation, rollout readiness, a built-in SOP / quick-start center for repeatable operations, and a therapy / rehab operations workspace for rehab starts, auth follow-up, and discharge-readiness coordination, plus a social services / discharge planning workspace for family meetings, psychosocial follow-up, and community resource coordination, plus a revenue cycle workspace for billing queue, denial tracking, and A/R aging, a contract management workspace for vendor contracts and renewal tracking, an upgraded budget and managed care module with full add/edit capability, and a Survey Command Center that rolls the major survey-readiness boards into one live leadership control room, plus a plan-of-correction builder for formal survey follow-up work, and an executive print/export center for packet prep, briefing sheets, and leadership handoff materials, plus an alerts and escalation center for overdue, blocked, critical, and due-now visibility across the survey workflow.",
+        "A simplified command center for census, staffing, quality, survey readiness, corrective action, live response, tracer work, packet prep, and leadership huddle planning. v84 adds a huddle generator so leaders can turn live operational pressure into a ready agenda before drilling into detailed boards.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
 
     auto* snapshot = new QLabel(
-        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items · %14 revenue cycle items · %15 contracts needing attention · %16 leadership-round follow-ups · %17 executive follow-up board items · %18 department pulse items · %19 evidence binder items · %20 mock survey drill items · %21 survey command items · %22 live survey requests · %23 survey document requests · %24 resident tracers · %25 plan-of-correction items · %26 executive print/export packets · %27 alert-center items")
+        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items · %14 revenue cycle items · %15 contracts needing attention · %16 leadership-round follow-ups · %17 executive follow-up board items · %18 department pulse items · %19 evidence binder items · %20 mock survey drill items · %21 survey command items · %22 live survey requests · %23 survey document requests · %24 resident tracers · %25 plan-of-correction items · %26 executive print/export packets · %27 alert-center items · %28 leadership huddle agenda(s)")
             .arg(db->countWhere("residents", "status='Current'"))
             .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'"))
             .arg(db->countWhere("staffing_assignments", "status='Open'"))
@@ -58,7 +58,8 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
             .arg(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'"))
             .arg(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'"))
             .arg(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'"))
-            .arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")),
+            .arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'"))
+            .arg(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")),
         hero);
     snapshot->setObjectName("dashboardSnapshot");
 
@@ -99,7 +100,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
         auto* l = new QLabel(label, summaryStrip);
         l->setObjectName("panelHint");
         auto* v = new QLabel(value, summaryStrip);
-        v->setStyleSheet("font-size:20px; font-weight:700; color:#102a43;");
+        v->setObjectName("summaryValue");
         wrap->addWidget(l);
         wrap->addWidget(v);
         summaryLayout->addLayout(wrap);
@@ -132,6 +133,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     addSummary("Resident tracers", QString::number(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")));
     addSummary("Print/export", QString::number(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
     addSummary("Alert center", QString::number(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
+    addSummary("Huddle agendas", QString::number(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")));
     summaryLayout->addStretch();
     root->addWidget(summaryStrip);
 
@@ -210,6 +212,9 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     kpiGrid->addWidget(new KpiCard("Alert-center open", QString::number(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")), this), 23, 0);
     kpiGrid->addWidget(new KpiCard("Critical alerts", QString::number(db->countWhere("alerts_escalation_items", "(status='Open' OR status='Due Today' OR status='Blocked') AND severity='Critical'")), this), 23, 1);
     kpiGrid->addWidget(new KpiCard("Blocked alerts", QString::number(db->countWhere("alerts_escalation_items", "status='Blocked'")), this), 23, 2);
+    kpiGrid->addWidget(new KpiCard("Huddle agendas", QString::number(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")), this), 24, 0);
+    kpiGrid->addWidget(new KpiCard("Huddles due now", QString::number(db->countWhere("leadership_huddle_agendas", QString("(status='Drafting' OR status='Ready') AND (huddle_date < '%1' OR (huddle_date='%1' AND due_time <= '%2'))").arg(QDate::currentDate().toString("yyyy-MM-dd"), QTime::currentTime().toString("HH:mm")))), this), 24, 1);
+    kpiGrid->addWidget(new KpiCard("Huddles completed", QString::number(db->countWhere("leadership_huddle_agendas", "status='Completed'")), this), 24, 2);
     root->addLayout(kpiGrid);
 
     auto* lowerRow = new QHBoxLayout();
@@ -267,6 +272,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     quickList->addItem(QString("%1 plan-of-correction item(s) remain open, in progress, awaiting evidence, or under review for formal survey follow-up.").arg(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'")));
     quickList->addItem(QString("%1 executive packet(s) remain drafting, waiting on input, or ready for print/export across leadership operations.").arg(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
     quickList->addItem(QString("%1 alert-center item(s) remain open, due today, or blocked across the survey urgency layer.").arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
+    quickList->addItem(QString("%1 leadership huddle agenda(s) are still drafting or ready for the next executive stand-up.").arg(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")));
     quickList->addItem("Reports workspace can export a daily summary, census CSV, and staffing CSV.");
     quickLayout->addWidget(quickHint);
     quickLayout->addWidget(quickList);
