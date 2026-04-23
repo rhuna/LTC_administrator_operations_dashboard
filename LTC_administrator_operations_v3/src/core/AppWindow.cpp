@@ -42,6 +42,9 @@
 #include "../ui/pages/LeadershipHuddleGeneratorPage.h"
 #include "../ui/pages/TreatmentsPage.h"
 #include "../ui/pages/GroupedWorkspacePage.h"
+#include "../ui/pages/UnifiedActionCenterPage.h"
+#include "../ui/pages/SharedNotesFollowUpPage.h"
+#include "../ui/pages/RoleBasedExecutiveViewsPage.h"
 
 #include <QAbstractScrollArea>
 #include <QFrame>
@@ -54,7 +57,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v87 Live Global Refresh");
+    setWindowTitle("LTC Administrator Operations Dashboard v94 Role-Based Executive Views");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -78,7 +81,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v87 keeps the unified hubs and now refreshes shared counts live after changes, so related tabs reflect one another immediately instead of waiting for a manual refresh.",
+        "v94 adds focused executive views so administrator, DON, department leadership, and survey-response leadership can interpret the same connected operating system through role-specific priorities.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);
@@ -97,9 +100,9 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     sidebarLayout->setContentsMargins(12, 14, 12, 14);
     sidebarLayout->setSpacing(10);
 
-    auto* navLabel = new QLabel("Navigation", sidebar);
+    auto* navLabel = new QLabel("Workspaces", sidebar);
     navLabel->setObjectName("sidebarHeading");
-    auto* navHint = new QLabel(QString("%1 profile · connected workspaces · shared counts and cross-tab workflow signals.").arg(roleName), sidebar);
+    auto* navHint = new QLabel(QString("%1 profile · simplified workspace layout · live shared counts.").arg(roleName), sidebar);
     navHint->setObjectName("sidebarHint");
     navHint->setWordWrap(true);
 
@@ -110,10 +113,13 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
 
     const QList<QPair<QString,QWidget*>> pages = {
         {"Dashboard", new DashboardPage(db)},
-        {"Daily Operations Hub", new GroupedWorkspacePage(
+        {"Role-Based Executive Views", new RoleBasedExecutiveViewsPage(db)},
+        {"Unified Action Center", new UnifiedActionCenterPage(db)},
+        {"Shared Notes & Follow-Up", new SharedNotesFollowUpPage(db)},
+        {"Daily Ops Hub", new GroupedWorkspacePage(
             db,
             "daily",
-            "Daily Operations Hub",
+            "Daily Ops Hub",
             "Daily leadership workflows are grouped together here so rounds, follow-up, morning priorities, barriers, and huddle prep live in one place instead of across separate top-level tabs.",
             {
                 {"Leadership Rounds", new LeadershipRoundsPage(db)},
@@ -153,7 +159,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
                 {"Residents", new ResidentsPage(db)},
                 {"Admissions", new AdmissionsPage(db)},
                 {"Treatments", new TreatmentsPage(db)},
-                {"Medical Records", new PharmacyPage(db)},
+                {"Meds / Records", new PharmacyPage(db)},
                 {"MDS", new MdsTripleCheckPage(db)},
                 {"DON / Incidents", new IncidentsPage(db)},
                 {"Social Services", new SocialServicesPage(db)},
@@ -174,10 +180,10 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
                 {"Quality", new QualityMeasuresPage(db)},
                 {"Budget", new BudgetPage(db)}
             })},
-        {"Documents, Reports & Setup", new GroupedWorkspacePage(
+        {"Docs, Reports & Setup", new GroupedWorkspacePage(
             db,
             "docs",
-            "Documents, Reports & Setup",
+            "Docs, Reports & Setup",
             "Reference, reporting, and dashboard-configuration tools are grouped under one workspace so administrative support items do not crowd the main operational navigation.",
             {
                 {"Document Center", new DocumentCenterPage(db)},

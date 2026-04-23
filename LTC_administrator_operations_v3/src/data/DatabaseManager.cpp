@@ -27,7 +27,7 @@ bool DatabaseManager::initialize() {
         return false;
     }
     QDir().mkpath(baseDir);
-    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v88_cross_page_shared_records.db");
+    const QString dbPath = QDir(baseDir).filePath("ltc_admin_dashboard_v94_role_based_executive_views.db");
 
     if (QSqlDatabase::contains("ltc_connection")) {
         m_db = QSqlDatabase::database("ltc_connection");
@@ -278,6 +278,8 @@ bool DatabaseManager::createTables() {
         "CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, due_date TEXT, owner TEXT, task_name TEXT, priority TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS alerts_items (id INTEGER PRIMARY KEY AUTOINCREMENT, alert_date TEXT, module_name TEXT, item_name TEXT, owner TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS shared_record_links (id INTEGER PRIMARY KEY AUTOINCREMENT, context_key TEXT, source_table TEXT, source_label TEXT, linked_tabs TEXT, owner TEXT, status TEXT, urgency TEXT, note_text TEXT)",
+        "CREATE TABLE IF NOT EXISTS unified_action_items (id INTEGER PRIMARY KEY AUTOINCREMENT, source_name TEXT, item_name TEXT, owner_name TEXT, due_date TEXT, severity TEXT, status TEXT, note_text TEXT)",
+        "CREATE TABLE IF NOT EXISTS shared_followup_threads (id INTEGER PRIMARY KEY AUTOINCREMENT, context_key TEXT, source_label TEXT, linked_tabs TEXT, owner_name TEXT, priority TEXT, status TEXT, note_text TEXT, followup_text TEXT, last_touched TEXT)",
         "CREATE TABLE IF NOT EXISTS pips (id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT, owner TEXT, status TEXT, next_step TEXT)",
         "CREATE TABLE IF NOT EXISTS budget_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, department TEXT, variance TEXT, status TEXT)",
         "CREATE TABLE IF NOT EXISTS compliance_items (id INTEGER PRIMARY KEY AUTOINCREMENT, item_name TEXT, due_date TEXT, owner TEXT, status TEXT)",
@@ -460,6 +462,15 @@ bool DatabaseManager::seedData() {
         })) return false;
     }
 
+    if (tableIsEmpty("unified_action_items")) {
+        if (!executeAll({
+            "INSERT INTO unified_action_items (source_name, item_name, owner_name, due_date, severity, status, note_text) VALUES ('Survey Command Center', 'Confirm survey escort coverage for afternoon document walk', 'Administrator', '2026-04-23', 'Critical', 'Open', 'Need final escort assignment and backup before 1 PM request round.')",
+            "INSERT INTO unified_action_items (source_name, item_name, owner_name, due_date, severity, status, note_text) VALUES ('Barrier Escalation', 'Resolve staffing hole affecting medication pass coverage', 'DON', '2026-04-23', 'High', 'Blocked', 'Agency confirmation still missing. Escalate if no response by noon.')",
+            "INSERT INTO unified_action_items (source_name, item_name, owner_name, due_date, severity, status, note_text) VALUES ('Executive Follow-Up', 'Close out dining observation correction and validate retraining', 'Dietary Manager', '2026-04-24', 'Medium', 'Due Today', 'Bring audit evidence and re-observation result to the next leadership huddle.')"
+        })) return false;
+    }
+
+
     if (tableIsEmpty("dashboard_preferences")) {
         if (!executeAll({
             "INSERT INTO dashboard_preferences (pref_key, pref_value) VALUES ('default_page', 'Dashboard')",
@@ -594,6 +605,16 @@ if (tableIsEmpty("tasks")) {
             "INSERT INTO tasks (due_date, owner, task_name, priority, status) VALUES ('2026-04-22', 'Business Office', 'Resolve authorization gap', 'High', 'In Progress')"
         })) return false;
     }
+
+    if (tableIsEmpty("shared_followup_threads")) {
+        const QStringList sharedThreadSeeds = {
+            "INSERT INTO shared_followup_threads (context_key, source_label, linked_tabs, owner_name, priority, status, note_text, followup_text, last_touched) VALUES ('daily', 'Agency CNA coverage on west hall', 'Department Pulse, Morning Meeting, Leadership Huddle, Unified Action Center', 'Staffing Coordinator', 'High', 'Needs Handoff', 'Coverage stabilized for first shift but the evening handoff still needs confirmed agency support and update language for the huddle.', 'Administrator to confirm evening coverage plan with staffing office before 2 PM and push the final note into the leadership huddle.', '2026-04-23 07:30')",
+            "INSERT INTO shared_followup_threads (context_key, source_label, linked_tabs, owner_name, priority, status, note_text, followup_text, last_touched) VALUES ('survey', 'Abuse policy sign-in packet request', 'Survey Command Center, Document Requests, Print & Export, Alerts & Escalation', 'Administrator', 'Critical', 'Open', 'Survey team requested verification packet and the source documents are split between binder prep and document requests.', 'Pull final sign-in roster, attach policy acknowledgment copy, and confirm export packet is marked ready before surveyor returns.', '2026-04-23 08:10')",
+            "INSERT INTO shared_followup_threads (context_key, source_label, linked_tabs, owner_name, priority, status, note_text, followup_text, last_touched) VALUES ('resident', 'Tracer follow-up for room 204 hydration concern', 'Resident Tracers, Plan of Correction, Residents, Social Services', 'DON', 'High', 'Watching', 'Resident tracer concern was addressed clinically, but social-services follow-up and family communication still need one shared note trail.', 'Document family update after afternoon call and close the thread once the resident-specific plan is visible in both tracer and follow-up views.', '2026-04-23 09:05')"
+        };
+        if (!executeAll(sharedThreadSeeds)) return false;
+    }
+
     if (tableIsEmpty("pips")) {
         if (!executeAll({
             "INSERT INTO pips (project_name, owner, status, next_step) VALUES ('Falls Reduction PIP', 'DON', 'Active', 'Review post-fall huddle trends')",

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(LTCAdministratorOperationsDashboard VERSION 88.0.0 LANGUAGES CXX)
+project(LTCAdministratorOperationsDashboard VERSION 94.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -149,6 +149,12 @@ qt_add_executable(LTCAdministratorOperationsDashboard
     src/ui/pages/ExecutivePrintExportCenterPage.cpp
     src/ui/pages/LeadershipHuddleGeneratorPage.h
     src/ui/pages/LeadershipHuddleGeneratorPage.cpp
+    src/ui/pages/UnifiedActionCenterPage.h
+    src/ui/pages/UnifiedActionCenterPage.cpp
+    src/ui/pages/SharedNotesFollowUpPage.h
+    src/ui/pages/SharedNotesFollowUpPage.cpp
+    src/ui/pages/RoleBasedExecutiveViewsPage.h
+    src/ui/pages/RoleBasedExecutiveViewsPage.cpp
     src/ui/pages/GroupedWorkspacePage.h
     src/ui/pages/GroupedWorkspacePage.cpp
     src/ui/pages/OutbreakCommandPage.h

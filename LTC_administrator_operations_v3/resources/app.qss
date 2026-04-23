@@ -119,3 +119,79 @@ QGroupBox::title {
     left: 12px;
     padding: 0 4px;
 }
+
+
+QFrame#appHeader, QFrame#sidebarCard, QStackedWidget#contentStack {
+    background: white;
+    border: 1px solid #dce4ee;
+    border-radius: 18px;
+}
+
+QLabel#appTitle {
+    color: #17324d;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+QLabel#appSubtitle, QLabel#dashboardSubtitle, QLabel#sidebarHint, QLabel#panelHint {
+    color: #5b7083;
+    font-size: 13px;
+}
+
+QLabel#sidebarHeading {
+    color: #17324d;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+QListWidget#sideNav {
+    background: transparent;
+    border: none;
+    padding: 2px;
+}
+
+QListWidget#sideNav::item {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 2px 0px;
+    color: #334e68;
+}
+
+QListWidget#sideNav::item:selected {
+    background: #e8f0f7;
+    border: 1px solid #c5d7e8;
+    color: #17324d;
+    font-weight: 700;
+}
+
+QListWidget#sideNav::item:hover {
+    background: #f4f7fb;
+}
+
+QTabWidget::pane {
+    border: 1px solid #dce4ee;
+    border-radius: 14px;
+    background: white;
+    top: -1px;
+}
+
+QTabBar::tab {
+    background: #f4f7fb;
+    border: 1px solid #dce4ee;
+    padding: 8px 12px;
+    margin-right: 6px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    color: #486581;
+}
+
+QTabBar::tab:selected {
+    background: white;
+    color: #17324d;
+    font-weight: 700;
+}
+
+QPushButton {
+    min-height: 16px;
+}

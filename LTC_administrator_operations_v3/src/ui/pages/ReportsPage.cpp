@@ -5,7 +5,6 @@
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPrinter>
@@ -22,12 +21,12 @@ ReportsPage::ReportsPage(DatabaseManager* db, QWidget* parent)
     root->setContentsMargins(8, 8, 8, 8);
     root->setSpacing(14);
 
-    auto* heading = new QLabel("Reports & Export", this);
+    auto* heading = new QLabel("Reporting & Print Consolidation", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     root->addWidget(heading);
 
     auto* subtitle = new QLabel(
-        "Create a leadership-ready daily summary, export census and staffing snapshots, and print a concise executive report without digging through every module.",
+        "v94 consolidates reporting so leadership can preview, export, and print connected operational summaries without bouncing between separate workspaces.",
         this);
     subtitle->setWordWrap(true);
     root->addWidget(subtitle);
@@ -39,10 +38,12 @@ ReportsPage::ReportsPage(DatabaseManager* db, QWidget* parent)
     m_exportDailyButton = new QPushButton("Export Daily Summary", this);
     m_exportCensusButton = new QPushButton("Export Census CSV", this);
     m_exportStaffingButton = new QPushButton("Export Staffing CSV", this);
+    m_exportActionButton = new QPushButton("Export Action Center CSV", this);
+    m_exportConnectedButton = new QPushButton("Export Connected Summary", this);
     m_printButton = new QPushButton("Print Daily Summary", this);
 
     auto* helper = new QLabel(
-        "Use the preview below to sanity-check the report, then export or print it for shift huddle, leadership review, or survey preparation.",
+        "Use the preview below to sanity-check the connected summary, then export or print it for leadership huddles, survey prep, or executive handoff.",
         this);
     helper->setWordWrap(true);
 
@@ -50,12 +51,14 @@ ReportsPage::ReportsPage(DatabaseManager* db, QWidget* parent)
     topLayout->addWidget(m_exportDailyButton, 0, 1);
     topLayout->addWidget(m_exportCensusButton, 0, 2);
     topLayout->addWidget(m_exportStaffingButton, 1, 0);
-    topLayout->addWidget(m_printButton, 1, 1);
-    topLayout->addWidget(helper, 2, 0, 1, 3);
+    topLayout->addWidget(m_exportActionButton, 1, 1);
+    topLayout->addWidget(m_exportConnectedButton, 1, 2);
+    topLayout->addWidget(m_printButton, 2, 0);
+    topLayout->addWidget(helper, 3, 0, 1, 3);
 
     root->addWidget(topBox);
 
-    auto* previewBox = new QGroupBox("Daily executive summary preview", this);
+    auto* previewBox = new QGroupBox("Connected executive summary preview", this);
     auto* previewLayout = new QVBoxLayout(previewBox);
     m_preview = new QTextEdit(this);
     m_preview->setReadOnly(true);
@@ -67,6 +70,8 @@ ReportsPage::ReportsPage(DatabaseManager* db, QWidget* parent)
     connect(m_exportDailyButton, &QPushButton::clicked, this, &ReportsPage::exportDailySummary);
     connect(m_exportCensusButton, &QPushButton::clicked, this, &ReportsPage::exportCensusCsv);
     connect(m_exportStaffingButton, &QPushButton::clicked, this, &ReportsPage::exportStaffingCsv);
+    connect(m_exportActionButton, &QPushButton::clicked, this, &ReportsPage::exportActionCenterCsv);
+    connect(m_exportConnectedButton, &QPushButton::clicked, this, &ReportsPage::exportConnectedSummary);
     connect(m_printButton, &QPushButton::clicked, this, &ReportsPage::printDailySummary);
 
     refreshPreview();
@@ -76,7 +81,7 @@ QString ReportsPage::buildDailySummaryText() const {
     QString text;
     QTextStream stream(&text);
 
-    stream << "LTC Administrator Operations Dashboard 54.0.0\n";
+    stream << "LTC Administrator Operations Dashboard 94.0.0\n";
     stream << "Daily Executive Summary\n";
     stream << "Generated: " << QDate::currentDate().toString("yyyy-MM-dd") << "\n\n";
 
@@ -108,6 +113,39 @@ QString ReportsPage::buildDailySummaryText() const {
         stream << "- " << item.first << ": " << item.second << "\n";
     }
 
+    stream << "\nConnected operational rollups\n";
+    stream << "- Unified action items still open: " << m_db->countWhere("unified_action_items", "status!='Closed'") << "\n";
+    stream << "- Shared follow-up threads still open: " << m_db->countWhere("shared_followup_threads", "status!='Closed'") << "\n";
+    stream << "- Executive packets still open: " << m_db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'") << "\n";
+    stream << "- Survey live requests still open: " << m_db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'") << "\n";
+    stream << "- Survey document pulls still open: " << m_db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'") << "\n";
+
+    return text;
+}
+
+QString ReportsPage::buildConnectedSummaryText() const {
+    QString text;
+    QTextStream stream(&text);
+
+    stream << "Connected Leadership Summary 94.0.0\n";
+    stream << "Generated: " << QDate::currentDate().toString("yyyy-MM-dd") << "\n\n";
+
+    stream << "Daily operations hub\n";
+    stream << "- Leadership rounds still open: " << m_db->countWhere("leadership_rounds", "status!='Closed' AND status!='Complete' AND status!='Completed'") << "\n";
+    stream << "- Executive follow-up still open: " << m_db->countWhere("executive_followups", "status!='Closed' AND status!='Complete' AND status!='Completed'") << "\n";
+    stream << "- Morning meeting items still active: " << m_db->countWhere("morning_meeting_items", "status!='Done' AND status!='Closed' AND status!='Completed'") << "\n";
+    stream << "- Barrier escalations still open: " << m_db->countWhere("barrier_escalations", "status!='Removed' AND status!='Closed' AND status!='Resolved'") << "\n\n";
+
+    stream << "Survey management hub\n";
+    stream << "- Alerts & escalation still open: " << m_db->countWhere("alerts_escalation_items", "status!='Resolved' AND status!='Closed'") << "\n";
+    stream << "- Resident tracers still active: " << m_db->countWhere("resident_tracer_items", "status!='Closed' AND status!='Completed'") << "\n";
+    stream << "- Plan-of-correction items still open: " << m_db->countWhere("plan_of_correction_items", "status!='Completed' AND status!='Submitted' AND status!='Closed'") << "\n";
+    stream << "- Export packets still open: " << m_db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'") << "\n\n";
+
+    stream << "Cross-page alignment\n";
+    stream << "- Shared record links: " << m_db->countWhere("shared_record_links") << "\n";
+    stream << "- Shared follow-up threads open: " << m_db->countWhere("shared_followup_threads", "status!='Closed'") << "\n";
+    stream << "- Action-center items open: " << m_db->countWhere("unified_action_items", "status!='Closed'") << "\n";
     return text;
 }
 
@@ -145,6 +183,18 @@ QString ReportsPage::buildStaffingCsv() const {
     return csv;
 }
 
+QString ReportsPage::buildActionCenterCsv() const {
+    QString csv;
+    QTextStream stream(&csv);
+    stream << "Module,Summary\n";
+    const auto items = m_db->actionCenterItems();
+    for (const auto& item : items) {
+        stream << '"' << item.first << "\",";
+        stream << '"' << item.second << "\"\n";
+    }
+    return csv;
+}
+
 bool ReportsPage::saveTextToFile(const QString& suggestedName, const QString& filter, const QString& content) const {
     const QString path = QFileDialog::getSaveFileName(nullptr, "Save Report", suggestedName, filter);
     if (path.isEmpty()) {
@@ -167,30 +217,42 @@ bool ReportsPage::saveTextToFile(const QString& suggestedName, const QString& fi
 }
 
 void ReportsPage::refreshPreview() {
-    m_preview->setPlainText(buildDailySummaryText());
+    m_preview->setPlainText(buildConnectedSummaryText() + "\n\n----------------------------------------\n\n" + buildDailySummaryText());
 }
 
 void ReportsPage::exportDailySummary() {
-    if (saveTextToFile("ltc_daily_summary_54.0.0.txt", "Text Files (*.txt)", buildDailySummaryText())) {
+    if (saveTextToFile("ltc_daily_summary_94.0.0.txt", "Text Files (*.txt)", buildDailySummaryText())) {
         QMessageBox::information(this, "Report exported", "The daily summary was exported successfully.");
     }
 }
 
 void ReportsPage::exportCensusCsv() {
-    if (saveTextToFile("ltc_census_snapshot_54.0.0.csv", "CSV Files (*.csv)", buildCensusCsv())) {
+    if (saveTextToFile("ltc_census_snapshot_94.0.0.csv", "CSV Files (*.csv)", buildCensusCsv())) {
         QMessageBox::information(this, "Export complete", "The census CSV was exported successfully.");
     }
 }
 
 void ReportsPage::exportStaffingCsv() {
-    if (saveTextToFile("ltc_staffing_snapshot_54.0.0.csv", "CSV Files (*.csv)", buildStaffingCsv())) {
+    if (saveTextToFile("ltc_staffing_snapshot_94.0.0.csv", "CSV Files (*.csv)", buildStaffingCsv())) {
         QMessageBox::information(this, "Export complete", "The staffing CSV was exported successfully.");
+    }
+}
+
+void ReportsPage::exportActionCenterCsv() {
+    if (saveTextToFile("ltc_action_center_94.0.0.csv", "CSV Files (*.csv)", buildActionCenterCsv())) {
+        QMessageBox::information(this, "Export complete", "The action center CSV was exported successfully.");
+    }
+}
+
+void ReportsPage::exportConnectedSummary() {
+    if (saveTextToFile("ltc_connected_summary_94.0.0.txt", "Text Files (*.txt)", buildConnectedSummaryText())) {
+        QMessageBox::information(this, "Export complete", "The connected summary was exported successfully.");
     }
 }
 
 void ReportsPage::printDailySummary() {
     QPrinter printer(QPrinter::HighResolution);
-    printer.setDocName("LTC Daily Executive Summary 54.0.0");
+    printer.setDocName("LTC Daily Executive Summary 94.0.0");
     QPrintDialog dialog(&printer, this);
     if (dialog.exec() == QDialog::Accepted) {
         m_preview->document()->print(&printer);

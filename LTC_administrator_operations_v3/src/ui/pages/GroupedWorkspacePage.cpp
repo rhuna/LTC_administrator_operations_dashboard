@@ -19,13 +19,13 @@ GroupedWorkspacePage::GroupedWorkspacePage(DatabaseManager* db,
     : QWidget(parent), m_db(db), m_contextKey(contextKey), m_sections(sections) {
     auto* rootLayout = new QVBoxLayout(this);
     rootLayout->setContentsMargins(0, 0, 0, 0);
-    rootLayout->setSpacing(14);
+    rootLayout->setSpacing(12);
 
     auto* hero = new QFrame(this);
     hero->setObjectName("heroPanel");
     auto* heroLayout = new QVBoxLayout(hero);
     heroLayout->setContentsMargins(18, 18, 18, 18);
-    heroLayout->setSpacing(8);
+    heroLayout->setSpacing(6);
 
     auto* titleLabel = new QLabel(title, hero);
     titleLabel->setObjectName("dashboardTitle");
@@ -50,6 +50,8 @@ GroupedWorkspacePage::GroupedWorkspacePage(DatabaseManager* db,
     m_tabs->setDocumentMode(true);
     m_tabs->setMovable(false);
     m_tabs->setUsesScrollButtons(true);
+    m_tabs->setElideMode(Qt::ElideRight);
+    m_tabs->setTabBarAutoHide(false);
 
     for (const auto& section : m_sections) {
         m_tabs->addTab(section.second, section.first);
@@ -137,7 +139,7 @@ void GroupedWorkspacePage::refreshConnectedState() {
     if (m_refreshStatusLabel) {
         const QString activeTab = (m_tabs->currentIndex() >= 0) ? m_tabs->tabText(m_tabs->currentIndex()) : QString("Overview");
         m_refreshStatusLabel->setText(
-            QString("Live global refresh is active. Shared counts and hub insight cards refreshed at %1 while viewing %2.")
+            QString("Shared counts refreshed at %1 · active section: %2")
                 .arg(QDateTime::currentDateTime().toString("MMM d, yyyy h:mm:ss AP"), activeTab));
     }
 }

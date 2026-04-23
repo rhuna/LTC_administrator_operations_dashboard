@@ -22,43 +22,43 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     heroLayout->setContentsMargins(20, 18, 20, 18);
     heroLayout->setSpacing(6);
 
-    auto* title = new QLabel("Executive dashboard", hero);
+    auto* title = new QLabel("Executive home screen", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "A simplified command center for census, staffing, quality, survey readiness, corrective action, live response, tracer work, packet prep, and leadership huddle planning. v84 adds a huddle generator so leaders can turn live operational pressure into a ready agenda before drilling into detailed boards.",
+        "The executive home screen stays simple, and v94 keeps the executive home screen simple while adding role-based leadership lenses so the same connected operational picture can be interpreted differently without rebuilding the work.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
 
+    const int dailyOpsOpen = db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'")
+        + db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'")
+        + db->countWhere("morning_meeting_items", "status='Open' OR status='In Progress' OR status='Blocked'")
+        + db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'")
+        + db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'");
+    const int surveyOpen = db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")
+        + db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'")
+        + db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'")
+        + db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")
+        + db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'");
+    const int residentCareOpen = db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'")
+        + db->countWhere("incidents", "status!='Closed'")
+        + db->countWhere("mds_items", "status!='Closed' AND status!='Complete'")
+        + db->countWhere("social_services_items", "status='Open' OR status='In Progress'")
+        + db->countWhere("therapy_items");
+    const int supportOpen = db->countWhere("staffing_assignments", "status='Open'")
+        + db->countWhere("tasks", "status='Open' OR status='In Progress' OR status='Blocked'")
+        + db->countWhere("quality_followups", "status!='Closed' AND status!='Complete'")
+        + db->countWhere("document_items", "status!='Closed'");
+
     auto* snapshot = new QLabel(
-        QString("%1 residents · %2 waitlist referrals · %3 open staffing · %4 minimum gaps · %5 overdue alerts · %6 off-target quality measures · %7 audit log events · %8 KPI trend rows · %9 sync profiles · %10 release items · %11 SOP items · %12 therapy items · %13 social services items · %14 revenue cycle items · %15 contracts needing attention · %16 leadership-round follow-ups · %17 executive follow-up board items · %18 department pulse items · %19 evidence binder items · %20 mock survey drill items · %21 survey command items · %22 live survey requests · %23 survey document requests · %24 resident tracers · %25 plan-of-correction items · %26 executive print/export packets · %27 alert-center items · %28 leadership huddle agenda(s)")
+        QString("%1 current residents · %2 open daily-ops items · %3 open survey items · %4 open resident-care items · %5 open support items · %6 minimum staffing gaps · %7 overdue alerts · %8 huddles ready or drafting")
             .arg(db->countWhere("residents", "status='Current'"))
-            .arg(db->countWhere("admissions", "status!='Admitted' AND status!='Discharged'"))
-            .arg(db->countWhere("staffing_assignments", "status='Open'"))
+            .arg(dailyOpsOpen)
+            .arg(surveyOpen)
+            .arg(residentCareOpen)
+            .arg(supportOpen)
             .arg(db->countMinimumStaffingGaps())
             .arg(db->overdueAlertCount())
-            .arg(db->countWhere("quality_measures", "status='Off Target'"))
-            .arg(db->countWhere("audit_log"))
-            .arg(db->countWhere("kpi_trend_rows"))
-            .arg(db->countWhere("external_sync_profiles"))
-            .arg(db->countWhere("release_candidate_items"))
-            .arg(db->countWhere("sop_items"))
-            .arg(db->countWhere("therapy_items"))
-            .arg(db->countWhere("social_services_items"))
-            .arg(db->countWhere("revenue_cycle_items", "status='Open' OR status='Pending Auth' OR status='Denial' OR status='At Risk'"))
-            .arg(db->countWhere("contracts", "status='Up for Renewal' OR status='Watch' OR status='Expired'"))
-            .arg(db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'"))
-            .arg(db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'"))
-            .arg(db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'"))
-            .arg(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'"))
-            .arg(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'"))
-            .arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'"))
-            .arg(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'"))
-            .arg(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'"))
-            .arg(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'"))
-            .arg(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'"))
-            .arg(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'"))
-            .arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'"))
             .arg(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")),
         hero);
     snapshot->setObjectName("dashboardSnapshot");
@@ -105,36 +105,14 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
         wrap->addWidget(v);
         summaryLayout->addLayout(wrap);
     };
-    addSummary("Ready referrals", QString::number(db->countWhere("admissions", "status='Ready'")));
-    addSummary("Needs docs", QString::number(db->countWhere("admissions", "status='Needs Docs'")));
-    addSummary("Open beds / turnovers", QString::number(db->countWhere("bed_board", "status!='Closed'")));
-    addSummary("Calendar items today", QString::number(db->countWhere("tasks", "due_date='2026-04-20'") + db->countWhere("compliance_items", "due_date='2026-04-20'") + db->countWhere("transport_items", "appointment_date='2026-04-20'")));
+    addSummary("Ready admits", QString::number(db->countWhere("admissions", "status='Ready'")));
+    addSummary("Coverage gaps", QString::number(db->countMinimumStaffingGaps()));
     addSummary("Open incidents", QString::number(db->countWhere("incidents", "status!='Closed'")));
-    addSummary("Open quality follow-ups", QString::number(db->countWhere("quality_followups", "status!='Closed' AND status!='Complete'")));
-    addSummary("Outbreak items", QString::number(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
-    addSummary("Audit events", QString::number(db->countWhere("audit_log")));
-    addSummary("KPI trend rows", QString::number(db->countWhere("kpi_trend_rows")));
-    addSummary("Sync profiles", QString::number(db->countWhere("external_sync_profiles")));
-    addSummary("Release items", QString::number(db->countWhere("release_candidate_items")));
-    addSummary("Ready to deploy", QString::number(db->countWhere("release_candidate_items", "status='Ready' OR status='Complete'")));
-    addSummary("SOP items", QString::number(db->countWhere("sop_items")));
-    addSummary("Social services", QString::number(db->countWhere("social_services_items")));
-    addSummary("Rounds follow-up", QString::number(db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'")));
-    addSummary("Exec follow-up", QString::number(db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'")));
-    addSummary("Morning board", QString::number(db->countWhere("morning_meeting_items", "status='Open' OR status='In Progress' OR status='Blocked'")));
-    addSummary("Dept pulse", QString::number(db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'")));
-    addSummary("Barriers", QString::number(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'")));
-    addSummary("Evidence binder", QString::number(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'")));
-    addSummary("Mock survey drill", QString::number(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'")));
-    addSummary("Entrance conf.", QString::number(db->countWhere("survey_entrance_conference_items", "status='Open' OR status='Assigned' OR status='Assembling'")));
-    addSummary("Survey command", QString::number(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
-    addSummary("Live requests", QString::number(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'")));
-    addSummary("Doc requests", QString::number(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'")));
-    addSummary("Resident tracers", QString::number(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")));
-    addSummary("Print/export", QString::number(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
-    addSummary("Alert center", QString::number(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
-    addSummary("Huddle agendas", QString::number(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")));
-    summaryLayout->addStretch();
+    addSummary("Survey pressure", QString::number(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'") + db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'") + db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'")));
+    addSummary("Barriers + alerts", QString::number(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'") + db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
+    addSummary("Open tasks", QString::number(db->countWhere("tasks", "status='Open' OR status='In Progress' OR status='Blocked'")));
+    addSummary("Docs needing work", QString::number(db->countWhere("document_items", "status!='Closed'")));
+    addSummary("Huddles due / ready", QString::number(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")));
     root->addWidget(summaryStrip);
 
     auto* kpiGrid = new QGridLayout();
@@ -220,9 +198,9 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* lowerRow = new QHBoxLayout();
     lowerRow->setSpacing(16);
 
-    auto* actionBox = new QGroupBox("Administrator action center", this);
+    auto* actionBox = new QGroupBox("Priority queue", this);
     auto* actionLayout = new QVBoxLayout(actionBox);
-    auto* actionHint = new QLabel("Short list of the highest-value follow-up items.", actionBox);
+    auto* actionHint = new QLabel("Highest-value work pulled into one short queue so leadership can decide what needs attention first without scanning every board.", actionBox);
     actionHint->setObjectName("panelHint");
     actionHint->setWordWrap(true);
     auto* list = new QListWidget(actionBox);
@@ -233,46 +211,22 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     actionLayout->addWidget(actionHint);
     actionLayout->addWidget(list);
 
-    auto* quickBox = new QGroupBox("Today at a glance", this);
+    auto* quickBox = new QGroupBox("Quick building brief", this);
     auto* quickLayout = new QVBoxLayout(quickBox);
-    auto* quickHint = new QLabel(QString("Use this to orient quickly before moving into a detailed module. Density mode: %1.").arg(densityMode), quickBox);
+    auto* quickHint = new QLabel(QString("Use this to orient the building quickly before moving into a detailed module. Density mode: %1.").arg(densityMode), quickBox);
     quickHint->setObjectName("panelHint");
     quickHint->setWordWrap(true);
     auto* quickList = new QListWidget(quickBox);
     quickList->setObjectName("actionList");
-    quickList->addItem(QString("%1 assignment(s) are still open").arg(db->countWhere("staffing_assignments", "status='Open'")));
+    quickList->addItem(QString("%1 assignment(s) still need staffing coverage").arg(db->countWhere("staffing_assignments", "status='Open'")));
     quickList->addItem(QString("%1 staffing group(s) are below minimum coverage").arg(db->countMinimumStaffingGaps()));
-    quickList->addItem(QString("%1 referral(s) are marked ready for admit").arg(db->countWhere("admissions", "status='Ready'")));
-    quickList->addItem(QString("%1 referral(s) still need documents").arg(db->countWhere("admissions", "status='Needs Docs'")));
-    quickList->addItem(QString("%1 document item(s) remain open").arg(db->countWhere("document_items", "status!='Closed'")));
-    quickList->addItem(QString("%1 MDS / triple-check item(s) remain open").arg(db->countWhere("mds_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 survey command item(s) remain open").arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 outbreak item(s) remain open").arg(db->countWhere("outbreak_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 quality measure(s) are off target").arg(db->countWhere("quality_measures", "status='Off Target'")));
-    quickList->addItem(QString("%1 overdue alert(s) need immediate attention").arg(db->overdueAlertCount()));
-    quickList->addItem("Calendar view rolls due dates, transports, admits, and MDS timing into one place.");
-    quickList->addItem(QString("%1 audit event(s) are available in the local change history.").arg(db->countWhere("audit_log")));
-    quickList->addItem(QString("%1 KPI trend row(s) are available for executive review.").arg(db->countWhere("kpi_trend_rows")));
-    quickList->addItem(QString("%1 sync readiness profile(s) are documented for future EMR/PCC integration work.").arg(db->countWhere("external_sync_profiles")));
-    quickList->addItem(QString("%1 release-readiness item(s) are tracked for packaging and rollout.").arg(db->countWhere("release_candidate_items")));
-    quickList->addItem(QString("%1 SOP / quick-start item(s) are available for training and repeatable operations.").arg(db->countWhere("sop_items")));
-    quickList->addItem(QString("%1 leadership round item(s) are still open, in progress, or on watch.").arg(db->countWhere("leadership_rounds", "status='Open' OR status='In Progress' OR status='Watch'")));
-    quickList->addItem(QString("%1 executive follow-up item(s) are still active on the leadership closure board.").arg(db->countWhere("executive_followups", "status='Open' OR status='In Progress' OR status='Watch' OR status='Blocked'")));
-    quickList->addItem(QString("%1 morning meeting item(s) are active on today's execution board.").arg(db->countWhere("morning_meeting_items", "status='Open' OR status='In Progress' OR status='Blocked'")));
-    quickList->addItem(QString("%1 department pulse item(s) are open, watched, or blocked across departments.").arg(db->countWhere("department_pulse_items", "status='Open' OR status='Watching' OR status='Blocked'")));
-    quickList->addItem(QString("%1 barrier escalation item(s) are still open, assigned, or waiting for removal.").arg(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'")));
-    quickList->addItem(QString("%1 survey recovery item(s) are open, in progress, or awaiting evidence on the corrective-action board.").arg(db->countWhere("survey_recovery_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence'")));
-    quickList->addItem(QString("%1 evidence binder item(s) are still open or collecting for survey-proof readiness.").arg(db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'")));
-    quickList->addItem(QString("%1 mock survey drill item(s) are still open, assigned, or in active drill before survey walk-throughs.").arg(db->countWhere("mock_survey_drills", "status='Open' OR status='Assigned' OR status='In Drill'")));
-    quickList->addItem(QString("%1 entrance-conference item(s) are still open, assigned, or assembling before surveyor arrival.").arg(db->countWhere("survey_entrance_conference_items", "status='Open' OR status='Assigned' OR status='Assembling'")));
-    quickList->addItem(QString("%1 survey command item(s) remain active in the cross-board survey control room.").arg(db->countWhere("survey_command_items", "status!='Closed' AND status!='Complete'")));
-    quickList->addItem(QString("%1 live survey request(s) remain open, assigned, gathering, or due soon during active survey response.").arg(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'")));
-    quickList->addItem(QString("%1 survey document request(s) remain open, locating, printing, ready to deliver, or missing during active survey response.").arg(db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'")));
-    quickList->addItem(QString("%1 resident tracer item(s) remain open, in progress, needing follow-up, or escalated across resident-centered survey tracers.").arg(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'")));
-    quickList->addItem(QString("%1 plan-of-correction item(s) remain open, in progress, awaiting evidence, or under review for formal survey follow-up.").arg(db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'")));
-    quickList->addItem(QString("%1 executive packet(s) remain drafting, waiting on input, or ready for print/export across leadership operations.").arg(db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
-    quickList->addItem(QString("%1 alert-center item(s) remain open, due today, or blocked across the survey urgency layer.").arg(db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
-    quickList->addItem(QString("%1 leadership huddle agenda(s) are still drafting or ready for the next executive stand-up.").arg(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'")));
+    quickList->addItem(QString("%1 referral(s) are ready for admit and %2 still need documents").arg(db->countWhere("admissions", "status='Ready'"), db->countWhere("admissions", "status='Needs Docs'")));
+    quickList->addItem(QString("%1 incident(s) and %2 quality follow-up item(s) remain open").arg(db->countWhere("incidents", "status!='Closed'"), db->countWhere("quality_followups", "status!='Closed' AND status!='Complete'")));
+    quickList->addItem(QString("%1 survey request(s), %2 document pull(s), and %3 POC item(s) are still active").arg(db->countWhere("survey_live_requests", "status='Open' OR status='Assigned' OR status='Gathering' OR status='Due Soon'"), db->countWhere("survey_document_requests", "status='Open' OR status='Locating' OR status='Printing' OR status='Ready to Deliver' OR status='Missing'"), db->countWhere("plan_of_correction_items", "status='Open' OR status='In Progress' OR status='Awaiting Evidence' OR status='Under Review'")));
+    quickList->addItem(QString("%1 barrier item(s) and %2 alert-center item(s) still need leadership attention").arg(db->countWhere("barrier_escalations", "status='Open' OR status='Assigned' OR status='Waiting'"), db->countWhere("alerts_escalation_items", "status='Open' OR status='Due Today' OR status='Blocked'")));
+    quickList->addItem(QString("%1 resident tracer(s) and %2 evidence-binder item(s) remain active").arg(db->countWhere("resident_tracer_items", "status='Open' OR status='In Progress' OR status='Needs Follow-Up' OR status='Escalated'"), db->countWhere("evidence_binder_items", "status='Open' OR status='Collecting'")));
+    quickList->addItem(QString("%1 document-center item(s) and %2 MDS item(s) still need work").arg(db->countWhere("document_items", "status!='Closed'"), db->countWhere("mds_items", "status!='Closed' AND status!='Complete'")));
+    quickList->addItem(QString("%1 huddle agenda(s) are drafting or ready, and %2 export packet(s) are still being prepared").arg(db->countWhere("leadership_huddle_agendas", "status='Drafting' OR status='Ready'"), db->countWhere("executive_export_packets", "status='Drafting' OR status='Waiting on Input' OR status='Ready'")));
     quickList->addItem("Reports workspace can export a daily summary, census CSV, and staffing CSV.");
     quickLayout->addWidget(quickHint);
     quickLayout->addWidget(quickList);
