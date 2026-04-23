@@ -1,29 +1,25 @@
-# LTC Administrator Operations Dashboard v94 Role-Based Executive Views
+# LTC Administrator Operations Dashboard v95 Executive UI Final Polish
 
-## v94 Role-Based Executive Views
+## v95 Executive UI Final Polish
 
-### What is new in v94
-- Added a dedicated **Role-Based Executive Views** page.
-- Added focused executive lenses for:
-  - **Administrator**
-  - **DON / Clinical**
-  - **Department Leadership**
-  - **Survey Response Lead**
-- Kept the connected workspace, action-center, shared notes, and reporting model intact.
-- Added role-specific priority summaries, follow-up guidance, and board-level pressure rollups without removing any existing functionality.
-- Updated app and database versioning to **94.0.0**.
-- Updated the local SQLite filename to a **v94-specific** database path.
-
-### Main files added
-- `src/ui/pages/RoleBasedExecutiveViewsPage.h`
-- `src/ui/pages/RoleBasedExecutiveViewsPage.cpp`
+### What is new in v95
+- Polished the executive presentation across the app without removing functionality.
+- Cleaned dashboard wording so the home screen reads more clearly.
+- Tightened role-based view wording so each lens scans faster.
+- Refined the stylesheet for calmer spacing, better contrast, and cleaner executive cards, tabs, and tables.
+- Updated app and database versioning to **95.0.0**.
+- Updated the local SQLite filename to a **v95-specific** database path.
 
 ### Main files updated
+- `resources/app.qss`
+- `src/ui/pages/DashboardPage.cpp`
+- `src/ui/pages/RoleBasedExecutiveViewsPage.cpp`
+- `src/ui/pages/ReportsPage.cpp`
 - `src/core/AppWindow.cpp`
 - `src/data/DatabaseManager.cpp`
 - `src/main.cpp`
 - `CMakeLists.txt`
 
 ### Notes
-- This snapshot keeps the simplified executive home screen, unified action center, shared notes, connected workspaces, and reporting/export tools intact.
-- The new role-based page does not remove permissions or hide data. It gives leadership different operational lenses over the same connected system.
+- This version is a final polish pass for the current build line.
+- Existing workspaces, connected summaries, shared records, unified action center, shared notes, reporting, and role-based views remain intact.

@@ -25,7 +25,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* title = new QLabel("Executive home screen", hero);
     title->setObjectName("dashboardTitle");
     auto* subtitle = new QLabel(
-        "The executive home screen stays simple, and v94 keeps the executive home screen simple while adding role-based leadership lenses so the same connected operational picture can be interpreted differently without rebuilding the work.",
+        "The executive home screen is the calm first-stop view for the building. v95 finishes the current build line with cleaner wording, less visual noise, and a sharper executive summary while keeping all connected workspaces intact.",
         hero);
     subtitle->setObjectName("dashboardSubtitle");
     subtitle->setWordWrap(true);
@@ -198,7 +198,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     auto* lowerRow = new QHBoxLayout();
     lowerRow->setSpacing(16);
 
-    auto* actionBox = new QGroupBox("Priority queue", this);
+    auto* actionBox = new QGroupBox("Priority actions", this);
     auto* actionLayout = new QVBoxLayout(actionBox);
     auto* actionHint = new QLabel("Highest-value work pulled into one short queue so leadership can decide what needs attention first without scanning every board.", actionBox);
     actionHint->setObjectName("panelHint");
@@ -211,7 +211,7 @@ DashboardPage::DashboardPage(DatabaseManager* db, QWidget* parent) : QWidget(par
     actionLayout->addWidget(actionHint);
     actionLayout->addWidget(list);
 
-    auto* quickBox = new QGroupBox("Quick building brief", this);
+    auto* quickBox = new QGroupBox("Today's building brief", this);
     auto* quickLayout = new QVBoxLayout(quickBox);
     auto* quickHint = new QLabel(QString("Use this to orient the building quickly before moving into a detailed module. Density mode: %1.").arg(densityMode), quickBox);
     quickHint->setObjectName("panelHint");

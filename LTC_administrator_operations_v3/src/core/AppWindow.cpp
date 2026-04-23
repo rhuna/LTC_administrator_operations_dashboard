@@ -57,7 +57,7 @@
 #include <QVBoxLayout>
 
 AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString& roleName, QWidget* parent) : QMainWindow(parent) {
-    setWindowTitle("LTC Administrator Operations Dashboard v94 Role-Based Executive Views");
+    setWindowTitle("LTC Administrator Operations Dashboard v95 Executive UI Final Polish");
     resize(1500, 940);
     setMinimumSize(1220, 780);
 
@@ -81,7 +81,7 @@ AppWindow::AppWindow(DatabaseManager* db, const QString& fullName, const QString
     topRow->addWidget(userBadge, 0, Qt::AlignRight);
 
     auto* subtitle = new QLabel(
-        "v94 adds focused executive views so administrator, DON, department leadership, and survey-response leadership can interpret the same connected operating system through role-specific priorities.",
+        "v95 finishes the current build line with cleaner language, calmer spacing, sharper hierarchy, and a more polished executive presentation without removing any underlying functionality.",
         header);
     subtitle->setObjectName("appSubtitle");
     subtitle->setWordWrap(true);

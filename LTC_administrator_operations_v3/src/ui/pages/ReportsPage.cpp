@@ -26,7 +26,7 @@ ReportsPage::ReportsPage(DatabaseManager* db, QWidget* parent)
     root->addWidget(heading);
 
     auto* subtitle = new QLabel(
-        "v94 consolidates reporting so leadership can preview, export, and print connected operational summaries without bouncing between separate workspaces.",
+        "v95 keeps reporting consolidated and presents connected operational summaries with cleaner executive wording and final build-line polish.",
         this);
     subtitle->setWordWrap(true);
     root->addWidget(subtitle);
@@ -81,7 +81,7 @@ QString ReportsPage::buildDailySummaryText() const {
     QString text;
     QTextStream stream(&text);
 
-    stream << "LTC Administrator Operations Dashboard 94.0.0\n";
+    stream << "LTC Administrator Operations Dashboard 95.0.0\n";
     stream << "Daily Executive Summary\n";
     stream << "Generated: " << QDate::currentDate().toString("yyyy-MM-dd") << "\n\n";
 
@@ -127,7 +127,7 @@ QString ReportsPage::buildConnectedSummaryText() const {
     QString text;
     QTextStream stream(&text);
 
-    stream << "Connected Leadership Summary 94.0.0\n";
+    stream << "Connected Leadership Summary 95.0.0\n";
     stream << "Generated: " << QDate::currentDate().toString("yyyy-MM-dd") << "\n\n";
 
     stream << "Daily operations hub\n";
@@ -221,38 +221,38 @@ void ReportsPage::refreshPreview() {
 }
 
 void ReportsPage::exportDailySummary() {
-    if (saveTextToFile("ltc_daily_summary_94.0.0.txt", "Text Files (*.txt)", buildDailySummaryText())) {
+    if (saveTextToFile("ltc_daily_summary_95.0.0.txt", "Text Files (*.txt)", buildDailySummaryText())) {
         QMessageBox::information(this, "Report exported", "The daily summary was exported successfully.");
     }
 }
 
 void ReportsPage::exportCensusCsv() {
-    if (saveTextToFile("ltc_census_snapshot_94.0.0.csv", "CSV Files (*.csv)", buildCensusCsv())) {
+    if (saveTextToFile("ltc_census_snapshot_95.0.0.csv", "CSV Files (*.csv)", buildCensusCsv())) {
         QMessageBox::information(this, "Export complete", "The census CSV was exported successfully.");
     }
 }
 
 void ReportsPage::exportStaffingCsv() {
-    if (saveTextToFile("ltc_staffing_snapshot_94.0.0.csv", "CSV Files (*.csv)", buildStaffingCsv())) {
+    if (saveTextToFile("ltc_staffing_snapshot_95.0.0.csv", "CSV Files (*.csv)", buildStaffingCsv())) {
         QMessageBox::information(this, "Export complete", "The staffing CSV was exported successfully.");
     }
 }
 
 void ReportsPage::exportActionCenterCsv() {
-    if (saveTextToFile("ltc_action_center_94.0.0.csv", "CSV Files (*.csv)", buildActionCenterCsv())) {
+    if (saveTextToFile("ltc_action_center_95.0.0.csv", "CSV Files (*.csv)", buildActionCenterCsv())) {
         QMessageBox::information(this, "Export complete", "The action center CSV was exported successfully.");
     }
 }
 
 void ReportsPage::exportConnectedSummary() {
-    if (saveTextToFile("ltc_connected_summary_94.0.0.txt", "Text Files (*.txt)", buildConnectedSummaryText())) {
+    if (saveTextToFile("ltc_connected_summary_95.0.0.txt", "Text Files (*.txt)", buildConnectedSummaryText())) {
         QMessageBox::information(this, "Export complete", "The connected summary was exported successfully.");
     }
 }
 
 void ReportsPage::printDailySummary() {
     QPrinter printer(QPrinter::HighResolution);
-    printer.setDocName("LTC Daily Executive Summary 94.0.0");
+    printer.setDocName("LTC Daily Executive Summary 95.0.0");
     QPrintDialog dialog(&printer, this);
     if (dialog.exec() == QDialog::Accepted) {
         m_preview->document()->print(&printer);

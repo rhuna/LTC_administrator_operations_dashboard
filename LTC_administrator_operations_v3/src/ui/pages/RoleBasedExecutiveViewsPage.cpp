@@ -41,7 +41,7 @@ RoleBasedExecutiveViewsPage::RoleBasedExecutiveViewsPage(DatabaseManager* db, QW
     auto* heading = new QLabel("Role-Based Executive Views", this);
     heading->setStyleSheet("font-size: 20px; font-weight: 700;");
     auto* subheading = new QLabel(
-        "v94 adds focused executive perspectives so the same connected operational system can be viewed through administrator, DON, department, or survey-response priorities without removing any existing functionality.",
+        "v95 keeps the role-based lenses in place, but presents them with clearer wording and a cleaner executive feel so each leader can scan the same connected system faster.",
         this);
     subheading->setWordWrap(true);
     subheading->setStyleSheet("color: #5b6472;");
@@ -85,7 +85,7 @@ RoleBasedExecutiveViewsPage::RoleBasedExecutiveViewsPage(DatabaseManager* db, QW
 
     auto* bodyRow = new QHBoxLayout();
 
-    auto* leftBox = new QGroupBox("Priority queue", this);
+    auto* leftBox = new QGroupBox("Priority actions", this);
     auto* leftLayout = new QVBoxLayout(leftBox);
     auto* leftHint = new QLabel("Top action buckets for the selected leadership lens.", leftBox);
     leftHint->setWordWrap(true);

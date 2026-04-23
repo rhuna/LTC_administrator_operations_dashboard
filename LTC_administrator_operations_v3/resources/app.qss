@@ -1,15 +1,15 @@
 QMainWindow {
-    background: #f4f7fb;
+    background: #f3f6fa;
 }
 
 QFrame#NavPanel {
-    background: #17324d;
+    background: #16314a;
     border: none;
 }
 
 QLabel#AppTitle {
     color: white;
-    font-size: 20px;
+    font-size: 21px;
     font-weight: 700;
 }
 
@@ -24,8 +24,8 @@ QPushButton#NavButton {
     color: #e6eef7;
     border: none;
     text-align: left;
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 13px 14px;
+    border-radius: 12px;
     font-size: 14px;
 }
 
@@ -41,7 +41,7 @@ QPushButton#NavButton:checked {
 QFrame#CardFrame, QFrame#kpiCard, QFrame#summaryStrip, QGroupBox#heroPanel {
     background: white;
     border: 1px solid #dce4ee;
-    border-radius: 16px;
+    border-radius: 20px;
 }
 
 QLabel#CardTitle, QLabel#kpiTitle {
@@ -52,13 +52,13 @@ QLabel#CardTitle, QLabel#kpiTitle {
 
 QLabel#CardValue, QLabel#kpiValue, QLabel#summaryValue {
     color: #17324d;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 700;
 }
 
 QLabel#PageTitle, QLabel#dashboardTitle {
     color: #17324d;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
 }
 
@@ -71,7 +71,7 @@ QLabel#SectionTitle {
 QTableView, QTableWidget, QListWidget {
     background: white;
     border: 1px solid #dce4ee;
-    border-radius: 10px;
+    border-radius: 12px;
     gridline-color: #e8eef5;
 }
 
@@ -96,8 +96,8 @@ QPushButton {
     background: #2c5b86;
     color: white;
     border: none;
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 10px 16px;
+    border-radius: 12px;
     font-weight: 600;
 }
 
@@ -108,7 +108,7 @@ QPushButton:hover {
 QGroupBox {
     border: 1px solid #dce4ee;
     border-radius: 14px;
-    margin-top: 12px;
+    margin-top: 14px;
     background: white;
     font-weight: 700;
     color: #17324d;
@@ -124,12 +124,12 @@ QGroupBox::title {
 QFrame#appHeader, QFrame#sidebarCard, QStackedWidget#contentStack {
     background: white;
     border: 1px solid #dce4ee;
-    border-radius: 18px;
+    border-radius: 20px;
 }
 
 QLabel#appTitle {
     color: #17324d;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
 }
 
@@ -152,7 +152,7 @@ QListWidget#sideNav {
 
 QListWidget#sideNav::item {
     border: 1px solid transparent;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 10px 12px;
     margin: 2px 0px;
     color: #334e68;
@@ -166,7 +166,7 @@ QListWidget#sideNav::item:selected {
 }
 
 QListWidget#sideNav::item:hover {
-    background: #f4f7fb;
+    background: #f3f6fa;
 }
 
 QTabWidget::pane {
@@ -177,9 +177,9 @@ QTabWidget::pane {
 }
 
 QTabBar::tab {
-    background: #f4f7fb;
+    background: #f3f6fa;
     border: 1px solid #dce4ee;
-    padding: 8px 12px;
+    padding: 9px 14px;
     margin-right: 6px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -195,3 +195,9 @@ QTabBar::tab:selected {
 QPushButton {
     min-height: 16px;
 }
+
+QLabel#dashboardSnapshot { color: #42586d; font-size: 13px; }
+QLabel#summaryValue { font-size: 24px; }
+QLabel#panelHint { line-height: 1.35; }
+QTableView::item, QTableWidget::item { padding: 6px; }
+QAbstractScrollArea { background: transparent; }
